@@ -1,4 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
+import tailwindStyleSheetUrl from "./styles/tailwind.css";
 import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
@@ -11,6 +12,7 @@ import {
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: tailwindStyleSheetUrl },
 ];
 
 export default function App() {

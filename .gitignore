@@ -1,0 +1,50 @@
+/.cache
+
+# Adding these ahead of time
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/fixtures/email/
+/coverage
+
+/other/cache.db
+
+# Easy way to create temporary files/folders that won't accidentally be added to git
+*.local.*
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# prisma
+/prisma/data.db
+/prisma/data.db-journal
+/tests/prisma
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+/public/build
+/server-build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo

@@ -5,6 +5,7 @@ import {
   Links,
   LiveReload,
   Meta,
+  type MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -19,9 +20,9 @@ export default function App() {
   return (
     <html lang="en">
       <head>
+        <Meta />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
         <Links />
       </head>
       <body>
@@ -33,3 +34,10 @@ export default function App() {
     </html>
   );
 }
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "SWFT" },
+    { name: "description", content: "Organize your projects SWFTly" },
+  ];
+};

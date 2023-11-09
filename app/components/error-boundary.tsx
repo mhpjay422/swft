@@ -25,7 +25,7 @@ export function DynamicErrorBoundary({
   const params = useParams();
 
   return (
-    <div className="mx-auto flex h-full w-full items-center justify-center p-20 font-semibold bg-red-500">
+    <div className="mx-auto flex h-screen w-screen items-center justify-center p-20 font-semibold bg-red-200">
       {isRouteErrorResponse(error)
         ? (statusHandlers?.[error.status] ?? defaultStatusHandler)({
             error,

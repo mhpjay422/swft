@@ -17,7 +17,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStyleSheetUrl },
 ];
 
-export default function App() {
+function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -27,12 +27,23 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {children}
         <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return (
+    <Document>
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </Document>
   );
 }
 
@@ -45,12 +56,14 @@ export const meta: MetaFunction = () => {
 
 export function ErrorBoundary() {
   return (
-    <DynamicErrorBoundary
-      statusHandlers={{
-        404: ({ params }) => (
-          <div>Sorry, we couldn't find the page you're looking for</div>
-        ),
-      }}
-    />
+    <Document>
+      <DynamicErrorBoundary
+        statusHandlers={{
+          404: ({ params }) => (
+            <div>Sorry, we couldn't find the page you're looking for</div>
+          ),
+        }}
+      />
+    </Document>
   );
 }

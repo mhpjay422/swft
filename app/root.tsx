@@ -9,10 +9,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteError,
-  useParams,
-  isRouteErrorResponse,
 } from "@remix-run/react";
+import { DynamicErrorBoundary } from "./components/error-boundary";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -46,18 +44,13 @@ export const meta: MetaFunction = () => {
 };
 
 export function ErrorBoundary() {
-  const error = useRouteError() as Error;
-  console.error(error);
-
-  let errorMessage = <p>There was an error! Error Message: {error.message}</p>;
-
-  if (isRouteErrorResponse(error) && error.status === 404) {
-    errorMessage = <p>Sorry, we couldn't find the page you're looking for</p>;
-  }
-
   return (
-    <div className="container mx-auto flex h-full w-full items-center justify-center bg-destructive p-20 text-h2 text-destructive-foreground">
-      {errorMessage}
-    </div>
+    <DynamicErrorBoundary
+      statusHandlers={{
+        404: ({ params }) => (
+          <div>Sorry, we couldn't find the page you're looking for</div>
+        ),
+      }}
+    />
   );
 }

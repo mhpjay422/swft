@@ -9,6 +9,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 
 export const links: LinksFunction = () => [
@@ -41,3 +42,13 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Organize your projects SWFTly" },
   ];
 };
+
+export function ErrorBoundary() {
+  const error = useRouteError() as Error;
+
+  return (
+    <div className="container mx-auto flex h-full w-full items-center justify-center bg-destructive p-20 text-h2 text-destructive-foreground">
+      There was an error! Error Message: {error.message}
+    </div>
+  );
+}

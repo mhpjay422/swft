@@ -15,6 +15,7 @@ import { DynamicErrorBoundary } from "./components/error-boundary";
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: tailwindStyleSheetUrl },
+  { rel: "icon", href: "/favicon.svg" },
 ];
 
 function Document({ children }: { children: React.ReactNode }) {
@@ -28,7 +29,6 @@ function Document({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

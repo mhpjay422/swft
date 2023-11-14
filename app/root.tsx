@@ -20,7 +20,7 @@ export const links: LinksFunction = () => [
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="text-gray-700">
       <head>
         <Meta />
         <meta charSet="utf-8" />

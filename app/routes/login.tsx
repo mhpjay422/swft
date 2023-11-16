@@ -3,9 +3,18 @@ import {
   type MetaFunction,
   json,
 } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { z } from "zod";
+import { conform, useForm } from "@conform-to/react";
+import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { useState } from "react";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { DynamicErrorBoundary } from "~/components/error-boundary";
+import { PasswordSchema, EmailSchema } from "../utils/zod.schemas";
+
+const LoginFormSchema = z.object({
+  email: EmailSchema,
+  password: PasswordSchema,
+});
 
 export async function loader({ request }: DataFunctionArgs) {
   return json({});
@@ -16,7 +25,6 @@ export async function action({ request }: DataFunctionArgs) {}
 export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [buttonText, setButtonText] = useState<string>("Sign in");
-
   const actionData = useActionData<typeof action>();
 
   return (
@@ -31,7 +39,7 @@ export default function LoginPage() {
         <Form method="POST" className="mt-8 space-y-2">
           {/* NOTE: Add error handling */}
           <div className="">
-            <div>Username</div>
+            <div>Email</div>
             <div>
               <label htmlFor="email-address" className=""></label>
               <input className="bg-white relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary  sm:text-sm" />

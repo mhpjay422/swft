@@ -51,7 +51,7 @@ export default function LoginPage() {
                 isSubmitting
                   ? "bg-primary-dark hover:cursor-not-allowed"
                   : "bg-gray-200 hover:bg-primary-dark"
-              } relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
+              } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
             >
               {buttonText}
             </button>

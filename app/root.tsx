@@ -11,6 +11,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { DynamicErrorBoundary } from "./components/error-boundary";
+import { Header } from "./components/header";
+import { Footer } from "./components/footer";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -20,7 +22,7 @@ export const links: LinksFunction = () => [
 
 function Document({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="text-gray-700">
+    <html lang="en" className="text-gray-700 h-screen overflow-hidden">
       <head>
         <Meta />
         <meta charSet="utf-8" />
@@ -40,9 +42,11 @@ function Document({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Document>
-      <div className="flex-1">
+      <Header />
+      <div className="flex-grow flex flex-col min-h-screen">
         <Outlet />
       </div>
+      <Footer />
     </Document>
   );
 }

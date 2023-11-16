@@ -20,10 +20,9 @@ export default function LoginPage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white h-screen">
+    <div className="flex-grow flex flex-col mb-[10%] items-center justify-center px-4 sm:px-6 lg:px-8 bg-white">
       <div className="w-full max-w-md space-y-8">
-        <div className="relative flex flex-col items-center w-full">
-          <div className="relative h-20 w-44">{/* LOGO */}</div>
+        <div className="relative flex flex-col w-full">
           <p className="mt-4 text-gray-500 text-center text-md">
             Sign in to SWFT
           </p>

@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <div className="flex flex-row justify-between lg:mx-64 xl:mx-96 mt-5">
+    <div className="flex flex-row justify-between lg:mx-64 xl:mx-96 sticky bottom-0">
       <div className="">© 2023 SWFT</div>
       <div className="flex mb-4">
         <a

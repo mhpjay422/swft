@@ -1,6 +1,4 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Footer } from "~/components/footer";
-import { Header } from "~/components/header";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,8 +10,7 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <div className="flex flex-col h-screen">
-        <Header />
+      <div className="flex flex-col">
         <div className="flex flex-1 bg-gray-100 min-w-screen">
           <div className="self-center flex flex-col w-[30%] mx-auto">
             <div className="text-3xl bg-gray-100 text-center text-gray-800">
@@ -32,7 +29,6 @@ export default function Index() {
             </p>
           </div>
         </div>
-        <Footer />
       </div>
     </div>
   );

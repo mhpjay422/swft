@@ -6,7 +6,7 @@ import {
 import { z } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { useState } from "react";
+import { useId } from "react";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { DynamicErrorBoundary } from "~/components/error-boundary";
 import { PasswordSchema, EmailSchema } from "../utils/zod.schemas";
@@ -22,14 +22,27 @@ export async function loader({ request }: DataFunctionArgs) {
 
 export async function action({ request }: DataFunctionArgs) {}
 
+const useDynamicId = (id: string | undefined) => {
+  const uniqueId = useId();
+  return id ?? uniqueId;
+};
+
 export default function LoginPage() {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [buttonText, setButtonText] = useState<string>("Sign in");
   const actionData = useActionData<typeof action>();
 
+  const [form, fields] = useForm({
+    id: "login-form",
+    constraint: getFieldsetConstraint(LoginFormSchema),
+    // lastSubmission: actionData?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: LoginFormSchema });
+    },
+    shouldRevalidate: "onBlur",
+  });
+
   return (
-    <div className="flex-grow flex flex-col mb-[10%] items-center justify-center px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="w-full max-w-md space-y-8">
+    <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-60">
+      <div className="w-full max-w-md space-y-8 mx-auto">
         <div className="relative flex flex-col w-full">
           <p className="mt-4 text-gray-500 text-center text-md">
             Sign in to SWFT
@@ -37,32 +50,50 @@ export default function LoginPage() {
         </div>
 
         <Form method="POST" className="mt-8 space-y-2">
-          {/* NOTE: Add error handling */}
-          <div className="">
-            <div>Email</div>
-            <div>
-              <label htmlFor="email-address" className=""></label>
-              <input className="bg-white relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary  sm:text-sm" />
-            </div>
-            <div className="mt-6">Password</div>
-            <div>
-              <label htmlFor="password" className=""></label>
-              <input className="bg-white relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm" />
-            </div>
-          </div>
-
           <div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`${
-                isSubmitting
-                  ? "bg-primary-dark hover:cursor-not-allowed"
-                  : "bg-gray-200 hover:bg-primary-dark"
-              } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
+            <div>Email</div>
+            <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+              <label htmlFor={useDynamicId(fields.email.id)} />
+              <input
+                className="h-full w-full px-3 py-3 rounded-md"
+                autoFocus
+                {...conform.input(fields.email)}
+              />
+              <div></div>
+            </div>
+            <ul
+              id={fields.email.errorId}
+              className="min-h-[32px] px-4 pb-3 pt-1"
             >
-              {buttonText}
-            </button>
+              {fields.email.errors
+                ? fields?.email?.errors.map((error, i) => (
+                    <li key={i} className="text-[10px] text-red-600">
+                      {error}
+                    </li>
+                  ))
+                : null}
+            </ul>
+            <div>Password</div>
+            <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+              <label htmlFor={fields.password.id} />
+              <input
+                className="h-full w-full px-3 py-3 rounded-md"
+                {...conform.input(fields.password)}
+              />
+              <div></div>
+            </div>
+            <ul
+              id={fields.password.errorId}
+              className="min-h-[32px] px-4 pb-3 pt-1"
+            >
+              {fields.password.errors
+                ? fields?.password?.errors.map((error, i) => (
+                    <li key={i} className="text-[10px] text-red-600">
+                      {error}
+                    </li>
+                  ))
+                : null}
+            </ul>
           </div>
         </Form>
       </div>

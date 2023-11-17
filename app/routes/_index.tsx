@@ -10,12 +10,12 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex flex-1 bg-gray-100 min-w-screen">
+      <div className="flex flex-1 bg-gray-50 min-w-screen">
         <div className="flex flex-col w-[30%] mx-auto mt-[15%]">
-          <div className="text-3xl bg-gray-100 text-center text-gray-800">
+          <div className="text-3xl text-center text-gray-800">
             The platform for organizing your projects
           </div>
-          <div className="bg-gray-100 text-center mt-8 text-4xl">
+          <div className="text-center mt-8 text-4xl">
             <span className="font-semibold inline mt-4 text-black"> SWFT</span>
             ly
           </div>

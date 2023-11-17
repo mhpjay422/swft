@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <div className="bg-white w-full sticky bottom-0">
-      <div className="flex flex-row justify-between lg:mx-64 xl:mx-96 pt-4">
+    <div className="bg-white w-full sticky bottom-0 h-16">
+      <div className="flex flex-row justify-between mx-32 lg:mx-64 xl:mx-96 pt-4">
         <div className="">© 2023 SWFT</div>
         <div className="flex mb-4">
           <a

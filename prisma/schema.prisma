@@ -11,15 +11,15 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
-  email    String  @unique
-  password String  @unique
-  name     String?
+  id    String  @id @default(cuid())
+  email String  @unique
+  name  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  todo Todo[]
+  todo     Todo[]
+  password Password?
 }
 
 model Todo {
@@ -33,4 +33,11 @@ model Todo {
 
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId String
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 }

@@ -7,7 +7,11 @@ await prisma.user.deleteMany();
 await prisma.user.create({
   data: {
     email: "admin@email.com",
-    password: "minda",
     name: "Admin",
+    password: {
+      create: {
+        hash: "minda",
+      },
+    },
   },
 });

@@ -17,9 +17,8 @@ import {
 import { DynamicErrorBoundary } from "~/components/error-boundary";
 import { PasswordSchema, EmailSchema } from "../utils/zod.schemas";
 import { sessionStorage } from "../utils/session.server";
-import { prismaClient } from "prisma/prisma.client";
+import prismaClient from "~/utils/db.server";
 
-const prisma = prismaClient;
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
@@ -30,6 +29,7 @@ export async function loader({ request }: DataFunctionArgs) {
 }
 
 export async function action({ request }: DataFunctionArgs) {
+  const prisma = prismaClient;
   const formData = await request.formData();
 
   const submission = await parse(formData, {

@@ -16,10 +16,10 @@ import {
 } from "@remix-run/react";
 import { DynamicErrorBoundary } from "~/components/error-boundary";
 import { PasswordSchema, EmailSchema } from "../utils/zod.schemas";
-import { PrismaClient } from "@prisma/client";
 import { sessionStorage } from "../utils/session.server";
+import { prismaClient } from "prisma/prisma.client";
 
-const prisma = new PrismaClient();
+const prisma = prismaClient;
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,

@@ -10,7 +10,7 @@ await prisma.user.create({
     name: "Admin",
     password: {
       create: {
-        hash: "minda",
+        hash: "mindaa",
       },
     },
   },

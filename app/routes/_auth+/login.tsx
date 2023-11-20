@@ -13,6 +13,7 @@ import {
   useActionData,
   useFormAction,
   useNavigation,
+  Link,
 } from "@remix-run/react";
 import { DynamicErrorBoundary } from "~/components/error-boundary";
 import { PasswordSchema, EmailSchema } from "../../utils/zod.schemas";
@@ -122,12 +123,10 @@ export default function LoginPage() {
   });
 
   return (
-    <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-48">
+    <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-28">
       <div className="w-full max-w-md space-y-8 mx-auto">
         <div className="relative flex flex-col w-full">
-          <p className="mt-4 text-gray-500 text-center text-md">
-            Sign in to SWFT
-          </p>
+          <p className="mt-4 text-gray-700 text-4xl font-semibold">Sign in</p>
         </div>
 
         <Form method="POST" className="mt-8 space-y-2" {...form.props}>
@@ -178,8 +177,8 @@ export default function LoginPage() {
             <button
               className={`${
                 useIsSubmitting()
-                  ? "bg-primary-dark hover:cursor-not-allowed"
-                  : "bg-gray-200 hover:bg-primary-dark"
+                  ? "bg-gray-500 hover:cursor-not-allowed"
+                  : "bg-gray-200 hover:bg-gray-300"
               } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
               type="submit"
               disabled={useIsSubmitting()}
@@ -187,6 +186,13 @@ export default function LoginPage() {
               {/* NOTE: FIX THIS */}
               {useIsSubmitting() ? "Submitting" : "Submit"}
             </button>
+            <div className="flex items-center justify-center gap-2 pt-6">
+              Dont have an account?
+              <Link to="/signup" className="text-blue-700 underline">
+                {" "}
+                Create an account
+              </Link>
+            </div>
           </div>
         </Form>
       </div>

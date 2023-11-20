@@ -122,9 +122,6 @@ export default function LoginPage() {
     shouldRevalidate: "onBlur",
   });
 
-  console.log("form", form);
-  console.log("formerrors", form.errors);
-
   return (
     <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-28">
       <div className="w-full max-w-md space-y-8 mx-auto">

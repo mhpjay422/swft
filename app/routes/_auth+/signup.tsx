@@ -14,6 +14,7 @@ import {
   useNavigation,
 } from "@remix-run/react";
 import { z } from "zod";
+import { bcrypt } from "~/utils/auth.server";
 import { sessionStorage } from "~/utils/session.server";
 import { EmailSchema, NameSchema, PasswordSchema } from "~/utils/zod.schemas";
 import prismClient from "~/utils/db.server";
@@ -154,7 +155,7 @@ export default function SignupRoute() {
             <button
               className={`${
                 useIsSubmitting()
-                  ? "bg-gray-500 hover:cursor-not-allowed"
+                  ? "bg-gray-400 hover:cursor-not-allowed"
                   : "bg-gray-200 hover:bg-gray-300"
               } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
               type="submit"

@@ -170,7 +170,6 @@ export default function SignupRoute() {
               <label htmlFor={useDynamicId(fields.name.id)} />
               <input
                 className="h-full w-full px-3 py-3 rounded-md"
-                autoFocus
                 {...conform.input(fields.name)}
               />
               <div></div>

@@ -122,6 +122,9 @@ export default function LoginPage() {
     shouldRevalidate: "onBlur",
   });
 
+  console.log("form", form);
+  console.log("formerrors", form.errors);
+
   return (
     <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-28">
       <div className="w-full max-w-md space-y-8 mx-auto">
@@ -174,10 +177,19 @@ export default function LoginPage() {
                   ))
                 : null}
             </ul>
+            {form.errors.length > 0 ? (
+              <ul id={form.errorId} className="flex flex-col gap-1">
+                {form.errors.map((e) => (
+                  <li key={e} className="text-[10px] text-red-600">
+                    {e}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             <button
               className={`${
                 useIsSubmitting()
-                  ? "bg-gray-500 hover:cursor-not-allowed"
+                  ? "bg-gray-400 hover:cursor-not-allowed"
                   : "bg-gray-200 hover:bg-gray-300"
               } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
               type="submit"

@@ -57,6 +57,61 @@ const useIsSubmitting = ({
 
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
+  const submission = await parse(formData, {
+    schema: SignupFormSchema.superRefine(async (data, ctx) => {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: data.email },
+        select: { id: true },
+      });
+      if (existingUser) {
+        ctx.addIssue({
+          path: ["username"],
+          code: z.ZodIssueCode.custom,
+          message: "A user already exists with this username",
+        });
+        return;
+      }
+    }).transform(async (data) => {
+      const { email, name, password } = data;
+
+      const user = await prisma.user.create({
+        select: { id: true },
+        data: {
+          email: email.toLowerCase(),
+          name,
+          password: {
+            create: {
+              hash: await bcrypt.hash(password, 10),
+            },
+          },
+        },
+      });
+
+      return { ...data, user };
+    }),
+    async: true,
+  });
+
+  if (submission.intent !== "submit") {
+    return json({ status: "idle", submission } as const);
+  }
+
+  if (!submission.value?.user) {
+    return json({ status: "error", submission } as const, { status: 400 });
+  }
+
+  const { user } = submission.value;
+
+  const cookieSession = await sessionStorage.getSession(
+    request.headers.get("cookie")
+  );
+  cookieSession.set("userId", user.id);
+
+  return redirect("/", {
+    headers: {
+      "set-cookie": await sessionStorage.commitSession(cookieSession),
+    },
+  });
 }
 
 export const meta: MetaFunction = () => {

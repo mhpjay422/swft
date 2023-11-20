@@ -19,6 +19,7 @@ import { sessionStorage } from "~/utils/session.server";
 import { EmailSchema, NameSchema, PasswordSchema } from "~/utils/zod.schemas";
 import prismClient from "~/utils/db.server";
 import { useId } from "react";
+import { DynamicErrorBoundary } from "~/components/error-boundary";
 
 const prisma = prismClient;
 
@@ -65,11 +66,11 @@ export async function action({ request }: DataFunctionArgs) {
       });
       if (existingUser) {
         ctx.addIssue({
-          path: ["username"],
           code: z.ZodIssueCode.custom,
-          message: "A user already exists with this username",
+          message: "A user already exists with this email address",
         });
-        return;
+
+        return z.NEVER;
       }
     }).transform(async (data) => {
       const { email, name, password } = data;
@@ -207,6 +208,15 @@ export default function SignupRoute() {
                   ))
                 : null}
             </ul>
+            {form.errors.length > 0 ? (
+              <ul id={form.errorId} className="flex flex-col gap-1">
+                {form.errors.map((e) => (
+                  <li key={e} className="text-[10px] text-red-600">
+                    {e}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             <button
               className={`${
                 useIsSubmitting()
@@ -231,4 +241,8 @@ export default function SignupRoute() {
       </div>
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  return <DynamicErrorBoundary />;
 }

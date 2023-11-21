@@ -12,7 +12,7 @@ await prisma.user.create({
     name: "Admin",
     password: {
       create: {
-        hash: "mindaa",
+        hash: bcrypt.hashSync("mindaa", 10),
       },
     },
   },

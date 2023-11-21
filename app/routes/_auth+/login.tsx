@@ -19,6 +19,7 @@ import { DynamicErrorBoundary } from "~/components/error-boundary";
 import { PasswordSchema, EmailSchema } from "../../utils/zod.schemas";
 import { sessionStorage } from "../../utils/session.server";
 import prismaClient from "~/utils/db.server";
+import { bcrypt } from "~/utils/auth.server";
 
 const LoginFormSchema = z.object({
   email: EmailSchema,
@@ -38,11 +39,20 @@ export async function action({ request }: DataFunctionArgs) {
       LoginFormSchema.transform(async (data, ctx) => {
         if (intent !== "submit") return { ...data, user: null };
 
-        const user = await prisma.user.findUnique({
-          select: { id: true },
+        const userWithPassword = await prisma.user.findUnique({
+          select: {
+            id: true,
+            password: {
+              select: {
+                hash: true,
+              },
+            },
+          },
           where: { email: data.email },
         });
-        if (!user) {
+
+        // Ensures there is a password to compare against for bcrypt
+        if (!userWithPassword || !userWithPassword.password) {
           ctx.addIssue({
             code: "custom",
             message: "Invalid username or password",
@@ -50,7 +60,20 @@ export async function action({ request }: DataFunctionArgs) {
           return z.NEVER;
         }
 
-        return { ...data, user };
+        const isValidPassword = await bcrypt.compare(
+          data.password,
+          userWithPassword?.password?.hash
+        );
+
+        if (!isValidPassword) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Invalid username or password",
+          });
+          return z.NEVER;
+        }
+
+        return { ...data, user: { id: userWithPassword.id } };
       }),
     async: true,
   });

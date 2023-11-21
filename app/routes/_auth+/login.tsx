@@ -73,6 +73,7 @@ export async function action({ request }: DataFunctionArgs) {
           return z.NEVER;
         }
 
+        // NOTE: Do not return the password hash to the client
         return { ...data, user: { id: userWithPassword.id } };
       }),
     async: true,

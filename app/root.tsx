@@ -1,6 +1,10 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import tailwindStyleSheetUrl from "./styles/tailwind.css";
-import type { LinksFunction } from "@remix-run/node";
+import {
+  json,
+  type DataFunctionArgs,
+  type LinksFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -13,12 +17,34 @@ import {
 import { DynamicErrorBoundary } from "./components/error-boundary";
 import { Header } from "./components/header";
 import { Footer } from "./components/footer";
+import { prismaClient } from "prisma/prisma.client";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: tailwindStyleSheetUrl },
   { rel: "icon", href: "/favicon.svg" },
 ];
+
+const prisma = prismaClient;
+
+export async function loader({ request }: DataFunctionArgs) {
+  const cookieSession = await sessionStorage.getSession(
+    request.headers.get("cookie")
+  );
+  const userId = cookieSession.get("userId");
+  const user = userId
+    ? await prisma.user.findUnique({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: { id: userId },
+      })
+    : null;
+  return json({
+    user,
+  });
+}
 
 function Document({ children }: { children: React.ReactNode }) {
   return (

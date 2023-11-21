@@ -14,10 +14,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { DynamicErrorBoundary } from "./components/error-boundary";
-import { Header } from "./components/header";
-import { Footer } from "./components/footer";
-import { prismaClient } from "prisma/prisma.client";
+import { Header } from "./components/header.tsx";
+import { Footer } from "./components/footer.tsx";
+import { DynamicErrorBoundary } from "./components/error-boundary.tsx";
+import prismaClient from "#app/utils/db.server.ts";
+import { sessionStorage } from "#app/utils/session.server.ts";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),

@@ -14,14 +14,19 @@ import {
   useNavigation,
 } from "@remix-run/react";
 import { z } from "zod";
-import { bcrypt } from "~/utils/auth.server";
-import { sessionStorage } from "~/utils/session.server";
-import { EmailSchema, NameSchema, PasswordSchema } from "~/utils/zod.schemas";
-import prismClient from "~/utils/db.server";
 import { useId } from "react";
-import { DynamicErrorBoundary } from "~/components/error-boundary";
+import prismaClient from "#app/utils/db.server.ts";
 
-const prisma = prismClient;
+import {
+  EmailSchema,
+  NameSchema,
+  PasswordSchema,
+} from "#app/utils/zod.schemas.ts";
+import { bcrypt } from "#app/utils/auth.server.ts";
+import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { sessionStorage } from "#app/utils/session.server.ts";
+
+const prisma = prismaClient;
 
 const SignupFormSchema = z.object({
   name: NameSchema,

@@ -15,11 +15,11 @@ import {
   useNavigation,
   Link,
 } from "@remix-run/react";
-import { DynamicErrorBoundary } from "~/components/error-boundary";
-import { PasswordSchema, EmailSchema } from "../../utils/zod.schemas";
-import { sessionStorage } from "../../utils/session.server";
-import prismaClient from "~/utils/db.server";
-import { bcrypt } from "~/utils/auth.server";
+import { bcrypt } from "#app/utils/auth.server.ts";
+import { EmailSchema, PasswordSchema } from "#app/utils/zod.schemas.ts";
+import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { sessionStorage } from "#app/utils/session.server.ts";
+import prismaClient from "#app/utils/db.server.ts";
 
 const LoginFormSchema = z.object({
   email: EmailSchema,

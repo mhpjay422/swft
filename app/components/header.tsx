@@ -1,5 +1,7 @@
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import Favicon from "../../public/favicon.svg";
+import { useLoggedInUser } from "#app/utils/user.ts";
+import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 
 export function Header() {
   return (
@@ -13,11 +15,20 @@ export function Header() {
             SWFT
           </div>
         </Link>
-        <Link to="/login">
-          <button className="h-10 w-20 rounded border border-black text-center self-center">
-            Log In
-          </button>
-        </Link>
+        {useLoggedInUser() ? (
+          <Form action="/logout" method="POST">
+            <AuthenticityTokenInput />
+            <button className="h-10 w-20 rounded border border-black text-center self-center">
+              Log Out
+            </button>
+          </Form>
+        ) : (
+          <Link to="/login">
+            <button className="h-10 w-20 rounded border border-black text-center self-center">
+              Log In
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );

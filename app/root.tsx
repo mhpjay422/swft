@@ -99,9 +99,11 @@ function App() {
 
 export default function AppwithProviders() {
   const data = useLoaderData<typeof loader>();
-  <AuthenticityTokenProvider token={data.csrfToken}>
-    <App />
-  </AuthenticityTokenProvider>;
+  return (
+    <AuthenticityTokenProvider token={data.csrfToken}>
+      <App />
+    </AuthenticityTokenProvider>
+  );
 }
 
 export const meta: MetaFunction = () => {

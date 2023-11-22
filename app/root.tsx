@@ -50,7 +50,11 @@ export async function loader({ request }: DataFunctionArgs) {
       user,
       csrfToken,
     },
+
     {
+      // The header is not avaliable if
+      // the csrf token was previously created (before this loader was called)
+      // and still valid
       headers: csrfCookieHeader ? { "set-cookie": csrfCookieHeader } : {},
     }
   );

@@ -15,7 +15,7 @@ import {
   useNavigation,
   Link,
 } from "@remix-run/react";
-import { bcrypt } from "#app/utils/auth.server.ts";
+import { bcrypt, getSessionExpirationDate } from "#app/utils/auth.server.ts";
 import { EmailSchema, PasswordSchema } from "#app/utils/zod.schemas.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { sessionStorage } from "#app/utils/session.server.ts";
@@ -23,11 +23,12 @@ import prismaClient from "#app/utils/db.server.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { csrf } from "#app/utils/csrf.server.ts";
 import { CSRFError } from "remix-utils/csrf/server";
-import { ErrorList } from "#app/utils/forms.tsx";
+import { CheckboxField, ErrorList } from "#app/utils/forms.tsx";
 
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
+  remember: z.boolean().optional(),
 });
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -104,7 +105,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "error", submission } as const, { status: 400 });
   }
 
-  const { user } = submission.value;
+  const { user, remember } = submission.value;
 
   const cookieSession = await sessionStorage.getSession(
     request.headers.get("Cookie")
@@ -113,7 +114,9 @@ export async function action({ request }: DataFunctionArgs) {
 
   return redirect("/", {
     headers: {
-      "set-cookie": await sessionStorage.commitSession(cookieSession),
+      "set-cookie": await sessionStorage.commitSession(cookieSession, {
+        expires: remember ? getSessionExpirationDate() : undefined,
+      }),
     },
   });
 }
@@ -189,6 +192,16 @@ export default function LoginPage() {
           </div>
           <ErrorList id={`error-${useId()}`} errors={fields.password.errors} />
           <ErrorList id={`error-${useId()}`} errors={form.errors} />
+          <CheckboxField
+            labelProps={{
+              htmlFor: fields.remember.id,
+              children: "Remember me",
+            }}
+            buttonProps={conform.input(fields.remember, {
+              type: "checkbox",
+            })}
+            errors={fields.remember.errors}
+          />
           <button
             className={`${
               useIsSubmitting()

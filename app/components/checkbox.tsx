@@ -1,35 +1,34 @@
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
-import * as LabelPrimitive from "@radix-ui/react-label";
 import { clsx } from "clsx";
+import * as React from "react";
 
-interface CheckboxProps {}
-
-const Checkbox = (props: CheckboxProps) => {
-  return (
-    <form className="flex items-center">
-      <CheckboxPrimitive.Root
-        id="c1"
-        defaultChecked
-        className={clsx(
-          "flex h-5 w-5 items-center justify-center rounded",
-          "radix-state-checked:bg-purple-600 radix-state-unchecked:bg-gray-200",
-          "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
-        )}
-      >
-        <CheckboxPrimitive.Indicator>
-          <CheckIcon className="h-4 w-4 self-center text-white" />
-        </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
-
-      <LabelPrimitive.Label
-        htmlFor="c1"
-        className="ml-3 select-none text-sm font-medium text-gray-900"
-      >
-        Accept terms and conditions
-      </LabelPrimitive.Label>
-    </form>
-  );
+export type CheckboxProps = Omit<
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
+  "type"
+> & {
+  type?: string;
 };
+
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+>(({ ...props }, ref) => (
+  <CheckboxPrimitive.Root
+    ref={ref}
+    className={clsx(
+      "flex h-5 w-5 items-end justify-center rounded border border-gray-400 mt-0.5",
+      "radix-state-checked:bg-purple-600 radix-state-unchecked:bg-white",
+      "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+    )}
+    {...props}
+  >
+    <CheckboxPrimitive.Indicator>
+      <CheckIcon className="h-4 w-4 self-center text-white" />
+    </CheckboxPrimitive.Indicator>
+  </CheckboxPrimitive.Root>
+));
+
+Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 export { Checkbox };

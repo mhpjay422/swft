@@ -24,6 +24,9 @@ import {
 import { bcrypt } from "#app/utils/auth.server.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { sessionStorage } from "#app/utils/session.server.ts";
+import { AuthenticityTokenInput } from "remix-utils/csrf/react";
+import { csrf } from "#app/utils/csrf.server.ts";
+import { CSRFError } from "remix-utils/csrf/server";
 
 const prisma = prismaClient;
 
@@ -62,6 +65,15 @@ const useIsSubmitting = ({
 
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
+
+  try {
+    await csrf.validate(formData, request.headers);
+  } catch (error) {
+    if (error instanceof CSRFError) {
+      throw new Response("Invalid CSRF token", { status: 403 });
+    }
+  }
+
   const submission = await parse(formData, {
     schema: SignupFormSchema.superRefine(async (data, ctx) => {
       const existingUser = await prisma.user.findUnique({
@@ -146,99 +158,92 @@ export default function SignupRoute() {
         </div>
 
         <Form method="POST" className="mt-8 space-y-2" {...form.props}>
-          <div>
-            <div>Email</div>
-            <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
-              <label htmlFor={useDynamicId(fields.email.id)} />
-              <input
-                className="h-full w-full px-3 py-3 rounded-md"
-                autoFocus
-                {...conform.input(fields.email)}
-              />
-              <div></div>
-            </div>
-            <ul
-              id={fields.email.errorId}
-              className="min-h-[32px] px-4 pb-3 pt-1"
-            >
-              {fields.email.errors
-                ? fields?.email?.errors.map((error, i) => (
-                    <li key={i} className="text-[10px] text-red-600">
-                      {error}
-                    </li>
-                  ))
-                : null}
-            </ul>
-            <div>Name</div>
-            <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
-              <label htmlFor={useDynamicId(fields.name.id)} />
-              <input
-                className="h-full w-full px-3 py-3 rounded-md"
-                {...conform.input(fields.name)}
-              />
-              <div></div>
-            </div>
-            <ul
-              id={fields.name.errorId}
-              className="min-h-[32px] px-4 pb-3 pt-1"
-            >
-              {fields.name.errors
-                ? fields?.name?.errors.map((error, i) => (
-                    <li key={i} className="text-[10px] text-red-600">
-                      {error}
-                    </li>
-                  ))
-                : null}
-            </ul>
-            <div>Password</div>
-            <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
-              <label htmlFor={fields.password.id} />
-              <input
-                className="h-full w-full px-3 py-3 rounded-md"
-                {...conform.input(fields.password)}
-              />
-              <div></div>
-            </div>
-            <ul
-              id={fields.password.errorId}
-              className="min-h-[32px] px-4 pb-3 pt-1"
-            >
-              {fields.password.errors
-                ? fields?.password?.errors.map((error, i) => (
-                    <li key={i} className="text-[10px] text-red-600">
-                      {error}
-                    </li>
-                  ))
-                : null}
-            </ul>
-            {form.errors.length > 0 ? (
-              <ul id={form.errorId} className="flex flex-col gap-1">
-                {form.errors.map((e) => (
-                  <li key={e} className="text-[10px] text-red-600">
-                    {e}
+          <AuthenticityTokenInput />
+          <div>Email</div>
+          <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+            <label htmlFor={useDynamicId(fields.email.id)} />
+            <input
+              className="h-full w-full px-3 py-3 rounded-md"
+              autoFocus
+              {...conform.input(fields.email)}
+            />
+            <div></div>
+          </div>
+          <ul id={fields.email.errorId} className="min-h-[32px] px-4 pb-3 pt-1">
+            {fields.email.errors
+              ? fields?.email?.errors.map((error, i) => (
+                  <li key={i} className="text-[10px] text-red-600">
+                    {error}
                   </li>
-                ))}
-              </ul>
-            ) : null}
-            <button
-              className={`${
-                useIsSubmitting()
-                  ? "bg-gray-400 hover:cursor-not-allowed"
-                  : "bg-gray-200 hover:bg-gray-300"
-              } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
-              type="submit"
-              disabled={useIsSubmitting()}
-            >
-              {/* NOTE: FIX THIS */}
-              {useIsSubmitting() ? "Submitting" : "Sign up"}
-            </button>
-            <div className="flex items-center justify-center gap-2 pt-6">
-              Already have an account?
-              <Link to="/login" className="text-blue-700 underline">
-                {" "}
-                Sign in
-              </Link>
-            </div>
+                ))
+              : null}
+          </ul>
+          <div>Name</div>
+          <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+            <label htmlFor={useDynamicId(fields.name.id)} />
+            <input
+              className="h-full w-full px-3 py-3 rounded-md"
+              {...conform.input(fields.name)}
+            />
+            <div></div>
+          </div>
+          <ul id={fields.name.errorId} className="min-h-[32px] px-4 pb-3 pt-1">
+            {fields.name.errors
+              ? fields?.name?.errors.map((error, i) => (
+                  <li key={i} className="text-[10px] text-red-600">
+                    {error}
+                  </li>
+                ))
+              : null}
+          </ul>
+          <div>Password</div>
+          <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+            <label htmlFor={fields.password.id} />
+            <input
+              className="h-full w-full px-3 py-3 rounded-md"
+              {...conform.input(fields.password)}
+            />
+            <div></div>
+          </div>
+          <ul
+            id={fields.password.errorId}
+            className="min-h-[32px] px-4 pb-3 pt-1"
+          >
+            {fields.password.errors
+              ? fields?.password?.errors.map((error, i) => (
+                  <li key={i} className="text-[10px] text-red-600">
+                    {error}
+                  </li>
+                ))
+              : null}
+          </ul>
+          {form.errors.length > 0 ? (
+            <ul id={form.errorId} className="flex flex-col gap-1">
+              {form.errors.map((e) => (
+                <li key={e} className="text-[10px] text-red-600">
+                  {e}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <button
+            className={`${
+              useIsSubmitting()
+                ? "bg-gray-400 hover:cursor-not-allowed"
+                : "bg-gray-200 hover:bg-gray-300"
+            } relative block w-full appearance-none rounded-md border border-gray-400 px-3 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm mt-20 h-12`}
+            type="submit"
+            disabled={useIsSubmitting()}
+          >
+            {/* NOTE: FIX THIS */}
+            {useIsSubmitting() ? "Submitting" : "Sign up"}
+          </button>
+          <div className="flex items-center justify-center gap-2 pt-6">
+            Already have an account?
+            <Link to="/login" className="text-blue-700 underline">
+              {" "}
+              Sign in
+            </Link>
           </div>
         </Form>
       </div>

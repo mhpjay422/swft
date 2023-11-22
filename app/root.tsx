@@ -13,6 +13,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import { Header } from "./components/header.tsx";
 import { Footer } from "./components/footer.tsx";
@@ -20,6 +21,7 @@ import { DynamicErrorBoundary } from "./components/error-boundary.tsx";
 import prismaClient from "#app/utils/db.server.ts";
 import { sessionStorage } from "#app/utils/session.server.ts";
 import { csrf } from "./utils/csrf.server.ts";
+import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -52,7 +54,7 @@ export async function loader({ request }: DataFunctionArgs) {
     },
 
     {
-      // The header is not avaliable if
+      // The header is null if
       // the csrf token was previously created (before this loader was called)
       // and still valid
       headers: csrfCookieHeader ? { "set-cookie": csrfCookieHeader } : {},
@@ -83,7 +85,7 @@ function Document({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+function App() {
   return (
     <Document>
       <Header />
@@ -93,6 +95,13 @@ export default function App() {
       <Footer />
     </Document>
   );
+}
+
+export default function AppwithProviders() {
+  const data = useLoaderData<typeof loader>();
+  <AuthenticityTokenProvider token={data.csrfToken}>
+    <App />
+  </AuthenticityTokenProvider>;
 }
 
 export const meta: MetaFunction = () => {

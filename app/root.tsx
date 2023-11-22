@@ -19,6 +19,7 @@ import { Footer } from "./components/footer.tsx";
 import { DynamicErrorBoundary } from "./components/error-boundary.tsx";
 import prismaClient from "#app/utils/db.server.ts";
 import { sessionStorage } from "#app/utils/session.server.ts";
+import { csrf } from "./utils/csrf.server.ts";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -42,9 +43,17 @@ export async function loader({ request }: DataFunctionArgs) {
         where: { id: userId },
       })
     : null;
-  return json({
-    user,
-  });
+  const [csrfToken, csrfCookieHeader] = await csrf.commitToken();
+
+  return json(
+    {
+      user,
+      csrfToken,
+    },
+    {
+      headers: csrfCookieHeader ? { "set-cookie": csrfCookieHeader } : {},
+    }
+  );
 }
 
 function Document({ children }: { children: React.ReactNode }) {

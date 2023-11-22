@@ -27,6 +27,7 @@ import { sessionStorage } from "#app/utils/session.server.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { csrf } from "#app/utils/csrf.server.ts";
 import { CSRFError } from "remix-utils/csrf/server";
+import { ErrorList } from "#app/utils/forms.tsx";
 
 const prisma = prismaClient;
 
@@ -169,15 +170,7 @@ export default function SignupRoute() {
             />
             <div></div>
           </div>
-          <ul id={fields.email.errorId} className="min-h-[32px] px-4 pb-3 pt-1">
-            {fields.email.errors
-              ? fields?.email?.errors.map((error, i) => (
-                  <li key={i} className="text-[10px] text-red-600">
-                    {error}
-                  </li>
-                ))
-              : null}
-          </ul>
+          <ErrorList id={`error-${useId()}`} errors={fields.email.errors} />
           <div>Name</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
             <label htmlFor={useDynamicId(fields.name.id)} />
@@ -187,15 +180,7 @@ export default function SignupRoute() {
             />
             <div></div>
           </div>
-          <ul id={fields.name.errorId} className="min-h-[32px] px-4 pb-3 pt-1">
-            {fields.name.errors
-              ? fields?.name?.errors.map((error, i) => (
-                  <li key={i} className="text-[10px] text-red-600">
-                    {error}
-                  </li>
-                ))
-              : null}
-          </ul>
+          <ErrorList id={`error-${useId()}`} errors={fields.name.errors} />
           <div>Password</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
             <label htmlFor={fields.password.id} />
@@ -205,27 +190,8 @@ export default function SignupRoute() {
             />
             <div></div>
           </div>
-          <ul
-            id={fields.password.errorId}
-            className="min-h-[32px] px-4 pb-3 pt-1"
-          >
-            {fields.password.errors
-              ? fields?.password?.errors.map((error, i) => (
-                  <li key={i} className="text-[10px] text-red-600">
-                    {error}
-                  </li>
-                ))
-              : null}
-          </ul>
-          {form.errors.length > 0 ? (
-            <ul id={form.errorId} className="flex flex-col gap-1">
-              {form.errors.map((e) => (
-                <li key={e} className="text-[10px] text-red-600">
-                  {e}
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <ErrorList id={`error-${useId()}`} errors={fields.password.errors} />
+          <ErrorList id={`error-${useId()}`} errors={form.errors} />
           <button
             className={`${
               useIsSubmitting()

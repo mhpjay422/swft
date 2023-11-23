@@ -191,7 +191,6 @@ export default function LoginPage() {
             <div></div>
           </div>
           <ErrorList id={`error-${useId()}`} errors={fields.password.errors} />
-          <ErrorList id={`error-${useId()}`} errors={form.errors} />
           <CheckboxField
             labelProps={{
               htmlFor: fields.remember.id,
@@ -202,6 +201,7 @@ export default function LoginPage() {
             })}
             errors={fields.remember.errors}
           />
+          <ErrorList id={`error-${useId()}`} errors={form.errors} />
           <button
             className={`${
               useIsSubmitting()

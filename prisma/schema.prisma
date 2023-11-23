@@ -18,11 +18,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  todo     Todo[]
+  task     Task[]
   password Password?
 }
 
-model Todo {
+model Task {
   id        String  @id @default(cuid())
   title     String
   content   String?

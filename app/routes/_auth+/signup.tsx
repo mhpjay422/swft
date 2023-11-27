@@ -20,6 +20,7 @@ import {
   EmailSchema,
   NameSchema,
   PasswordSchema,
+  UsernameSchema,
 } from "#app/utils/zod.schemas.ts";
 import { bcrypt } from "#app/utils/auth.server.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
@@ -33,6 +34,7 @@ const prisma = prismaClient;
 
 const SignupFormSchema = z.object({
   name: NameSchema,
+  username: UsernameSchema,
   email: EmailSchema,
   password: PasswordSchema,
 });
@@ -90,13 +92,14 @@ export async function action({ request }: DataFunctionArgs) {
         return z.NEVER;
       }
     }).transform(async (data) => {
-      const { email, name, password } = data;
+      const { email, name, password, username } = data;
 
       const user = await prisma.user.create({
         select: { id: true },
         data: {
           email: email.toLowerCase(),
           name,
+          username,
           password: {
             create: {
               hash: await bcrypt.hash(password, 10),
@@ -160,6 +163,7 @@ export default function SignupRoute() {
 
         <Form method="POST" className="mt-8 space-y-2" {...form.props}>
           <AuthenticityTokenInput />
+
           <div>Email</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
             <label htmlFor={useDynamicId(fields.email.id)} />
@@ -168,9 +172,9 @@ export default function SignupRoute() {
               autoFocus
               {...conform.input(fields.email)}
             />
-            <div></div>
           </div>
           <ErrorList id={`error-${useId()}`} errors={fields.email.errors} />
+
           <div>Name</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
             <label htmlFor={useDynamicId(fields.name.id)} />
@@ -178,9 +182,19 @@ export default function SignupRoute() {
               className="h-full w-full px-3 py-3 rounded-md"
               {...conform.input(fields.name)}
             />
-            <div></div>
           </div>
           <ErrorList id={`error-${useId()}`} errors={fields.name.errors} />
+
+          <div>Username</div>
+          <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
+            <label htmlFor={useDynamicId(fields.username.id)} />
+            <input
+              className="h-full w-full px-3 py-3 rounded-md"
+              {...conform.input(fields.username)}
+            />
+          </div>
+          <ErrorList id={`error-${useId()}`} errors={fields.name.errors} />
+
           <div>Password</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">
             <label htmlFor={fields.password.id} />
@@ -188,7 +202,6 @@ export default function SignupRoute() {
               className="h-full w-full px-3 py-3 rounded-md"
               {...conform.input(fields.password)}
             />
-            <div></div>
           </div>
           <ErrorList id={`error-${useId()}`} errors={fields.password.errors} />
           <ErrorList id={`error-${useId()}`} errors={form.errors} />

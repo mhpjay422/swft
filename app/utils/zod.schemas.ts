@@ -17,3 +17,8 @@ export const NameSchema = z
   .string({ required_error: "Name is required" })
   .min(3, { message: "Name is too short" })
   .max(30, { message: "Name is too long" });
+
+export const UsernameSchema = z
+  .string({ required_error: "Username is required" })
+  .min(3, { message: "Username is too short" })
+  .max(15, { message: "Username is too long" });

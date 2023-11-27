@@ -10,6 +10,7 @@ await prisma.user.create({
   data: {
     email: "admin@email.com",
     name: "Admin",
+    username: "admin",
     password: {
       create: {
         hash: bcrypt.hashSync("mindaa", 10),
@@ -29,6 +30,7 @@ function createSeedUserData() {
 
   return {
     email: faker.internet.email(),
+    username: `${firstName}${lastName}`,
     name: `${firstName} ${lastName}`,
     password: {
       create: {

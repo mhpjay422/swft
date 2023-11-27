@@ -20,6 +20,20 @@ model User {
 
   task     Task[]
   password Password?
+  project  Project[]
+}
+
+model Project {
+  id    String @id @default(cuid())
+  title String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId String
+
+  task Task[]
 }
 
 model Task {
@@ -31,8 +45,10 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ownerId String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId   String
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
 }
 
 model Password {

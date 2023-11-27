@@ -16,7 +16,7 @@ await prisma.user.create({
         hash: bcrypt.hashSync("mindaa", 10),
       },
     },
-    project: {
+    projects: {
       create: {
         title: "Admin Project",
       },
@@ -37,7 +37,7 @@ function createSeedUserData() {
         hash: bcrypt.hashSync(faker.internet.password(), 10),
       },
     },
-    project: {
+    projects: {
       create: {
         title: "My Project",
       },

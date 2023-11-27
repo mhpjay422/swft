@@ -55,6 +55,7 @@ export async function action({ request }: DataFunctionArgs) {
         const userWithPassword = await prisma.user.findUnique({
           select: {
             id: true,
+            username: true,
             password: {
               select: {
                 hash: true,
@@ -87,7 +88,13 @@ export async function action({ request }: DataFunctionArgs) {
         }
 
         // NOTE: Do not return the password hash to the client
-        return { ...data, user: { id: userWithPassword.id } };
+        return {
+          ...data,
+          user: {
+            id: userWithPassword.id,
+            username: userWithPassword.username,
+          },
+        };
       }),
     async: true,
   });
@@ -112,7 +119,7 @@ export async function action({ request }: DataFunctionArgs) {
   );
   cookieSession.set("userId", user.id);
 
-  return redirect("/", {
+  return redirect(`/home/${user.username}`, {
     headers: {
       "set-cookie": await sessionStorage.commitSession(cookieSession, {
         expires: remember ? getSessionExpirationDate() : undefined,

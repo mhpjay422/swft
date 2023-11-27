@@ -95,7 +95,7 @@ export async function action({ request }: DataFunctionArgs) {
       const { email, name, password, username } = data;
 
       const user = await prisma.user.create({
-        select: { id: true },
+        select: { id: true, username: true },
         data: {
           email: email.toLowerCase(),
           name,
@@ -103,6 +103,11 @@ export async function action({ request }: DataFunctionArgs) {
           password: {
             create: {
               hash: await bcrypt.hash(password, 10),
+            },
+          },
+          projects: {
+            create: {
+              title: "My first project",
             },
           },
         },
@@ -128,7 +133,7 @@ export async function action({ request }: DataFunctionArgs) {
   );
   cookieSession.set("userId", user.id);
 
-  return redirect("/", {
+  return redirect(`/home/${user.username}`, {
     headers: {
       "set-cookie": await sessionStorage.commitSession(cookieSession),
     },

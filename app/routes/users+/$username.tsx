@@ -42,7 +42,7 @@ export default function UserHomeProfilePage() {
         {data.owner.projects.map((project) => (
           <Link
             key={project.id}
-            to={`/users/${data.owner.username}/${project.id}`}
+            to={`/users/${data.owner.username}/project/${project.id}`}
           >
             <p className=" text-blue-600">Title: {project.title}</p>
           </Link>

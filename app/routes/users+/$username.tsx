@@ -6,7 +6,7 @@ import {
   json,
   type MetaFunction,
 } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
 const prisma = prismaClient;
 
@@ -33,14 +33,19 @@ export async function loader({ params }: DataFunctionArgs) {
 
 export async function action({ request }: DataFunctionArgs) {}
 
-export default function HomePage() {
+export default function UserHomeProfilePage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="flex flex-col mx-96 w-auto h-96 mt-20 border border-gray-200 hover:border-gray-300 rounded-lg">
       <div className="p-8 ">
-        <p className="text-xl font-semibold">Projects</p>
+        <p className="text-xl font-semibold">My Projects</p>
         {data.owner.projects.map((project) => (
-          <p key={project.id}>Title: {project.title}</p>
+          <Link
+            key={project.id}
+            to={`/users/${data.owner.username}/${project.id}`}
+          >
+            <p className=" text-blue-600">Title: {project.title}</p>
+          </Link>
         ))}
       </div>
     </div>
@@ -48,7 +53,7 @@ export default function HomePage() {
 }
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Your homepage at SWFT" }];
+  return [{ title: "Your profile homepage at SWFT" }];
 };
 
 export function ErrorBoundary() {

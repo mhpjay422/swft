@@ -133,7 +133,7 @@ export async function action({ request }: DataFunctionArgs) {
   );
   cookieSession.set("userId", user.id);
 
-  return redirect(`/home/${user.username}`, {
+  return redirect(`/users/${user.username}`, {
     headers: {
       "set-cookie": await sessionStorage.commitSession(cookieSession),
     },

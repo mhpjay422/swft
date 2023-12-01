@@ -33,14 +33,14 @@ export default function UsersProjectDetailPage() {
   console.log(data.owner.tasks);
 
   return (
-    <div className="flex flex-grow flex-col h-full border border-gray-200 hover:border-gray-300 rounded-lg items-center">
+    <div className="flex flex-grow flex-col items-center mb-32">
       <div className="flex flex-row py-6 px-5 mt-10">
         <ul className="mr-6 w-64">
           To do
           {data.owner.tasks.map((task) => (
             <li
               key={task.id}
-              className="h-28 w-64 border border-gray-200 rounded-lg"
+              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
             >
               <p className="text-sm p-4 font-semibold">{task.title}</p>
             </li>
@@ -51,7 +51,7 @@ export default function UsersProjectDetailPage() {
           {data.owner.tasks.map((task) => (
             <li
               key={task.id}
-              className="h-28 w-64 border border-gray-200 rounded-lg"
+              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
             >
               <p className="text-sm p-4 font-semibold">{task.title}</p>
             </li>
@@ -62,7 +62,7 @@ export default function UsersProjectDetailPage() {
           {data.owner.tasks.map((task) => (
             <li
               key={task.id}
-              className="h-28 w-64 border border-gray-200 rounded-lg"
+              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
             >
               <p className="text-sm p-4 font-semibold">{task.title}</p>
             </li>
@@ -73,7 +73,7 @@ export default function UsersProjectDetailPage() {
           {data.owner.tasks.map((task) => (
             <li
               key={task.id}
-              className="h-28 w-64 border border-gray-200 rounded-lg"
+              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
             >
               <p className="text-sm p-4 font-semibold">{task.title}</p>
             </li>

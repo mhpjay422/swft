@@ -1,9 +1,9 @@
 import { useLocation } from "@remix-run/react";
 import {
-  FolderIcon,
-  UsersIcon,
+  BookOpenIcon,
+  UserGroupIcon,
   ListBulletIcon,
-  HomeIcon,
+  HomeModernIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
@@ -12,29 +12,29 @@ export default function Sidebar() {
     {
       name: "My Workspace",
       href: "/my-workspace",
-      icon: UsersIcon,
+      icon: UserGroupIcon,
       current: location.pathname === "/my-workspace",
     },
   ];
   const homeItem = {
     name: "Home",
     href: "/",
-    icon: HomeIcon,
+    icon: HomeModernIcon,
     current: location?.pathname === "/",
   };
   const projectsNavigation = [
     {
       name: "My Project",
       href: "/users/admin",
-      icon: FolderIcon,
+      icon: BookOpenIcon,
       current: location?.pathname === "/users/admin",
     },
   ];
 
   return (
     <div className="h-screen">
-      <div className="h-full md:flex md:w-72 md:flex-col">
-        <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-100 pt-2">
+      <div className="h-full md:flex md:w-64 md:flex-col">
+        <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 pt-2">
           <div className="flex flex-grow flex-col">
             <nav className="flex flex-col px-2 pb-4 h-full justify-between">
               <div>

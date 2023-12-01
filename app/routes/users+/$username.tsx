@@ -36,7 +36,7 @@ export async function action({ request }: DataFunctionArgs) {}
 export default function UserHomeProfilePage() {
   const data = useLoaderData<typeof loader>();
   return (
-    <div className="flex flex-col mx-96 w-auto h-96 mt-20 border border-gray-200 hover:border-gray-300 rounded-lg">
+    <div className="flex flex-col sm:mx-8 md:mx-32 lg:mx-64 w-full h-96 mt-20 border border-gray-200 hover:border-gray-300 rounded-lg">
       <div className="p-8 ">
         <p className="text-xl font-semibold">My Projects</p>
         {data.owner.projects.map((project) => (

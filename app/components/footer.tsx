@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 
 export function Footer() {
   return (
-    <div className="bg-white w-full sticky bottom-0 h-16">
+    <div className="w-full sticky bottom-0 h-16 border-t border-gray-200 bg-gray-50">
       <div className="flex flex-row justify-between mx-32 lg:mx-64 xl:mx-96 pt-4">
         <div>© 2023 SWFT</div>
         <div className="flex mb-4">

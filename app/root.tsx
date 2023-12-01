@@ -22,6 +22,7 @@ import prismaClient from "#app/utils/db.server.ts";
 import { sessionStorage } from "#app/utils/session.server.ts";
 import { csrf } from "./utils/csrf.server.ts";
 import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
+import Sidebar from "./components/sidebar.tsx";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -89,7 +90,8 @@ function App() {
   return (
     <Document>
       <Header />
-      <div className="flex-grow flex flex-col min-h-screen">
+      <div className="flex-grow flex flex-row min-h-screen w-screen p-0 m-0">
+        <Sidebar />
         <Outlet />
       </div>
       <Footer />

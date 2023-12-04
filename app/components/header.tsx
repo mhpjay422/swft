@@ -18,13 +18,13 @@ export function Header() {
         {useLoggedInUser() ? (
           <Form action="/logout" method="POST">
             <AuthenticityTokenInput />
-            <button className="h-10 w-20 rounded border border-black text-center self-center">
+            <button className="bg-white h-10 w-20 rounded-lg border border-gray-300 hover:text-gray-800 text-center self-center">
               Log Out
             </button>
           </Form>
         ) : (
           <Link to="/login">
-            <button className="h-10 w-20 rounded border border-black text-center self-center">
+            <button className="bg-white h-10 w-20 rounded-lg border border-gray-300 hover:text-gray-800 text-center self-center">
               Log In
             </button>
           </Link>

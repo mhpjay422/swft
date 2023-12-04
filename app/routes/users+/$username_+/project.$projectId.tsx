@@ -30,7 +30,6 @@ export async function action({ request, params }: DataFunctionArgs) {
 
 export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
-  console.log(data.owner.tasks);
 
   return (
     <div className="flex flex-grow flex-col items-center mb-32">

@@ -38,13 +38,16 @@ export default function UserHomeProfilePage() {
   return (
     <div className="flex flex-col sm:mx-8 md:mx-32 lg:mx-64 w-full h-96 mt-20 border border-gray-200 hover:border-gray-300 rounded-lg">
       <div className="p-8 ">
-        <p className="text-xl font-semibold">My Projects</p>
+        <p className="text-xl font-semibold mb-4">My Projects</p>
         {data.owner.projects.map((project) => (
           <Link
             key={project.id}
             to={`/users/${data.owner.username}/project/${project.id}`}
           >
-            <p className=" text-blue-600">Title: {project.title}</p>
+            <div className="flex flex-row w-64 rounded-lg hover:bg-gray-50 p-2">
+              <div className="h-10 w-10 mr-4 bg-blue-400 rounded-lg"></div>
+              <p className="text-sm mt-2.5 font-semibold">{project.title}</p>
+            </div>
           </Link>
         ))}
       </div>

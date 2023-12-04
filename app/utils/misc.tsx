@@ -1,3 +1,6 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export function invariantResponse(
   condition: any,
   message: string | (() => string),
@@ -9,4 +12,8 @@ export function invariantResponse(
       ...responseInit,
     });
   }
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

@@ -1,16 +1,12 @@
-import type { Config } from "tailwindcss";
-import animatePlugin from "tailwindcss-animate";
-import radixPlugin from "tailwindcss-radix";
-
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+	],
   theme: {
     container: {
       center: true,
@@ -76,5 +72,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), animatePlugin, radixPlugin],
-} satisfies Config;
+  plugins: [require("tailwindcss-animate")],
+}

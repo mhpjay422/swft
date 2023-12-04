@@ -6,6 +6,11 @@ import {
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
 import { useLoggedInUser } from "#app/utils/user.ts";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "#app/components/ui/popover.tsx";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -96,57 +101,72 @@ export default function Sidebar() {
                 </p>
 
                 {itemsNavigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={`
+                  <Popover key={item.name}>
+                    <PopoverTrigger>
+                      <button className="cursor-not-allowed">
+                        <a
+                          href={item.href}
+                          className={`
                       ${
                         item.current
                           ? "bg-slate-200 text-gray-900"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          : "text-gray-300 hover:bg-gray-50 hover:text-gray-900"
                       }
-                      group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
-                  >
-                    <item.icon
-                      className={`
+                      group flex items-center px-2 py-2 text-sm font-medium rounded-md pointer-events-none w-full`}
+                        >
+                          <item.icon
+                            className={`
                         ${
                           item.current
                             ? "text-gray-800"
                             : "text-gray-400 group-hover:text-gray-500"
                         }
                         mr-3 flex-shrink-0 h-6 w-6`}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </a>
+                            aria-hidden="true"
+                          />
+                          {item.name}
+                        </a>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="text-sm">
+                      <p>This feature is coming soon...</p>
+                    </PopoverContent>
+                  </Popover>
                 ))}
               </div>
 
-              <div className="flex flex-col mb-32">
-                <a
-                  key="Settings"
-                  href="/settings"
-                  className={`
+              <Popover>
+                <PopoverTrigger>
+                  <button className="flex flex-col mb-32 cursor-not-allowed">
+                    <a
+                      key="Settings"
+                      href="/settings"
+                      className={`
                     ${
                       location.pathname === "/settings"
                         ? "bg-slate-200 text-gray-900"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        : "text-gray-300 hover:bg-gray-50 hover:text-gray-900"
                     }
-                    group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
-                >
-                  <ListBulletIcon
-                    className={`
+                    group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full pointer-events-none`}
+                    >
+                      <ListBulletIcon
+                        className={`
                       ${
                         location.pathname === "/settings"
                           ? "text-gray-800"
                           : "text-gray-400 group-hover:text-gray-500"
                       }
                       mr-3 flex-shrink-0 h-6 w-6`}
-                    aria-hidden="true"
-                  />
-                  Settings
-                </a>
-              </div>
+                        aria-hidden="true"
+                      />
+                      Settings
+                    </a>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="text-sm">
+                  <p>This feature is coming soon...</p>
+                </PopoverContent>
+              </Popover>
             </nav>
           </div>
         </div>

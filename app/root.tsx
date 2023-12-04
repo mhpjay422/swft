@@ -42,6 +42,7 @@ export async function loader({ request }: DataFunctionArgs) {
         select: {
           id: true,
           name: true,
+          username: true,
         },
         where: { id: userId },
       })

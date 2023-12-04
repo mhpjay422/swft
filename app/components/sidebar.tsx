@@ -5,6 +5,7 @@ import {
   ListBulletIcon,
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
+import { useLoggedInUser } from "#app/utils/user.ts";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -16,6 +17,7 @@ export default function Sidebar() {
       current: location.pathname === "/my-workspace",
     },
   ];
+  const loggedInUserPathname = useLoggedInUser()?.username;
   const homeItem = {
     name: "Home",
     href: "/",
@@ -25,9 +27,9 @@ export default function Sidebar() {
   const projectsNavigation = [
     {
       name: "My Project",
-      href: "/users/admin",
+      href: "/users/" + loggedInUserPathname,
       icon: BookOpenIcon,
-      current: location?.pathname === "/users/admin",
+      current: location?.pathname === "/users/" + loggedInUserPathname,
     },
   ];
 

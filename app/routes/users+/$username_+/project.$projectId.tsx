@@ -9,10 +9,16 @@ const prisma = prismaClient;
 export async function loader({ request, params }: DataFunctionArgs) {
   const owner = await prisma.user.findFirst({
     select: {
-      tasks: {
+      sections: {
         select: {
           id: true,
           title: true,
+          tasks: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
         },
       },
     },
@@ -34,50 +40,19 @@ export default function UsersProjectDetailPage() {
   return (
     <div className="flex flex-grow flex-col items-center mb-32">
       <div className="flex flex-row py-6 px-5 mt-10">
-        <ul className="mr-6 w-64">
-          To do
-          {data.owner.tasks.map((task) => (
-            <li
-              key={task.id}
-              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
-            >
-              <p className="text-sm p-4 font-semibold">{task.title}</p>
-            </li>
-          ))}
-        </ul>
-        <ul className="mr-6 w-64">
-          Doing
-          {data.owner.tasks.map((task) => (
-            <li
-              key={task.id}
-              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
-            >
-              <p className="text-sm p-4 font-semibold">{task.title}</p>
-            </li>
-          ))}
-        </ul>
-        <ul className="mr-6 w-64">
-          Done
-          {data.owner.tasks.map((task) => (
-            <li
-              key={task.id}
-              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
-            >
-              <p className="text-sm p-4 font-semibold">{task.title}</p>
-            </li>
-          ))}
-        </ul>
-        <ul className="mr-6 w-64">
-          Todo
-          {data.owner.tasks.map((task) => (
-            <li
-              key={task.id}
-              className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
-            >
-              <p className="text-sm p-4 font-semibold">{task.title}</p>
-            </li>
-          ))}
-        </ul>
+        {data.owner.sections.map((section) => (
+          <ul key={section.id} className="mr-6 w-64">
+            <div className="font-semibold">{section.title}</div>
+            {section.tasks.map((task) => (
+              <li
+                key={task.id}
+                className="h-28 w-64 border border-gray-200 hover:border-gray-400 rounded-lg mb-2 "
+              >
+                <p className="text-sm p-4 font-semibold">{task.title}</p>
+              </li>
+            ))}
+          </ul>
+        ))}
       </div>
     </div>
   );

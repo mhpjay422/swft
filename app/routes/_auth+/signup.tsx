@@ -118,6 +118,7 @@ export async function action({ request }: DataFunctionArgs) {
                   tasks: {
                     create: {
                       title: "My first task",
+                      description: "This is my first task",
                       owner: {
                         connect: { username },
                       },

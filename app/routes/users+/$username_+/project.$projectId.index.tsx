@@ -10,7 +10,7 @@ const prisma = prismaClient;
 type Task = {
   id: string;
   title: string;
-  content: string | null;
+  description: string | null;
   completed: boolean;
   createdAt: string;
   updatedAt: string;
@@ -108,7 +108,7 @@ export default function UsersProjectDetailPage() {
             <div>
               Completed: {isTaskModalOpenAndData[1].completed ? "Yes" : "No"}
             </div>
-            <div>Content: {isTaskModalOpenAndData[1].content}</div>
+            <div>Description: {isTaskModalOpenAndData[1].description}</div>
           </div>
         </div>
       )}

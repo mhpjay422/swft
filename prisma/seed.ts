@@ -70,7 +70,7 @@ const seedData = async () => {
             create: seedSectionNames.map((name) => ({
               title: name,
               owner: {
-                connect: { username: "admin" },
+                connect: { username: `${firstName}${lastName}` },
               },
               tasks: {
                 create: tasks.map((task) => ({

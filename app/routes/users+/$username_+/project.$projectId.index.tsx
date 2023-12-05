@@ -101,11 +101,18 @@ export default function UsersProjectDetailPage() {
             id="task-modal"
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-4 mt-16 mb-16 mx-auto rounded-xl border border-gray-200"
           >
-            <div>Title: {isTaskModalOpenAndData[1].title}</div>
-            <div>
+            <div className="font-semibold text-xl mb-16">
+              {isTaskModalOpenAndData[1].title}
+            </div>
+            <div className="mb-8">
               Completed: {isTaskModalOpenAndData[1].completed ? "Yes" : "No"}
             </div>
-            <div>Description: {isTaskModalOpenAndData[1].description}</div>
+            <div>
+              Description:
+              <div className="border border-gray-200 hover:border-gray-300 p-4 rounded-lg">
+                {isTaskModalOpenAndData[1].description}
+              </div>
+            </div>
           </div>
         </div>
       )}

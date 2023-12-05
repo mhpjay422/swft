@@ -36,12 +36,13 @@ const seedData = async () => {
                 connect: { username: "admin" },
               },
               tasks: {
-                create: tasks.map((task) => ({
-                  ...task,
+                create: {
+                  title: "My first Task",
+                  description: "This is my first task",
                   owner: {
                     connect: { username: "admin" },
                   },
-                })),
+                },
               },
             })),
           },

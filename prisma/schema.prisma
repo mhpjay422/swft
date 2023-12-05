@@ -21,7 +21,7 @@ model User {
 
   password Password?
   projects Project[]
-  section  Section[]
+  sections Section[]
   tasks    Task[]
 }
 
@@ -48,7 +48,7 @@ model Section {
 
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId   String
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projects  Project? @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   projectId String?
 
   tasks Task[]
@@ -65,9 +65,9 @@ model Task {
 
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId   String
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projects  Project? @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   projectId String?
-  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sections  Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sectionId String?
 }
 

@@ -10,7 +10,7 @@ const seedSectionNames = ["To do", "Doing", "Done"];
 
 const createRandomTask = () => ({
   title: faker.lorem.words(),
-  descriptiion: faker.lorem.paragraph(),
+  description: faker.lorem.paragraph(),
   completed: faker.datatype.boolean(0.5),
 });
 const tasks = Array.from({ length: 3 }, createRandomTask);

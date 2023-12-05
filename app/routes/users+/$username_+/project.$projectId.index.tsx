@@ -57,9 +57,6 @@ export async function loader({ request, params }: DataFunctionArgs) {
 
   invariantResponse(owner, "Owner not found", { status: 404 });
 
-  console.log("params", params);
-  console.log("owner", owner.tasks);
-
   return json({ owner, projectId: params.projectId });
 }
 

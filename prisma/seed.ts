@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 
 await prisma.user.deleteMany();
 
+const seedSectionNames = ["To do", "Doing", "Done"];
+
 const createRandomTask = () => ({
   title: faker.lorem.words(),
   content: faker.lorem.paragraph(),
@@ -27,11 +29,19 @@ const seedData = async () => {
       projects: {
         create: {
           title: "Admin Project",
-          tasks: {
-            create: tasks.map((task) => ({
-              ...task,
+          sections: {
+            create: seedSectionNames.map((name) => ({
+              title: name,
               owner: {
                 connect: { username: "admin" },
+              },
+              tasks: {
+                create: tasks.map((task) => ({
+                  ...task,
+                  owner: {
+                    connect: { username: "admin" },
+                  },
+                })),
               },
             })),
           },
@@ -56,11 +66,19 @@ const seedData = async () => {
       projects: {
         create: {
           title: "My Project",
-          tasks: {
-            create: tasks.map((task) => ({
-              ...task,
+          sections: {
+            create: seedSectionNames.map((name) => ({
+              title: name,
               owner: {
-                connect: { username: `${firstName}${lastName}` },
+                connect: { username: "admin" },
+              },
+              tasks: {
+                create: tasks.map((task) => ({
+                  ...task,
+                  owner: {
+                    connect: { username: `${firstName}${lastName}` },
+                  },
+                })),
               },
             })),
           },
@@ -73,7 +91,7 @@ const seedData = async () => {
 
   for (let i = 0; i <= numCreateSeedUsers; i++) {
     await prisma.user.create({
-      data: createSeedUserData(),
+      data: await createSeedUserData(),
     });
   }
 };

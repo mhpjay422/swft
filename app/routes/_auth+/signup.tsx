@@ -93,6 +93,7 @@ export async function action({ request }: DataFunctionArgs) {
       }
     }).transform(async (data) => {
       const { email, name, password, username } = data;
+      const seedSectionNames = ["To do", "Doing", "Done"];
 
       const user = await prisma.user.create({
         select: { id: true, username: true },
@@ -107,7 +108,23 @@ export async function action({ request }: DataFunctionArgs) {
           },
           projects: {
             create: {
-              title: "My first project",
+              title: "My First Project",
+              sections: {
+                create: seedSectionNames.map((name) => ({
+                  title: name,
+                  owner: {
+                    connect: { username },
+                  },
+                  tasks: {
+                    create: {
+                      title: "My first task",
+                      owner: {
+                        connect: { username },
+                      },
+                    },
+                  },
+                })),
+              },
             },
           },
         },

@@ -48,9 +48,9 @@ export async function loader({ request, params }: DataFunctionArgs) {
         select: {
           id: true,
           title: true,
-          tasks: true,
         },
       },
+      tasks: true,
     },
     where: { username: params.username },
   });
@@ -58,6 +58,7 @@ export async function loader({ request, params }: DataFunctionArgs) {
   invariantResponse(owner, "Owner not found", { status: 404 });
 
   console.log("params", params);
+  console.log("owner", owner.tasks);
 
   return json({ owner, projectId: params.projectId });
 }
@@ -84,10 +85,10 @@ export default function UsersProjectDetailPage() {
         {data.owner.sections.map((section) => (
           <ul key={section.id} className="mr-6 w-64">
             <div className="font-semibold mb-2">{section.title}</div>
-            {section.tasks.map((task) => (
+            {data.owner.tasks.map((task) => (
               <div
                 key={task.id}
-                className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 rounded-lg mb-2"
+                className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 hover:cursor-pointer rounded-lg mb-2"
                 onClick={() => setIsTaskModalOpenAndData([true, task])}
               >
                 {task.title}
@@ -101,9 +102,13 @@ export default function UsersProjectDetailPage() {
           <div
             ref={wrapperRef}
             id="task-modal"
-            className="bg-gray-50 opacity-100 text-black flex flex-grow h-full w-[50%] mt-16 mb-16 mx-auto rounded-xl border border-white"
+            className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-4 mt-16 mb-16 mx-auto rounded-xl border border-gray-200"
           >
-            {isTaskModalOpenAndData[1].title}
+            <div>Title: {isTaskModalOpenAndData[1].title}</div>
+            <div>
+              Completed: {isTaskModalOpenAndData[1].completed ? "Yes" : "No"}
+            </div>
+            <div>Content: {isTaskModalOpenAndData[1].content}</div>
           </div>
         </div>
       )}

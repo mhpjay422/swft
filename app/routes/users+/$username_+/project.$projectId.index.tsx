@@ -95,11 +95,11 @@ export default function UsersProjectDetailPage() {
         ))}
       </div>
       {isTaskModalOpenAndData[0] && isTaskModalOpenAndData[1] !== null && (
-        <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] text-white overflow-scroll">
+        <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll ">
           <div
             ref={wrapperRef}
             id="task-modal"
-            className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-4 mt-16 mb-16 mx-auto rounded-xl border border-gray-200"
+            className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
             <div className="font-semibold text-xl mb-16">
               {isTaskModalOpenAndData[1].title}

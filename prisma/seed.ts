@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { bcrypt } from "#app/utils/auth.server.ts";
+import { createId as cuid } from "@paralleldrive/cuid2";
 
 const prisma = new PrismaClient();
 
@@ -16,6 +17,10 @@ const createRandomTask = () => ({
 const tasks = Array.from({ length: 3 }, createRandomTask);
 
 const seedData = async () => {
+  // NOTE: Setting the projectId like this doesnt feel right
+  // Maybe we should for loop create each model and connect them separately so
+  // we can get the id from them
+  const projectId = cuid();
   await prisma.user.create({
     data: {
       email: "admin@email.com",
@@ -28,6 +33,7 @@ const seedData = async () => {
       },
       projects: {
         create: {
+          id: projectId,
           title: "Admin Project",
           sections: {
             create: seedSectionNames.map((name) => ({
@@ -42,6 +48,11 @@ const seedData = async () => {
                   owner: {
                     connect: { username: "admin" },
                   },
+                  projects: {
+                    connect: {
+                      id: projectId,
+                    },
+                  },
                 },
               },
             })),
@@ -54,6 +65,7 @@ const seedData = async () => {
   function createSeedUserData() {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
+    const projectId = cuid();
 
     return {
       email: faker.internet.email(),
@@ -66,7 +78,8 @@ const seedData = async () => {
       },
       projects: {
         create: {
-          title: "My Project",
+          id: projectId,
+          title: `${firstName}${lastName}s first project`,
           sections: {
             create: seedSectionNames.map((name) => ({
               title: name,
@@ -79,6 +92,11 @@ const seedData = async () => {
                   owner: {
                     connect: { username: `${firstName}${lastName}` },
                   },
+                  projects: {
+                    connect: {
+                      id: projectId,
+                    },
+                  },
                 })),
               },
             })),
@@ -90,7 +108,7 @@ const seedData = async () => {
 
   const numCreateSeedUsers = 3;
 
-  for (let i = 0; i <= numCreateSeedUsers; i++) {
+  for (let i = 0; i < numCreateSeedUsers; i++) {
     await prisma.user.create({
       data: await createSeedUserData(),
     });

@@ -29,6 +29,7 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { csrf } from "#app/utils/csrf.server.ts";
 import { CSRFError } from "remix-utils/csrf/server";
 import { ErrorList } from "#app/utils/forms.tsx";
+import { createId as cuid } from "@paralleldrive/cuid2";
 
 const prisma = prismaClient;
 
@@ -94,6 +95,7 @@ export async function action({ request }: DataFunctionArgs) {
     }).transform(async (data) => {
       const { email, name, password, username } = data;
       const seedSectionNames = ["To do", "Doing", "Done"];
+      const projectId = cuid();
 
       const user = await prisma.user.create({
         select: { id: true, username: true },
@@ -108,6 +110,7 @@ export async function action({ request }: DataFunctionArgs) {
           },
           projects: {
             create: {
+              id: projectId,
               title: "My First Project",
               sections: {
                 create: seedSectionNames.map((name) => ({
@@ -121,6 +124,9 @@ export async function action({ request }: DataFunctionArgs) {
                       description: "This is my first task",
                       owner: {
                         connect: { username },
+                      },
+                      projects: {
+                        connect: { id: projectId },
                       },
                     },
                   },

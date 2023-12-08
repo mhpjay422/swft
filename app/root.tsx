@@ -34,7 +34,6 @@ const prisma = prismaClient;
 
 export async function loader({ request }: DataFunctionArgs) {
   const userId = await getUserId(request);
-  // NOTE: Need to add logout if user is null
   const user = userId
     ? await prisma.user.findUniqueOrThrow({
         select: {

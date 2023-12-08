@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import prismaClient from "#app/utils/db.server.ts";
+import { redirect } from "@remix-run/node";
+import { safeRedirect } from "remix-utils/safe-redirect";
 
 const prisma = prismaClient;
 
@@ -21,6 +23,32 @@ export async function getUserId(request: Request) {
     select: { id: true },
     where: { id: userId },
   });
+  if (!user) {
+    throw await logout({ request });
+  }
+  return user.id;
+}
 
-  return user?.id;
+export async function redirectIfAlreadyLoggedIn(request: Request) {
+  const userId = await getUserId(request);
+  if (userId) {
+    throw redirect("/");
+  }
+}
+
+export async function logout({
+  request,
+  redirectTo = "/",
+}: {
+  request: Request;
+  redirectTo?: string;
+}) {
+  const cookieSession = await sessionStorage.getSession(
+    request.headers.get("cookie")
+  );
+  throw redirect(safeRedirect(redirectTo), {
+    headers: {
+      "set-cookie": await sessionStorage.destroySession(cookieSession),
+    },
+  });
 }

@@ -15,7 +15,11 @@ import {
   useNavigation,
   Link,
 } from "@remix-run/react";
-import { bcrypt, getSessionExpirationDate } from "#app/utils/auth.server.ts";
+import {
+  bcrypt,
+  getSessionExpirationDate,
+  redirectIfAlreadyLoggedIn,
+} from "#app/utils/auth.server.ts";
 import { EmailSchema, PasswordSchema } from "#app/utils/zod.schemas.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { sessionStorage } from "#app/utils/session.server.ts";
@@ -32,6 +36,7 @@ const LoginFormSchema = z.object({
 });
 
 export async function loader({ request }: DataFunctionArgs) {
+  redirectIfAlreadyLoggedIn(request);
   return json({});
 }
 

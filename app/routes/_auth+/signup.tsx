@@ -22,7 +22,7 @@ import {
   PasswordSchema,
   UsernameSchema,
 } from "#app/utils/zod.schemas.ts";
-import { bcrypt } from "#app/utils/auth.server.ts";
+import { bcrypt, redirectIfAlreadyLoggedIn } from "#app/utils/auth.server.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { sessionStorage } from "#app/utils/session.server.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
@@ -30,6 +30,11 @@ import { csrf } from "#app/utils/csrf.server.ts";
 import { CSRFError } from "remix-utils/csrf/server";
 import { ErrorList } from "#app/utils/forms.tsx";
 import { createId as cuid } from "@paralleldrive/cuid2";
+
+export async function loader({ request }: DataFunctionArgs) {
+  redirectIfAlreadyLoggedIn(request);
+  return json({});
+}
 
 const prisma = prismaClient;
 

@@ -19,10 +19,10 @@ import { Header } from "./components/header.tsx";
 import { Footer } from "./components/footer.tsx";
 import { DynamicErrorBoundary } from "./components/error-boundary.tsx";
 import prismaClient from "#app/utils/db.server.ts";
-import { sessionStorage } from "#app/utils/session.server.ts";
 import { csrf } from "./utils/csrf.server.ts";
 import { AuthenticityTokenProvider } from "remix-utils/csrf/react";
 import Sidebar from "./components/sidebar.tsx";
+import { getUserId } from "./utils/auth.server.ts";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -33,12 +33,10 @@ export const links: LinksFunction = () => [
 const prisma = prismaClient;
 
 export async function loader({ request }: DataFunctionArgs) {
-  const cookieSession = await sessionStorage.getSession(
-    request.headers.get("cookie")
-  );
-  const userId = cookieSession.get("userId");
+  const userId = await getUserId(request);
+  // NOTE: Need to add logout if user is null
   const user = userId
-    ? await prisma.user.findUnique({
+    ? await prisma.user.findUniqueOrThrow({
         select: {
           id: true,
           name: true,

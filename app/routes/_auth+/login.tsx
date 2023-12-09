@@ -36,7 +36,7 @@ const LoginFormSchema = z.object({
 });
 
 export async function loader({ request }: DataFunctionArgs) {
-  redirectIfAlreadyLoggedIn(request);
+  await redirectIfAlreadyLoggedIn(request);
   return json({});
 }
 

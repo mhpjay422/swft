@@ -32,7 +32,7 @@ import { ErrorList } from "#app/utils/forms.tsx";
 import { createId as cuid } from "@paralleldrive/cuid2";
 
 export async function loader({ request }: DataFunctionArgs) {
-  redirectIfAlreadyLoggedIn(request);
+  await redirectIfAlreadyLoggedIn(request);
   return json({});
 }
 

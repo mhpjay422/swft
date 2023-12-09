@@ -37,6 +37,16 @@ export async function redirectIfAlreadyLoggedIn(request: Request) {
   }
 }
 
+export async function redirectIfNotAuthorized(
+  request: Request,
+  ownerId: string
+) {
+  const userId = await getUserId(request);
+  if (userId !== ownerId) {
+    throw redirect("/");
+  }
+}
+
 export async function logout({
   request,
   redirectTo = "/",

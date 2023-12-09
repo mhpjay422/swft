@@ -9,6 +9,8 @@ export async function action({ request }: DataFunctionArgs) {
   return json({});
 }
 
+// NOTE: This page is not a protected route. Be sure to not add anything sensitive here that you don't want public.
+
 export default function UsersIndexPage() {
   return (
     <div className="flex flex-col mx-96 w-auto h-96 mt-20 border border-gray-200 hover:border-gray-300 rounded-lg">

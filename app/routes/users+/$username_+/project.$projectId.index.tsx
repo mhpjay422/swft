@@ -1,4 +1,5 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { redirectIfNotAuthorized } from "#app/utils/auth.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
 import { type DataFunctionArgs, json } from "@remix-run/node";
@@ -56,6 +57,7 @@ export async function loader({ request, params }: DataFunctionArgs) {
   });
 
   invariantResponse(owner, "Owner not found", { status: 404 });
+  await redirectIfNotAuthorized(request, owner.id);
 
   return json({ owner, projectId: params.projectId });
 }

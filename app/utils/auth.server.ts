@@ -30,19 +30,29 @@ export async function getUserId(request: Request) {
   return user.id;
 }
 
+export async function requireUserId(request: Request) {
+  const userId = await getUserId(request);
+  if (!userId) {
+    throw redirect("/login");
+  }
+  return userId;
+}
+
+export async function requireUser(request: Request) {
+  const userId = await requireUserId(request);
+  const user = await prisma.user.findUnique({
+    select: { id: true, username: true },
+    where: { id: userId },
+  });
+  if (!user) {
+    throw await logout({ request });
+  }
+  return user;
+}
+
 export async function redirectIfAlreadyLoggedIn(request: Request) {
   const userId = await getUserId(request);
   if (userId) {
-    throw redirect("/");
-  }
-}
-
-export async function redirectIfNotAuthorized(
-  request: Request,
-  ownerId: string
-) {
-  const userId = await getUserId(request);
-  if (userId !== ownerId) {
     throw redirect("/");
   }
 }

@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { sessionStorage } from "#app/utils/session.server.ts";
+import { authSessionStorage } from "#app/utils/session.server.ts";
 
 export async function loader() {
   return redirect("/");
@@ -8,11 +8,11 @@ export async function loader() {
 // You do not need the cookie here to logout. getSession() will still get the
 // session and we will destroy the session in the redirect.
 export async function action() {
-  const cookieSession = await sessionStorage.getSession();
+  const cookieSession = await authSessionStorage.getSession();
 
   return redirect("/", {
     headers: {
-      "set-cookie": await sessionStorage.destroySession(cookieSession),
+      "set-cookie": await authSessionStorage.destroySession(cookieSession),
     },
   });
 }

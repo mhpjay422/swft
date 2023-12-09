@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import prismaClient from "#app/utils/db.server.ts";
 import { redirect } from "@remix-run/node";
 import { safeRedirect } from "remix-utils/safe-redirect";
+import { authSessionStorage } from "./session.server.ts";
 
 const prisma = prismaClient;
 
@@ -14,7 +15,7 @@ export function getSessionExpirationDate() {
 }
 
 export async function getUserId(request: Request) {
-  const cookieSession = await sessionStorage.getSession(
+  const cookieSession = await authSessionStorage.getSession(
     request.headers.get("cookie")
   );
   const userId = cookieSession.get("userId");

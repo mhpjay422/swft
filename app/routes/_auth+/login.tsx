@@ -22,7 +22,7 @@ import {
 } from "#app/utils/auth.server.ts";
 import { EmailSchema, PasswordSchema } from "#app/utils/zod.schemas.ts";
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { sessionStorage } from "#app/utils/session.server.ts";
+import { authSessionStorage } from "#app/utils/session.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { csrf } from "#app/utils/csrf.server.ts";
@@ -119,14 +119,14 @@ export async function action({ request }: DataFunctionArgs) {
 
   const { user, remember } = submission.value;
 
-  const cookieSession = await sessionStorage.getSession(
+  const cookieSession = await authSessionStorage.getSession(
     request.headers.get("Cookie")
   );
   cookieSession.set("userId", user.id);
 
   return redirect(`/users/${user.username}`, {
     headers: {
-      "set-cookie": await sessionStorage.commitSession(cookieSession, {
+      "set-cookie": await authSessionStorage.commitSession(cookieSession, {
         expires: remember ? getSessionExpirationDate() : undefined,
       }),
     },

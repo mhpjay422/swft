@@ -8,12 +8,14 @@ import { z } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { useId } from "react";
+import { safeRedirect } from "remix-utils/safe-redirect";
 import {
   Form,
   useActionData,
   useFormAction,
   useNavigation,
   Link,
+  useSearchParams,
 } from "@remix-run/react";
 import {
   bcrypt,
@@ -32,6 +34,7 @@ import { CheckboxField, ErrorList } from "#app/utils/forms.tsx";
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
+  redirectTo: z.string().optional(),
   remember: z.boolean().optional(),
 });
 
@@ -117,14 +120,16 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "error", submission } as const, { status: 400 });
   }
 
-  const { user, remember } = submission.value;
+  const { user, remember, redirectTo } = submission.value;
 
   const cookieSession = await authSessionStorage.getSession(
     request.headers.get("Cookie")
   );
   cookieSession.set("userId", user.id);
 
-  return redirect(`/users/${user.username}`, {
+  const redirectUrl = redirectTo ?? `/users/${user.username}`;
+
+  return redirect(safeRedirect(redirectUrl), {
     headers: {
       "set-cookie": await authSessionStorage.commitSession(cookieSession, {
         expires: remember ? getSessionExpirationDate() : undefined,
@@ -162,10 +167,13 @@ const useIsSubmitting = ({
 
 export default function LoginPage() {
   const actionData = useActionData<typeof action>();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
 
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getFieldsetConstraint(LoginFormSchema),
+    defaultValue: { redirectTo },
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: LoginFormSchema });
@@ -213,6 +221,9 @@ export default function LoginPage() {
             })}
             errors={fields.remember.errors}
           />
+
+          <input {...conform.input(fields.redirectTo, { type: "hidden" })} />
+
           <ErrorList id={`error-${useId()}`} errors={form.errors} />
           <button
             className={`${
@@ -228,7 +239,14 @@ export default function LoginPage() {
           </button>
           <div className="flex items-center justify-center gap-2 pt-6">
             Dont have an account?
-            <Link to="/signup" className="text-blue-700 underline">
+            <Link
+              to={
+                redirectTo
+                  ? `/signup?${encodeURIComponent(redirectTo)}`
+                  : "/signup"
+              }
+              className="text-blue-700 underline"
+            >
               {" "}
               Create an account
             </Link>

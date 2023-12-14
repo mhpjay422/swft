@@ -137,7 +137,7 @@ export default function Sidebar() {
 
               <Popover>
                 <PopoverTrigger>
-                  <button className="flex flex-col mb-16 cursor-not-allowed">
+                  <button className="flex flex-col mb-28 cursor-not-allowed">
                     <a
                       key="Settings"
                       href="/settings"

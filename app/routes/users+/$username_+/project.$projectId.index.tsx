@@ -1,10 +1,11 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
 import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useState, useEffect, useRef, type RefObject } from "react";
+import { useState, useRef } from "react";
 
 const prisma = prismaClient;
 
@@ -19,25 +20,6 @@ type Task = {
   projectId: string | null;
   sectionId: string | null;
 } | null;
-
-const useClickOutside = (
-  ref: RefObject<HTMLElement>,
-  onClickOutside: (event: MouseEvent) => void
-) => {
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        onClickOutside(event);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [ref, onClickOutside]);
-};
 
 export async function loader({ request, params }: DataFunctionArgs) {
   const user = await requireUser(request);

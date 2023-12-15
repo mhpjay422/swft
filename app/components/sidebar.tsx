@@ -103,7 +103,7 @@ export default function Sidebar() {
                 {itemsNavigation.map((item) => (
                   <Popover key={item.name}>
                     <PopoverTrigger>
-                      <button className="cursor-not-allowed">
+                      <div className="cursor-not-allowed">
                         <a
                           href={item.href}
                           className={`
@@ -126,7 +126,7 @@ export default function Sidebar() {
                           />
                           {item.name}
                         </a>
-                      </button>
+                      </div>
                     </PopoverTrigger>
                     <PopoverContent className="text-sm">
                       <p>This feature is coming soon...</p>
@@ -137,7 +137,7 @@ export default function Sidebar() {
 
               <Popover>
                 <PopoverTrigger>
-                  <button className="flex flex-col mb-28 cursor-not-allowed">
+                  <div className="flex flex-col mb-28 cursor-not-allowed">
                     <a
                       key="Settings"
                       href="/settings"
@@ -161,7 +161,7 @@ export default function Sidebar() {
                       />
                       Settings
                     </a>
-                  </button>
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent className="text-sm">
                   <p>This feature is coming soon...</p>

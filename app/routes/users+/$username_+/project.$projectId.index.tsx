@@ -1,13 +1,24 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { AddTaskButton } from "#app/components/ui/add-task-button.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
+import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
+import { parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import { useState, useRef } from "react";
+import { CSRFError } from "remix-utils/csrf/server";
+import { z } from "zod";
 
 const prisma = prismaClient;
+
+const AddTaskFormSchema = z.object({
+  title: z.string().min(1).max(255),
+  ownerId: z.string(),
+  sectionId: z.string(),
+});
 
 type Task = {
   id: string;
@@ -36,9 +47,9 @@ export async function loader({ request, params }: DataFunctionArgs) {
         select: {
           id: true,
           title: true,
+          tasks: true,
         },
       },
-      tasks: true,
     },
     where: { username: params.username },
   });
@@ -49,11 +60,60 @@ export async function loader({ request, params }: DataFunctionArgs) {
 }
 
 export async function action({ request, params }: DataFunctionArgs) {
-  return json({});
+  const formData = await request.formData();
+
+  try {
+    await csrf.validate(formData, request.headers);
+  } catch (error) {
+    if (error instanceof CSRFError) {
+      throw new Response("Invalid CSRF token", { status: 403 });
+    }
+  }
+
+  const submission = await parse(formData, {
+    schema: (intent) =>
+      AddTaskFormSchema.transform(async (data, ctx) => {
+        if (intent !== "submit") return { ...data, task: null };
+
+        const task = await prisma.task.create({
+          data: {
+            title: data.title,
+            ownerId: data.ownerId,
+            sectionId: data.sectionId,
+            projectId: params.projectId,
+          },
+        });
+
+        if (!task) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Unable to create task",
+          });
+          return z.NEVER;
+        }
+
+        return {
+          ...data,
+          task,
+        };
+      }),
+    async: true,
+  });
+
+  if (submission.intent !== "submit") {
+    return json({ status: "idle", submission } as const);
+  }
+
+  if (!submission.value?.task) {
+    return json({ status: "error", submission } as const, { status: 400 });
+  }
+
+  return json({ status: "success", submission } as const, { status: 200 });
 }
 
 export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const [isTaskModalOpenAndData, setIsTaskModalOpenAndData] = useState<
     [boolean, Task]
   >([false, null]);
@@ -70,7 +130,7 @@ export default function UsersProjectDetailPage() {
         {data.owner.sections.map((section) => (
           <ul key={section.id} className="mr-6 w-64">
             <div className="font-semibold mb-2">{section.title}</div>
-            {data.owner.tasks.map((task) => (
+            {section.tasks.map((task) => (
               <div
                 key={task.id}
                 className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 hover:cursor-pointer rounded-lg mb-2"
@@ -79,6 +139,14 @@ export default function UsersProjectDetailPage() {
                 {task.title}
               </div>
             ))}
+            <div className="shrink-0 h-full w-96 select-none">
+              <AddTaskButton
+                AddTaskFormSchema={AddTaskFormSchema}
+                actionData={actionData}
+                ownerId={data.owner.id}
+                sectionId={section.id}
+              />
+            </div>
           </ul>
         ))}
       </div>
@@ -97,7 +165,7 @@ export default function UsersProjectDetailPage() {
             </div>
             <div>
               Description:
-              <div className="border border-gray-200 hover:border-gray-300 p-4 rounded-lg">
+              <div className="border border-gray-300 hover:border-gray-400 p-4 rounded-lg h-96 hover:cursor-text">
                 {isTaskModalOpenAndData[1].description}
               </div>
             </div>

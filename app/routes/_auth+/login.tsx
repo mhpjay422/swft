@@ -9,14 +9,7 @@ import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { useId } from "react";
 import { safeRedirect } from "remix-utils/safe-redirect";
-import {
-  Form,
-  useActionData,
-  useFormAction,
-  useNavigation,
-  Link,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, useActionData, Link, useSearchParams } from "@remix-run/react";
 import {
   bcrypt,
   getSessionExpirationDate,
@@ -30,6 +23,7 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { csrf } from "#app/utils/csrf.server.ts";
 import { CSRFError } from "remix-utils/csrf/server";
 import { CheckboxField, ErrorList } from "#app/utils/forms.tsx";
+import { useIsSubmitting } from "#app/hooks/useIsSubmitting.ts";
 
 const LoginFormSchema = z.object({
   email: EmailSchema,
@@ -141,28 +135,6 @@ export async function action({ request }: DataFunctionArgs) {
 const useDynamicId = (id: string | undefined) => {
   const uniqueId = useId();
   return id ?? uniqueId;
-};
-
-const useIsSubmitting = ({
-  formAction,
-  formMethod = "POST",
-  state = "non-idle",
-}: {
-  formAction?: string;
-  formMethod?: "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
-  state?: "submitting" | "loading" | "non-idle";
-} = {}) => {
-  const frmActn = useFormAction();
-  const navigation = useNavigation();
-  const isPendingState =
-    state === "non-idle"
-      ? navigation.state !== "idle"
-      : navigation.state === state;
-  return (
-    isPendingState &&
-    navigation.formAction === (formAction ?? frmActn) &&
-    navigation.formMethod === formMethod
-  );
 };
 
 export default function LoginPage() {

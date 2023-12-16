@@ -21,6 +21,7 @@ interface AddTaskButtonProps {
   actionData: any;
   ownerId: string;
   sectionId: string;
+  sectionRef: React.RefObject<HTMLDivElement>;
 }
 
 export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
@@ -28,6 +29,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   actionData,
   ownerId,
   sectionId,
+  sectionRef,
 }) => {
   const fetcher = useFetcher();
   const isSubmitting = useIsSubmitting();
@@ -44,6 +46,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     setIsEditing(true);
     setTimeout(() => {
       inputRef.current?.focus();
+      scrollIntoView();
     });
   };
 
@@ -57,6 +60,16 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
 
   useEventListener("keydown", onKeyDown);
   useClickOutside(formRef, disableEditing);
+
+  const scrollIntoView = () => {
+    const current = sectionRef.current;
+    console.log("current", current);
+    console.log("sectionRef", sectionRef);
+
+    if (current) {
+      current.scrollTop = current.scrollHeight;
+    }
+  };
 
   const [form, fields] = useForm({
     id: "add-task-form",
@@ -84,6 +97,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             {...conform.input(fields.title)}
             className="text-sm px-2 py-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter list title..."
+            onFocus={scrollIntoView}
           />
           <ErrorList id={`error-${uniqueId}`} errors={fields.title.errors} />
           <input

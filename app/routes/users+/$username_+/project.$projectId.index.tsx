@@ -8,7 +8,7 @@ import { invariantResponse } from "#app/utils/misc.tsx";
 import { parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
-import { useState, useRef } from "react";
+import { useState, useRef, createRef } from "react";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
 
@@ -118,6 +118,10 @@ export default function UsersProjectDetailPage() {
     [boolean, Task]
   >([false, null]);
   const wrapperRef = useRef(null);
+  const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
+    data.owner.sections.map(() => createRef())
+  );
+
   const handleOutsideClick = () => {
     setIsTaskModalOpenAndData([false, null]);
   };
@@ -127,10 +131,13 @@ export default function UsersProjectDetailPage() {
   return (
     <div className="flex flex-grow flex-col items-center">
       <div className="flex flex-row py-6 px-5 mt-10">
-        {data.owner.sections.map((section) => (
+        {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-6 w-72">
             <div className="font-semibold mb-2">{section.title}</div>
-            <div className="overflow-x-hidden overflow-y-auto max-h-screen pb-96">
+            <div
+              ref={sectionRefs[index]}
+              className="overflow-x-hidden overflow-y-auto max-h-screen pb-96"
+            >
               {section.tasks.map((task) => (
                 <div
                   key={task.id}
@@ -146,6 +153,7 @@ export default function UsersProjectDetailPage() {
                   actionData={actionData}
                   ownerId={data.owner.id}
                   sectionId={section.id}
+                  sectionRef={sectionRefs[index]}
                 />
               </div>
             </div>

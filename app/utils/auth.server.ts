@@ -76,12 +76,12 @@ export async function logout({
   request: Request;
   redirectTo?: string;
 }) {
-  const cookieSession = await sessionStorage.getSession(
+  const cookieSession = await authSessionStorage.getSession(
     request.headers.get("cookie")
   );
   throw redirect(safeRedirect(redirectTo), {
     headers: {
-      "set-cookie": await sessionStorage.destroySession(cookieSession),
+      "set-cookie": await authSessionStorage.destroySession(cookieSession),
     },
   });
 }

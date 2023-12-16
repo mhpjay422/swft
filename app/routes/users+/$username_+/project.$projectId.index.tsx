@@ -125,29 +125,31 @@ export default function UsersProjectDetailPage() {
   useClickOutside(wrapperRef, handleOutsideClick);
 
   return (
-    <div className="flex flex-grow flex-col items-center mb-32">
+    <div className="flex flex-grow flex-col items-center">
       <div className="flex flex-row py-6 px-5 mt-10">
         {data.owner.sections.map((section) => (
-          <ul key={section.id} className="mr-6 w-64">
+          <div key={section.id} className="mr-6 w-72">
             <div className="font-semibold mb-2">{section.title}</div>
-            {section.tasks.map((task) => (
-              <div
-                key={task.id}
-                className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 hover:cursor-pointer rounded-lg mb-2"
-                onClick={() => setIsTaskModalOpenAndData([true, task])}
-              >
-                {task.title}
+            <div className="overflow-x-hidden overflow-y-auto max-h-screen pb-96">
+              {section.tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 hover:cursor-pointer rounded-lg mb-2"
+                  onClick={() => setIsTaskModalOpenAndData([true, task])}
+                >
+                  {task.title}
+                </div>
+              ))}
+              <div className="shrink-0 w-96 select-none">
+                <AddTaskButton
+                  AddTaskFormSchema={AddTaskFormSchema}
+                  actionData={actionData}
+                  ownerId={data.owner.id}
+                  sectionId={section.id}
+                />
               </div>
-            ))}
-            <div className="shrink-0 h-full w-96 select-none">
-              <AddTaskButton
-                AddTaskFormSchema={AddTaskFormSchema}
-                actionData={actionData}
-                ownerId={data.owner.id}
-                sectionId={section.id}
-              />
             </div>
-          </ul>
+          </div>
         ))}
       </div>
       {isTaskModalOpenAndData[0] && isTaskModalOpenAndData[1] !== null && (

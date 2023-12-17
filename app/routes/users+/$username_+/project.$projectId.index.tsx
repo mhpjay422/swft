@@ -75,6 +75,10 @@ export async function action({ request, params }: DataFunctionArgs) {
       AddTaskFormSchema.transform(async (data, ctx) => {
         if (intent !== "submit") return { ...data, task: null };
 
+        if (!data.title) {
+          return;
+        }
+
         const task = await prisma.task.create({
           data: {
             title: data.title,
@@ -100,12 +104,8 @@ export async function action({ request, params }: DataFunctionArgs) {
     async: true,
   });
 
-  if (submission.intent !== "submit") {
+  if (submission.intent !== "submit" || !submission.value?.task) {
     return json({ status: "idle", submission } as const);
-  }
-
-  if (!submission.value?.task) {
-    return json({ status: "error", submission } as const, { status: 400 });
   }
 
   return json({ status: "success", submission } as const, { status: 200 });
@@ -129,14 +129,14 @@ export default function UsersProjectDetailPage() {
   useClickOutside(wrapperRef, handleOutsideClick);
 
   return (
-    <div className="flex flex-grow flex-col items-center">
-      <div className="flex flex-row py-6 px-5 mt-10">
+    <div className="flex flex-col items-center">
+      <div className="flex flex-row pt-6 px-5 mb-36 h-screen">
         {data.owner.sections.map((section, index) => (
-          <div key={section.id} className="mr-6 w-72">
+          <div key={section.id} className="mr-4 w-[274px]">
             <div className="font-semibold mb-2">{section.title}</div>
             <div
               ref={sectionRefs[index]}
-              className="overflow-x-hidden overflow-y-auto max-h-screen pb-96"
+              className="overflow-x-hidden overflow-y-auto max-h-[80vh]"
             >
               {section.tasks.map((task) => (
                 <div
@@ -147,7 +147,7 @@ export default function UsersProjectDetailPage() {
                   {task.title}
                 </div>
               ))}
-              <div className="shrink-0 w-96 select-none">
+              <div className="shrink-0 w-64 select-none mb-32">
                 <AddTaskButton
                   AddTaskFormSchema={AddTaskFormSchema}
                   actionData={actionData}

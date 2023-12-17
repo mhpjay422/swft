@@ -41,9 +41,9 @@ export default function Sidebar() {
   return (
     <div className="h-screen">
       <div className="h-full flex w-64 flex-col">
-        <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 pt-2">
+        <div className="flex flex-grow flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 pt-2 mb-32">
           <div className="flex flex-grow flex-col">
-            <nav className="flex flex-col px-2 pb-4 h-full justify-between">
+            <nav className="flex flex-col px-2 h-full justify-between">
               <div>
                 <a
                   href={homeItem.href}
@@ -137,7 +137,7 @@ export default function Sidebar() {
 
               <Popover>
                 <PopoverTrigger>
-                  <div className="flex flex-col mb-28 cursor-not-allowed">
+                  <div className="flex flex-col cursor-not-allowed">
                     <a
                       key="Settings"
                       href="/settings"

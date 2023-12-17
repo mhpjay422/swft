@@ -9,7 +9,6 @@ import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { ErrorList } from "#app/utils/forms.tsx";
 import { useId } from "react";
-import { useIsSubmitting } from "#app/hooks/useIsSubmitting.ts";
 
 interface AddTaskButtonProps {
   AddTaskFormSchema: ZodObject<{
@@ -32,10 +31,8 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   sectionRef,
 }) => {
   const fetcher = useFetcher();
-  const isSubmitting = useIsSubmitting();
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
-  const submitRef = useRef<ElementRef<"button">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const uniqueId = useId();
@@ -119,14 +116,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             {...conform.input(fields.sectionId, { type: "hidden" })}
             value={sectionId}
           />
-          <div className="flex items-center gap-x-1">
-            <button ref={submitRef} disabled={isSubmitting}>
-              Save Task
-            </button>
-            <button type="button" onClick={disableEditing}>
-              X
-            </button>
-          </div>
         </fetcher.Form>
       ) : (
         <button

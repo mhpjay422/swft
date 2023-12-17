@@ -37,6 +37,8 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const inputRef = useRef<ElementRef<"input">>(null);
   const submitRef = useRef<ElementRef<"button">>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [taskTitle, setTaskTitle] = useState("");
+  const uniqueId = useId();
 
   const disableEditing = () => {
     setIsEditing(false);
@@ -44,6 +46,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
 
   const enableEditing = () => {
     setIsEditing(true);
+    setTaskTitle("");
     setTimeout(() => {
       inputRef.current?.focus();
       scrollIntoView();
@@ -56,11 +59,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     }
   };
 
-  const uniqueId = useId();
-
-  useEventListener("keydown", onKeyDown);
-  useClickOutside(formRef, disableEditing);
-
   const scrollIntoView = () => {
     const current = sectionRef.current;
     console.log("current", current);
@@ -68,6 +66,14 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
 
     if (current) {
       current.scrollTop = current.scrollHeight;
+    }
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(event.target as Node)) {
+      disableEditing();
+      formRef.current.submit();
+      setTaskTitle("");
     }
   };
 
@@ -81,6 +87,9 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     shouldRevalidate: "onBlur",
   });
 
+  useEventListener("keydown", onKeyDown);
+  useClickOutside(formRef, handleOutsideClick);
+
   return (
     <div>
       {isEditing ? (
@@ -89,14 +98,16 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
           method="POST"
           ref={formRef}
           onSubmit={disableEditing}
-          className="w-full p-3 rounded-md bg-white space-y-4 shadow-md"
+          className="w-64 p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
         >
           <AuthenticityTokenInput />
           <input
             ref={inputRef}
             {...conform.input(fields.title)}
-            className="text-sm px-2 py-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
-            placeholder="Enter list title..."
+            value={taskTitle}
+            onChange={(e) => setTaskTitle(e.target.value)}
+            className="text-sm px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
+            placeholder="Enter task title..."
             onFocus={scrollIntoView}
           />
           <ErrorList id={`error-${uniqueId}`} errors={fields.title.errors} />
@@ -120,7 +131,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
       ) : (
         <button
           onClick={enableEditing}
-          className="w-full rounded-md bg-white/80 hover:bg-white/50 transition p-3 flex items-center font-medium text-sm"
+          className="w-full rounded-md bg-white/80 hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm"
         >
           + Add a Task
         </button>

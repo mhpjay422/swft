@@ -7,7 +7,6 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { ErrorList } from "#app/utils/forms.tsx";
 import { useId } from "react";
 
 interface AddTaskButtonProps {
@@ -107,7 +106,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             placeholder="Enter task title..."
             onFocus={scrollIntoView}
           />
-          <ErrorList id={`error-${uniqueId}`} errors={fields.title.errors} />
           <input
             {...conform.input(fields.ownerId, { type: "hidden" })}
             value={ownerId}

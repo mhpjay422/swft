@@ -10,7 +10,7 @@ export async function loader() {
 export async function action() {
   const cookieSession = await authSessionStorage.getSession();
 
-  return redirect("/", {
+  return redirect("/login", {
     headers: {
       "set-cookie": await authSessionStorage.destroySession(cookieSession),
     },

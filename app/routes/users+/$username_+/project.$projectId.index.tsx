@@ -136,7 +136,7 @@ export default function UsersProjectDetailPage() {
             <div className="font-semibold mb-2">{section.title}</div>
             <div
               ref={sectionRefs[index]}
-              className="overflow-x-hidden overflow-y-auto max-h-[80vh]"
+              className="overflow-x-hidden overflow-y-auto section-max-height"
             >
               {section.tasks.map((task) => (
                 <div

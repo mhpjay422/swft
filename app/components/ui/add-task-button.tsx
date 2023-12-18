@@ -28,7 +28,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   sectionId,
   sectionRef,
 }) => {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher({ key: "create-task" });
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -64,7 +64,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const handleOutsideClick = (event: MouseEvent) => {
     if (formRef.current && !formRef.current.contains(event.target as Node)) {
       disableEditing();
-      formRef.current.requestSubmit();
+      fetcher.submit(formRef.current);
       setTaskTitle("");
     }
   };

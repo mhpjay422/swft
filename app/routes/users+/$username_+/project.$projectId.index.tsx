@@ -1,5 +1,5 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { AddTaskButton } from "#app/components/ui/add-task-button.tsx";
+import { AddTaskButton } from "#app/components/add-task-button.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";

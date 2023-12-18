@@ -7,7 +7,6 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { useId } from "react";
 
 interface AddTaskButtonProps {
   AddTaskFormSchema: ZodObject<{
@@ -34,7 +33,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const inputRef = useRef<ElementRef<"input">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
-  const uniqueId = useId();
 
   const disableEditing = () => {
     setIsEditing(false);
@@ -57,8 +55,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
 
   const scrollIntoView = () => {
     const current = sectionRef.current;
-    console.log("current", current);
-    console.log("sectionRef", sectionRef);
 
     if (current) {
       current.scrollTop = current.scrollHeight;
@@ -68,7 +64,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const handleOutsideClick = (event: MouseEvent) => {
     if (formRef.current && !formRef.current.contains(event.target as Node)) {
       disableEditing();
-      formRef.current.submit();
+      formRef.current.requestSubmit();
       setTaskTitle("");
     }
   };

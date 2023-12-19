@@ -1,11 +1,11 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { useFetcher } from "@remix-run/react";
 import { type ElementRef, useRef, useState } from "react";
-import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { flushSync } from "react-dom";
 
 interface AddTaskButtonProps {
   AddTaskFormSchema: ZodObject<{
@@ -33,32 +33,11 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
 
-  const disableEditing = () => {
-    setIsEditing(false);
-  };
-
-  const enableEditing = () => {
-    setIsEditing(true);
-    setTaskTitle("");
-    setTimeout(() => {
-      inputRef.current?.select();
-      scrollIntoView();
-    });
-  };
-
   const scrollIntoView = () => {
     const current = sectionRef.current;
 
     if (current) {
       current.scrollTop = current.scrollHeight;
-    }
-  };
-
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (formRef.current && !formRef.current.contains(event.target as Node)) {
-      disableEditing();
-      fetcher.submit(formRef.current);
-      setTaskTitle("");
     }
   };
 
@@ -72,8 +51,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     shouldRevalidate: "onBlur",
   });
 
-  useClickOutside(formRef, handleOutsideClick);
-
   return (
     <div>
       {isEditing ? (
@@ -81,7 +58,14 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
           {...form.props}
           method="POST"
           ref={formRef}
-          onSubmit={disableEditing}
+          onSubmit={() => setIsEditing(false)}
+          onBlur={() => {
+            if (formRef.current?.value !== "") {
+              fetcher.submit(formRef.current);
+            }
+            setIsEditing(false);
+            setTaskTitle("");
+          }}
           className="w-64 p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
         >
           <AuthenticityTokenInput />
@@ -110,7 +94,15 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
         </fetcher.Form>
       ) : (
         <button
-          onClick={enableEditing}
+          onClick={() => {
+            // This allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
+            flushSync(() => {
+              setIsEditing(true);
+              setTaskTitle("");
+            });
+            inputRef.current?.select();
+            scrollIntoView();
+          }}
           className="w-full rounded-md bg-white/80 hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm"
         >
           + Add a Task

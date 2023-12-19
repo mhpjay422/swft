@@ -16,7 +16,7 @@ export function Header() {
           </div>
         </Link>
         {useLoggedInUser() ? (
-          <Form action="/logout" method="POST">
+          <Form replace action="/logout" method="POST">
             <AuthenticityTokenInput />
             <button className="bg-white h-10 w-20 rounded-lg border border-gray-300 hover:text-gray-800 text-center self-center">
               Log Out

@@ -160,7 +160,7 @@ export default function LoginPage() {
           <p className="mt-4 text-gray-700 text-4xl font-semibold">Sign in</p>
         </div>
 
-        <Form method="POST" className="mt-8 space-y-2" {...form.props}>
+        <Form replace method="POST" className="mt-8 space-y-2" {...form.props}>
           <AuthenticityTokenInput />
           <div>Email</div>
           <div className="bg-white block w-full appearance-none rounded-md border border-gray-300 text-gray-900 sm:text-sm">

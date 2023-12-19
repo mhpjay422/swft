@@ -195,7 +195,7 @@ export default function SignupRoute() {
           </p>
         </div>
 
-        <Form method="POST" className="mt-8 space-y-2" {...form.props}>
+        <Form replace method="POST" className="mt-8 space-y-2" {...form.props}>
           <AuthenticityTokenInput />
 
           <div>Email</div>

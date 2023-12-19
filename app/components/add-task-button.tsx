@@ -2,7 +2,6 @@ import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { useFetcher } from "@remix-run/react";
 import { type ElementRef, useRef, useState } from "react";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
-import { useEventListener } from "#app/hooks/useEventListener.ts";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
@@ -42,15 +41,9 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     setIsEditing(true);
     setTaskTitle("");
     setTimeout(() => {
-      inputRef.current?.focus();
+      inputRef.current?.select();
       scrollIntoView();
     });
-  };
-
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      disableEditing();
-    }
   };
 
   const scrollIntoView = () => {
@@ -79,7 +72,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
     shouldRevalidate: "onBlur",
   });
 
-  useEventListener("keydown", onKeyDown);
   useClickOutside(formRef, handleOutsideClick);
 
   return (
@@ -101,6 +93,11 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             className="text-sm px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter task title..."
             onFocus={scrollIntoView}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setIsEditing(false);
+              }
+            }}
           />
           <input
             {...conform.input(fields.ownerId, { type: "hidden" })}

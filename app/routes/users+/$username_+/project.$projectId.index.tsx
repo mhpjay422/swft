@@ -1,5 +1,6 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { AddTaskButton } from "#app/components/add-task-button.tsx";
+import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
+import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
@@ -20,7 +21,7 @@ const AddTaskFormSchema = z.object({
   sectionId: z.string(),
 });
 
-type Task = {
+export type Task = {
   id: string;
   title: string;
   description: string | null;
@@ -31,14 +32,6 @@ type Task = {
   projectId: string | null;
   sectionId: string | null;
 };
-
-interface TaskProps {
-  task?: Task;
-  setIsTaskModalOpenAndData?: React.Dispatch<
-    React.SetStateAction<[boolean, Task | null]>
-  >;
-  title?: string;
-}
 
 export async function loader({ request, params }: DataFunctionArgs) {
   const user = await requireUser(request);
@@ -147,17 +140,17 @@ export default function UsersProjectDetailPage() {
               className="overflow-x-hidden overflow-y-auto section-max-height"
             >
               {section.tasks.map((task) => (
-                <Task
+                <TaskCard
                   key={task.id}
                   task={task}
                   setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
                 />
               ))}
               {fetcher.state !== "idle" && taskTitle !== "" && (
-                <Task title={taskTitle} />
+                <TaskCard title={taskTitle} />
               )}
               <div className="shrink-0 w-64 select-none mb-32">
-                <AddTaskButton
+                <AddTaskButtonAndForm
                   AddTaskFormSchema={AddTaskFormSchema}
                   fetcher={fetcher}
                   actionData={actionData}
@@ -195,29 +188,6 @@ export default function UsersProjectDetailPage() {
     </div>
   );
 }
-
-const Task: React.FC<TaskProps> = ({
-  task,
-  setIsTaskModalOpenAndData,
-  title,
-}) => {
-  const isCreatedTask = !!task;
-  const handleClick =
-    isCreatedTask && setIsTaskModalOpenAndData
-      ? () => setIsTaskModalOpenAndData([true, task])
-      : undefined;
-
-  return (
-    <div
-      className={`task ${
-        handleClick ? "hover:cursor-pointer" : "hover:cursor-wait"
-      }`}
-      onClick={handleClick}
-    >
-      {isCreatedTask ? task?.title : title}
-    </div>
-  );
-};
 
 export function ErrorBoundary() {
   return <DynamicErrorBoundary />;

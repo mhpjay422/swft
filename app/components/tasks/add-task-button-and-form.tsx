@@ -21,7 +21,7 @@ interface AddTaskButtonProps {
   fetcher: FetcherWithComponents<unknown>;
 }
 
-export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
+export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   AddTaskFormSchema,
   actionData,
   ownerId,

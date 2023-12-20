@@ -124,7 +124,8 @@ export default function UsersProjectDetailPage() {
   const wrapperRef = useRef(null);
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
-
+  const taskSectionId = fetcher.formData?.get("sectionId")?.toString();
+  const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
   useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
   });
@@ -146,7 +147,8 @@ export default function UsersProjectDetailPage() {
                   setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
                 />
               ))}
-              {fetcher.state !== "idle" && taskTitle !== "" && (
+              {/* Optimistic update for new task creation */}
+              {taskIsSubmitting && taskSectionId === section.id && (
                 <TaskCard title={taskTitle} />
               )}
               <div className="shrink-0 w-64 select-none mb-32">

@@ -31,7 +31,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("");
 
   const scrollIntoView = () => {
     const current = sectionRef.current;
@@ -64,7 +63,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
               fetcher.submit(formRef.current);
             }
             setIsEditing(false);
-            setTaskTitle("");
+            formRef.current?.reset();
           }}
           className="w-64 p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
         >
@@ -72,8 +71,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
           <input
             ref={inputRef}
             {...conform.input(fields.title)}
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
             className="text-sm px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter task title..."
             onFocus={scrollIntoView}
@@ -98,7 +95,6 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             // This allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
             flushSync(() => {
               setIsEditing(true);
-              setTaskTitle("");
             });
             inputRef.current?.select();
             scrollIntoView();

@@ -29,9 +29,9 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   sectionRef,
   fetcher,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
-  const [isEditing, setIsEditing] = useState(false);
 
   const scrollIntoView = () => {
     const current = sectionRef.current;

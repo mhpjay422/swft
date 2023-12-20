@@ -122,22 +122,19 @@ export async function action({ request, params }: DataFunctionArgs) {
 export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
-  const fetcher = useFetcher({ key: "create-task" });
-  const taskTitle = fetcher.formData?.get("title")?.toString();
-
   const [isTaskModalOpenAndData, setIsTaskModalOpenAndData] = useState<
     [boolean, Task | null]
   >([false, null]);
-  const wrapperRef = useRef(null);
   const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
+  const wrapperRef = useRef(null);
+  const fetcher = useFetcher({ key: "create-task" });
+  const taskTitle = fetcher.formData?.get("title")?.toString();
 
-  const handleOutsideClick = () => {
+  useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
-  };
-
-  useClickOutside(wrapperRef, handleOutsideClick);
+  });
 
   return (
     <div className="flex flex-col items-center">

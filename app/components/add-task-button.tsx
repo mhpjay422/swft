@@ -1,11 +1,11 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { useFetcher } from "@remix-run/react";
 import { type ElementRef, useRef, useState } from "react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { flushSync } from "react-dom";
+import { type FetcherWithComponents } from "@remix-run/react";
 
 interface AddTaskButtonProps {
   AddTaskFormSchema: ZodObject<{
@@ -18,6 +18,7 @@ interface AddTaskButtonProps {
   ownerId: string;
   sectionId: string;
   sectionRef: React.RefObject<HTMLDivElement>;
+  fetcher: FetcherWithComponents<unknown>;
 }
 
 export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
@@ -26,8 +27,8 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
   ownerId,
   sectionId,
   sectionRef,
+  fetcher,
 }) => {
-  const fetcher = useFetcher({ key: "create-task" });
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
   const [isEditing, setIsEditing] = useState(false);

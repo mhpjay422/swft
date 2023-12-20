@@ -7,7 +7,7 @@ import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
 import { parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData, useFetcher } from "@remix-run/react";
 import { useState, useRef, createRef } from "react";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
@@ -30,7 +30,15 @@ type Task = {
   ownerId: string;
   projectId: string | null;
   sectionId: string | null;
-} | null;
+};
+
+interface TaskProps {
+  task?: Task;
+  setIsTaskModalOpenAndData?: React.Dispatch<
+    React.SetStateAction<[boolean, Task | null]>
+  >;
+  title?: string;
+}
 
 export async function loader({ request, params }: DataFunctionArgs) {
   const user = await requireUser(request);
@@ -114,8 +122,11 @@ export async function action({ request, params }: DataFunctionArgs) {
 export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const fetcher = useFetcher({ key: "create-task" });
+  const taskTitle = fetcher.formData?.get("title")?.toString();
+
   const [isTaskModalOpenAndData, setIsTaskModalOpenAndData] = useState<
-    [boolean, Task]
+    [boolean, Task | null]
   >([false, null]);
   const wrapperRef = useRef(null);
   const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
@@ -139,17 +150,19 @@ export default function UsersProjectDetailPage() {
               className="overflow-x-hidden overflow-y-auto section-max-height"
             >
               {section.tasks.map((task) => (
-                <div
+                <Task
                   key={task.id}
-                  className="h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 hover:cursor-pointer rounded-lg mb-2"
-                  onClick={() => setIsTaskModalOpenAndData([true, task])}
-                >
-                  {task.title}
-                </div>
+                  task={task}
+                  setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
+                />
               ))}
+              {fetcher.state !== "idle" && taskTitle !== "" && (
+                <Task title={taskTitle} />
+              )}
               <div className="shrink-0 w-64 select-none mb-32">
                 <AddTaskButton
                   AddTaskFormSchema={AddTaskFormSchema}
+                  fetcher={fetcher}
                   actionData={actionData}
                   ownerId={data.owner.id}
                   sectionId={section.id}
@@ -175,7 +188,7 @@ export default function UsersProjectDetailPage() {
             </div>
             <div>
               Description:
-              <div className="border border-gray-300 hover:border-gray-400 p-4 rounded-lg h-96 hover:cursor-text">
+              <div className="border border-gray-300 hover:border-gray-400 p-4 rounded-lg h-96 hover:cursor-text cursor">
                 {isTaskModalOpenAndData[1].description}
               </div>
             </div>
@@ -185,6 +198,29 @@ export default function UsersProjectDetailPage() {
     </div>
   );
 }
+
+const Task: React.FC<TaskProps> = ({
+  task,
+  setIsTaskModalOpenAndData,
+  title,
+}) => {
+  const isCreatedTask = !!task;
+  const handleClick =
+    isCreatedTask && setIsTaskModalOpenAndData
+      ? () => setIsTaskModalOpenAndData([true, task])
+      : undefined;
+
+  return (
+    <div
+      className={`task ${
+        handleClick ? "hover:cursor-pointer" : "hover:cursor-wait"
+      }`}
+      onClick={handleClick}
+    >
+      {isCreatedTask ? task?.title : title}
+    </div>
+  );
+};
 
 export function ErrorBoundary() {
   return <DynamicErrorBoundary />;

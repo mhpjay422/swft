@@ -65,6 +65,7 @@ export const AddTaskButton: React.FC<AddTaskButtonProps> = ({
             }
             setIsEditing(false);
             formRef.current?.reset();
+            scrollIntoView();
           }}
           className="w-64 p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
         >

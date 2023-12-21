@@ -16,7 +16,7 @@ import { z } from "zod";
 const prisma = prismaClient;
 
 const AddTaskFormSchema = z.object({
-  title: z.string().min(1).max(255),
+  title: z.string().min(1).max(32),
   ownerId: z.string(),
   sectionId: z.string(),
 });
@@ -126,13 +126,14 @@ export default function UsersProjectDetailPage() {
   const taskTitle = fetcher.formData?.get("title")?.toString();
   const taskSectionId = fetcher.formData?.get("sectionId")?.toString();
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
+
   useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
   });
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex flex-row pt-6 px-5 mb-36 h-screen">
+    <div className="flex flex-col items-center overflow-x-auto w-screen mb-36 mr-8">
+      <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
             <div className="font-semibold mb-2">{section.title}</div>

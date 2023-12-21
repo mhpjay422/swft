@@ -128,6 +128,8 @@ export default function UsersProjectDetailPage() {
   const taskSectionId = fetcher.formData?.get("sectionId")?.toString();
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
   const deleteFetcher = useFetcher({ key: "delete-task" });
+  const deleteTaskIsSubmitting =
+    deleteFetcher.state !== "idle" && taskTitle !== "";
 
   useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
@@ -148,6 +150,7 @@ export default function UsersProjectDetailPage() {
                   key={task.id}
                   task={task}
                   setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
+                  deleteTaskIsSubmitting={deleteTaskIsSubmitting}
                 />
               ))}
               {/* Optimistic update for new task creation */}

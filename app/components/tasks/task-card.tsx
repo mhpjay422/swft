@@ -6,16 +6,18 @@ interface TaskProps {
     React.SetStateAction<[boolean, Task | null]>
   >;
   title?: string;
+  deleteTaskIsSubmitting?: boolean;
 }
 
 export const TaskCard: React.FC<TaskProps> = ({
   task,
   setIsTaskModalOpenAndData,
   title,
+  deleteTaskIsSubmitting,
 }) => {
   const isCreatedTask = !!task;
   const handleClick =
-    isCreatedTask && setIsTaskModalOpenAndData
+    isCreatedTask && setIsTaskModalOpenAndData && !deleteTaskIsSubmitting
       ? () => setIsTaskModalOpenAndData([true, task])
       : undefined;
 

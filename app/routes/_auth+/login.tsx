@@ -157,7 +157,7 @@ export default function LoginPage() {
     <div className="flex-grow flex flex-col w-full px-4 sm:px-6 lg:px-8 bg-gray-50 pt-28">
       <div className="w-full max-w-md space-y-8 mx-auto">
         <div className="relative flex flex-col w-full">
-          <p className="mt-4 text-gray-700 text-4xl font-semibold">Sign in</p>
+          <p className="mt-4 text-gray-700 text-4xl font-semibold">Log In</p>
         </div>
 
         <Form replace method="POST" className="mt-8 space-y-2" {...form.props}>
@@ -207,7 +207,7 @@ export default function LoginPage() {
             disabled={useIsSubmitting()}
           >
             {/* NOTE: FIX THIS */}
-            {useIsSubmitting() ? "Submitting" : "Submit"}
+            {useIsSubmitting() ? "Logging In" : "Log In "}
           </button>
           <div className="flex items-center justify-center gap-2 pt-6">
             Dont have an account?

@@ -10,6 +10,7 @@ import { parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useLoaderData, useFetcher } from "@remix-run/react";
 import { useState, useRef, createRef } from "react";
+import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
 
@@ -126,6 +127,7 @@ export default function UsersProjectDetailPage() {
   const taskTitle = fetcher.formData?.get("title")?.toString();
   const taskSectionId = fetcher.formData?.get("sectionId")?.toString();
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
+  const deleteFetcher = useFetcher({ key: "delete-task" });
 
   useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
@@ -173,11 +175,29 @@ export default function UsersProjectDetailPage() {
             id="task-modal"
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
-            <div className="font-semibold text-xl mb-16">
-              {isTaskModalOpenAndData[1].title}
+            <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16">
+              <div>{isTaskModalOpenAndData[1].title}</div>
+              <deleteFetcher.Form
+                method="DELETE"
+                action="/task-delete"
+                onSubmit={() => setIsTaskModalOpenAndData([false, null])}
+              >
+                <AuthenticityTokenInput />
+                <input
+                  type="hidden"
+                  name="taskId"
+                  value={isTaskModalOpenAndData[1].id}
+                />
+                <button
+                  type="submit"
+                  className="bg-red-500 text-white h-10 w-20 rounded-lg border border-gray-100 hover:bg-red-600 text-center self-center text-base"
+                >
+                  Delete
+                </button>
+              </deleteFetcher.Form>
             </div>
             <div className="mb-8">
-              Completed: {isTaskModalOpenAndData[1].completed ? "Yes" : "No"}
+              Completed: {isTaskModalOpenAndData[1].completed ? "√" : "X"}
             </div>
             <div>
               Description:

@@ -132,7 +132,7 @@ export async function action({ request }: DataFunctionArgs) {
   });
 }
 
-const useDynamicId = (id: string | undefined) => {
+const useDynamicId = (id: string | undefined): string => {
   const uniqueId = useId();
   return id ?? uniqueId;
 };

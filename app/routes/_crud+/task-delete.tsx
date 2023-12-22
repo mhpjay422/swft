@@ -29,8 +29,6 @@ export async function action({ request, params }: DataFunctionArgs) {
     schema: DeleteTaskFormSchema,
   });
 
-  console.log("sub", submission);
-
   if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }

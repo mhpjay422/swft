@@ -122,12 +122,17 @@ export default function UsersProjectDetailPage() {
   const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
-  const [taskEditingId, setTaskEditingId] = useState<string | null>(null);
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const wrapperRef = useRef(null);
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
-  const taskSectionId = fetcher.formData?.get("sectionId")?.toString();
+  const taskSubmittingSectionId = fetcher.formData
+    ?.get("sectionId")
+    ?.toString();
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
+  const sectionHasOptimisticUpdate = (sectionId: string | undefined) =>
+    taskIsSubmitting && taskSubmittingSectionId === sectionId;
   const deleteFetcher = useFetcher({ key: "delete-task" });
   const deleteTaskIsSubmitting =
     deleteFetcher.state !== "idle" && taskTitle !== "";
@@ -148,9 +153,12 @@ export default function UsersProjectDetailPage() {
             >
               <div
                 className={`w-64 h-full rounded-lg ${
-                  section.tasks.length === 0 &&
-                  section.id !== taskEditingId &&
-                  "bg-gray-50"
+                  section.tasks.length > 0 ||
+                  editingSectionId === section.id ||
+                  sectionHasOptimisticUpdate(section.id) ||
+                  isTempBlurSubmitting
+                    ? "bg-white"
+                    : "bg-gray-50"
                 }`}
               >
                 {section.tasks.map((task) => (
@@ -162,7 +170,7 @@ export default function UsersProjectDetailPage() {
                   />
                 ))}
                 {/* Optimistic update for new task creation */}
-                {taskIsSubmitting && taskSectionId === section.id && (
+                {sectionHasOptimisticUpdate(section.id) && (
                   <TaskCard title={taskTitle} />
                 )}
                 <div className="shrink-0 w-64 select-none mb-32">
@@ -173,8 +181,13 @@ export default function UsersProjectDetailPage() {
                     ownerId={data.owner.id}
                     sectionId={section.id}
                     sectionRef={sectionRefs[index]}
-                    sectionEmpty={section.tasks.length === 0}
-                    setTaskEditingId={setTaskEditingId}
+                    sectionEmptyAndIdle={
+                      section.tasks.length === 0 &&
+                      !sectionHasOptimisticUpdate(section.id) &&
+                      !isTempBlurSubmitting
+                    }
+                    setEditingSectionId={setEditingSectionId}
+                    setIsTempBlurSubmitting={setIsTempBlurSubmitting}
                   />
                 </div>
               </div>

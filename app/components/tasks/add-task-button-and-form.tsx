@@ -19,8 +19,9 @@ interface AddTaskButtonProps {
   sectionId: string;
   sectionRef: React.RefObject<HTMLDivElement>;
   fetcher: FetcherWithComponents<unknown>;
-  sectionEmpty: boolean;
-  setTaskEditingId: React.Dispatch<React.SetStateAction<string | null>>;
+  sectionEmptyAndIdle: boolean;
+  setEditingSectionId: React.Dispatch<React.SetStateAction<string | null>>;
+  setIsTempBlurSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
@@ -30,8 +31,9 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   sectionId,
   sectionRef,
   fetcher,
-  sectionEmpty,
-  setTaskEditingId,
+  sectionEmptyAndIdle,
+  setEditingSectionId,
+  setIsTempBlurSubmitting,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<ElementRef<"form">>(null);
@@ -64,18 +66,26 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
           ref={formRef}
           onSubmit={() => {
             setIsEditing(false);
-            setTaskEditingId(null);
+            setEditingSectionId(null);
           }}
           onBlur={() => {
-            if (formRef.current?.value !== "") {
-              fetcher.submit(formRef.current);
+            let formData;
+            if (formRef.current) {
+              formData = new FormData(formRef.current);
             }
-            setIsEditing(false);
-            setTaskEditingId(null);
+            flushSync(() => {
+              setIsTempBlurSubmitting(true);
+              setIsEditing(false);
+              setEditingSectionId(null);
+            });
+            if (formData?.has("title") && formData.get("title")) {
+              fetcher.submit(formData, { method: "post" });
+            }
+            setIsTempBlurSubmitting(false);
             formRef.current?.reset();
             scrollIntoView();
           }}
-          className="p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
+          className="h-28 p-3 pb-8 rounded-lg bg-white space-y-4 border border-gray-400"
         >
           <AuthenticityTokenInput />
           <input
@@ -87,7 +97,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 setIsEditing(false);
-                setTaskEditingId(null);
+                setEditingSectionId(null);
               }
             }}
           />
@@ -103,16 +113,16 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
       ) : (
         <button
           onClick={() => {
-            // This allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
+            // flushSync allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
             flushSync(() => {
               setIsEditing(true);
-              setTaskEditingId(sectionId);
+              setEditingSectionId(sectionId);
             });
             inputRef.current?.select();
             scrollIntoView();
           }}
           className={`w-full rounded-md ${
-            sectionEmpty ? "bg-gray-50" : "bg-white/80"
+            sectionEmptyAndIdle ? "bg-gray-50" : "bg-white/80"
           } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
         >
           <div className="mx-auto">+ Add a Task</div>

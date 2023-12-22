@@ -80,6 +80,6 @@
     max-height: calc(100vh - 200px);
   }
   .task {
-    @apply h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 rounded-lg mb-2;
+    @apply h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 rounded-lg mb-2 bg-white;
   }
 }

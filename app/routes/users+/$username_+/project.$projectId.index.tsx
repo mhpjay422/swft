@@ -122,6 +122,7 @@ export default function UsersProjectDetailPage() {
   const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
+  const [taskEditingId, setTaskEditingId] = useState<string | null>(null);
   const wrapperRef = useRef(null);
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
@@ -143,29 +144,39 @@ export default function UsersProjectDetailPage() {
             <div className="font-semibold mb-2">{section.title}</div>
             <div
               ref={sectionRefs[index]}
-              className="overflow-x-hidden overflow-y-auto section-max-height"
+              className={`overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg`}
             >
-              {section.tasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
-                  deleteTaskIsSubmitting={deleteTaskIsSubmitting}
-                />
-              ))}
-              {/* Optimistic update for new task creation */}
-              {taskIsSubmitting && taskSectionId === section.id && (
-                <TaskCard title={taskTitle} />
-              )}
-              <div className="shrink-0 w-64 select-none mb-32">
-                <AddTaskButtonAndForm
-                  AddTaskFormSchema={AddTaskFormSchema}
-                  fetcher={fetcher}
-                  actionData={actionData}
-                  ownerId={data.owner.id}
-                  sectionId={section.id}
-                  sectionRef={sectionRefs[index]}
-                />
+              <div
+                className={`w-64 h-full rounded-lg ${
+                  section.tasks.length === 0 &&
+                  section.id !== taskEditingId &&
+                  "bg-gray-50"
+                }`}
+              >
+                {section.tasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
+                    deleteTaskIsSubmitting={deleteTaskIsSubmitting}
+                  />
+                ))}
+                {/* Optimistic update for new task creation */}
+                {taskIsSubmitting && taskSectionId === section.id && (
+                  <TaskCard title={taskTitle} />
+                )}
+                <div className="shrink-0 w-64 select-none mb-32">
+                  <AddTaskButtonAndForm
+                    AddTaskFormSchema={AddTaskFormSchema}
+                    fetcher={fetcher}
+                    actionData={actionData}
+                    ownerId={data.owner.id}
+                    sectionId={section.id}
+                    sectionRef={sectionRefs[index]}
+                    sectionEmpty={section.tasks.length === 0}
+                    setTaskEditingId={setTaskEditingId}
+                  />
+                </div>
               </div>
             </div>
           </div>

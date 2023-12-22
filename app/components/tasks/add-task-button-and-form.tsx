@@ -19,6 +19,8 @@ interface AddTaskButtonProps {
   sectionId: string;
   sectionRef: React.RefObject<HTMLDivElement>;
   fetcher: FetcherWithComponents<unknown>;
+  sectionEmpty: boolean;
+  setTaskEditingId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
@@ -28,6 +30,8 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   sectionId,
   sectionRef,
   fetcher,
+  sectionEmpty,
+  setTaskEditingId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<ElementRef<"form">>(null);
@@ -58,16 +62,20 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
           {...form.props}
           method="POST"
           ref={formRef}
-          onSubmit={() => setIsEditing(false)}
+          onSubmit={() => {
+            setIsEditing(false);
+            setTaskEditingId(null);
+          }}
           onBlur={() => {
             if (formRef.current?.value !== "") {
               fetcher.submit(formRef.current);
             }
             setIsEditing(false);
+            setTaskEditingId(null);
             formRef.current?.reset();
             scrollIntoView();
           }}
-          className="w-64 p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
+          className="p-3 pb-8 rounded-md bg-white space-y-4 border border-gray-400"
         >
           <AuthenticityTokenInput />
           <input
@@ -79,6 +87,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 setIsEditing(false);
+                setTaskEditingId(null);
               }
             }}
           />
@@ -97,13 +106,16 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             // This allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
             flushSync(() => {
               setIsEditing(true);
+              setTaskEditingId(sectionId);
             });
             inputRef.current?.select();
             scrollIntoView();
           }}
-          className="w-full rounded-md bg-white/80 hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm"
+          className={`w-full rounded-md ${
+            sectionEmpty ? "bg-gray-50" : "bg-white/80"
+          } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
         >
-          + Add a Task
+          <div className="mx-auto">+ Add a Task</div>
         </button>
       )}
     </div>

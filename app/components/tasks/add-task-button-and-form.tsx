@@ -1,5 +1,5 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { type ElementRef, useRef, useState } from "react";
+import { type ElementRef, useRef } from "react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
@@ -20,6 +20,7 @@ interface AddTaskButtonProps {
   sectionRef: React.RefObject<HTMLDivElement>;
   fetcher: FetcherWithComponents<unknown>;
   sectionEmptyAndIdle: boolean;
+  isEditing: boolean;
   setEditingSectionId: React.Dispatch<React.SetStateAction<string | null>>;
   setIsTempBlurSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -32,10 +33,10 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   sectionRef,
   fetcher,
   sectionEmptyAndIdle,
+  isEditing,
   setEditingSectionId,
   setIsTempBlurSubmitting,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
 
@@ -65,7 +66,6 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
           method="POST"
           ref={formRef}
           onSubmit={() => {
-            setIsEditing(false);
             setEditingSectionId(null);
           }}
           onBlur={() => {
@@ -75,7 +75,6 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             }
             flushSync(() => {
               setIsTempBlurSubmitting(true);
-              setIsEditing(false);
               setEditingSectionId(null);
             });
             if (formData?.has("title") && formData.get("title")) {
@@ -96,7 +95,6 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             onFocus={scrollIntoView}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
-                setIsEditing(false);
                 setEditingSectionId(null);
               }
             }}
@@ -115,14 +113,13 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
           onClick={() => {
             // flushSync allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
             flushSync(() => {
-              setIsEditing(true);
               setEditingSectionId(sectionId);
             });
             inputRef.current?.select();
             scrollIntoView();
           }}
           className={`w-full rounded-md ${
-            sectionEmptyAndIdle ? "bg-gray-50" : "bg-white/80"
+            sectionEmptyAndIdle ? "bg-white" : "bg-gray-50"
           } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
         >
           <div className="mx-auto">+ Add a Task</div>

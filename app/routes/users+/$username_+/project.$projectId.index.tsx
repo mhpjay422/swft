@@ -125,6 +125,7 @@ export default function UsersProjectDetailPage() {
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const wrapperRef = useRef(null);
+
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
   const taskSubmittingSectionId = fetcher.formData
@@ -133,10 +134,28 @@ export default function UsersProjectDetailPage() {
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
   const sectionHasOptimisticUpdate = (sectionId: string | undefined) =>
     taskIsSubmitting && taskSubmittingSectionId === sectionId;
-  const deleteFetcher = useFetcher({ key: "delete-task" });
-  const deleteTaskIsSubmitting =
-    deleteFetcher.state !== "idle" && taskTitle !== "";
 
+  const deleteFetcher = useFetcher({ key: "delete-task" });
+  const deleteTaskTitle = fetcher.formData?.get("title")?.toString();
+  const deleteTaskSubmittingSectionId = deleteFetcher.formData
+    ?.get("sectionId")
+    ?.toString();
+  const deleteTaskIsSubmitting =
+    deleteFetcher.state !== "idle" && deleteTaskTitle !== "";
+  const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
+    deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
+  const sectionEmptyAndIdle = (
+    section: { tasks: string | any[] },
+    sectionId: string | undefined
+  ) => {
+    return (
+      section.tasks.length > 0 ||
+      editingSectionId === sectionId ||
+      sectionHasOptimisticUpdate(sectionId) ||
+      sectionHasOptimisticDeletion(sectionId) ||
+      isTempBlurSubmitting
+    );
+  };
   useClickOutside(wrapperRef, () => {
     setIsTaskModalOpenAndData([false, null]);
   });
@@ -153,10 +172,7 @@ export default function UsersProjectDetailPage() {
             >
               <div
                 className={`w-64 h-full rounded-lg ${
-                  section.tasks.length > 0 ||
-                  editingSectionId === section.id ||
-                  sectionHasOptimisticUpdate(section.id) ||
-                  isTempBlurSubmitting
+                  sectionEmptyAndIdle(section, section.id)
                     ? "bg-white"
                     : "bg-gray-50"
                 }`}
@@ -181,11 +197,11 @@ export default function UsersProjectDetailPage() {
                     ownerId={data.owner.id}
                     sectionId={section.id}
                     sectionRef={sectionRefs[index]}
-                    sectionEmptyAndIdle={
-                      section.tasks.length === 0 &&
-                      !sectionHasOptimisticUpdate(section.id) &&
-                      !isTempBlurSubmitting
-                    }
+                    sectionEmptyAndIdle={sectionEmptyAndIdle(
+                      section,
+                      section.id
+                    )}
+                    isEditing={editingSectionId === section.id}
                     setEditingSectionId={setEditingSectionId}
                     setIsTempBlurSubmitting={setIsTempBlurSubmitting}
                   />

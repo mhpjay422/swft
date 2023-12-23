@@ -147,11 +147,11 @@ export default function UsersProjectDetailPage() {
     sectionId: string | undefined
   ) => {
     return (
-      section.tasks.length > 0 ||
-      editingSectionId === sectionId ||
-      sectionHasOptimisticUpdate(sectionId) ||
-      sectionHasOptimisticDeletion(sectionId) ||
-      isTempBlurSubmitting
+      section.tasks.length === 0 &&
+      editingSectionId !== sectionId &&
+      !sectionHasOptimisticUpdate(sectionId) &&
+      !sectionHasOptimisticDeletion(sectionId) &&
+      !isTempBlurSubmitting
     );
   };
   useClickOutside(wrapperRef, () => {
@@ -171,8 +171,8 @@ export default function UsersProjectDetailPage() {
               <div
                 className={`w-64 h-full rounded-lg ${
                   sectionEmptyAndIdle(section, section.id)
-                    ? "bg-white"
-                    : "bg-gray-50"
+                    ? "bg-gray-50"
+                    : "bg-white"
                 }`}
               >
                 {section.tasks.map((task) => (

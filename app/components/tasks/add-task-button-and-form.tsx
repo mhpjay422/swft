@@ -120,7 +120,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             scrollIntoView();
           }}
           className={`w-full rounded-md ${
-            sectionEmptyAndIdle ? "bg-white" : "bg-gray-50"
+            sectionEmptyAndIdle ? "bg-gray-50" : "bg-white"
           } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
         >
           <div className="mx-auto">+ Add a Task</div>

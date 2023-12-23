@@ -74,6 +74,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
               formData = new FormData(formRef.current);
             }
             flushSync(() => {
+              // NOTE: This is a hack to have the parent component UI update before closing the form
               setIsTempBlurSubmitting(true);
               setEditingSectionId(null);
             });

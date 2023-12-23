@@ -116,9 +116,7 @@ export async function action({ request, params }: DataFunctionArgs) {
 export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
-  const [isTaskModalOpenAndData, setIsTaskModalOpenAndData] = useState<
-    [boolean, Task | null]
-  >([false, null]);
+  const [taskModalData, setTaskModalData] = useState<Task | null>(null);
   const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
@@ -157,7 +155,7 @@ export default function UsersProjectDetailPage() {
     );
   };
   useClickOutside(wrapperRef, () => {
-    setIsTaskModalOpenAndData([false, null]);
+    setTaskModalData(null);
   });
 
   return (
@@ -181,7 +179,7 @@ export default function UsersProjectDetailPage() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    setIsTaskModalOpenAndData={setIsTaskModalOpenAndData}
+                    setTaskModalData={setTaskModalData}
                     deleteTaskIsSubmitting={deleteTaskIsSubmitting}
                   />
                 ))}
@@ -211,7 +209,7 @@ export default function UsersProjectDetailPage() {
           </div>
         ))}
       </div>
-      {isTaskModalOpenAndData[0] && isTaskModalOpenAndData[1] !== null && (
+      {taskModalData !== null && (
         <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll ">
           <div
             ref={wrapperRef}
@@ -219,18 +217,14 @@ export default function UsersProjectDetailPage() {
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
             <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16">
-              <div>{isTaskModalOpenAndData[1].title}</div>
+              <div>{taskModalData.title}</div>
               <deleteFetcher.Form
                 method="DELETE"
                 action="/task-delete"
-                onSubmit={() => setIsTaskModalOpenAndData([false, null])}
+                onSubmit={() => setTaskModalData(null)}
               >
                 <AuthenticityTokenInput />
-                <input
-                  type="hidden"
-                  name="taskId"
-                  value={isTaskModalOpenAndData[1].id}
-                />
+                <input type="hidden" name="taskId" value={taskModalData.id} />
                 <button
                   type="submit"
                   className="bg-red-500 text-white h-10 w-20 rounded-lg border border-gray-100 hover:bg-red-600 text-center self-center text-base"
@@ -240,12 +234,12 @@ export default function UsersProjectDetailPage() {
               </deleteFetcher.Form>
             </div>
             <div className="mb-8">
-              Completed: {isTaskModalOpenAndData[1].completed ? "√" : "X"}
+              Completed: {taskModalData.completed ? "√" : "X"}
             </div>
             <div>
               Description:
               <div className="border border-gray-300 hover:border-gray-400 p-4 rounded-lg h-96 hover:cursor-text cursor">
-                {isTaskModalOpenAndData[1].description}
+                {taskModalData.description}
               </div>
             </div>
           </div>

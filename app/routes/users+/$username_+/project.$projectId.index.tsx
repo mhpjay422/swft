@@ -253,8 +253,39 @@ export default function UsersProjectDetailPage() {
                 </button>
               </deleteFetcher.Form>
             </div>
-            <div className="mb-8">
-              Completed: {taskModalData.completed ? "√" : "X"}
+            <div className="flex flex-row mb-8">
+              <div className="mr-2">Completed:</div>
+              {taskModalData.completed ? (
+                <div className="h-6 w-6">
+                  <svg
+                    data-slot="icon"
+                    fill="none"
+                    stroke-width="4"
+                    stroke="#34cb45"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                <div className="h-7 w-7">
+                  <svg
+                    data-slot="icon"
+                    fill="#fd0207"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"></path>
+                  </svg>
+                </div>
+              )}
             </div>
             <div>
               Description:

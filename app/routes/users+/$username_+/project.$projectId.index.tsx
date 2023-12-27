@@ -150,8 +150,7 @@ export default function UsersProjectDetailPage() {
       section.tasks.length === 0 &&
       editingSectionId !== sectionId &&
       !sectionHasOptimisticUpdate(sectionId) &&
-      !sectionHasOptimisticDeletion(sectionId) &&
-      !isTempBlurSubmitting
+      !sectionHasOptimisticDeletion(sectionId)
     );
   };
   useClickOutside(wrapperRef, () => {
@@ -170,7 +169,8 @@ export default function UsersProjectDetailPage() {
             >
               <div
                 className={`w-64 h-full rounded-lg ${
-                  sectionEmptyAndIdle(section, section.id)
+                  sectionEmptyAndIdle(section, section.id) &&
+                  !isTempBlurSubmitting
                     ? "bg-gray-50"
                     : "bg-white"
                 }`}

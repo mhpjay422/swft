@@ -191,7 +191,14 @@ export default function UsersProjectDetailPage() {
                   </>
                 )}
                 <div className="shrink-0 w-64 select-none mb-32">
-                  {!sectionHasOptimisticDeletion(section.id) ? (
+                  {/* Render stand in add task button while optimisticly deleting task. This avoids
+                      unsynchronized updating of UI while deleting task.
+                  */}
+                  {sectionHasOptimisticDeletion(section.id) ? (
+                    <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">
+                      <div className="mx-auto">+ Add a Task</div>
+                    </div>
+                  ) : (
                     <AddTaskButtonAndForm
                       AddTaskFormSchema={AddTaskFormSchema}
                       fetcher={fetcher}
@@ -210,10 +217,6 @@ export default function UsersProjectDetailPage() {
                       setEditingSectionId={setEditingSectionId}
                       setIsTempBlurSubmitting={setIsTempBlurSubmitting}
                     />
-                  ) : (
-                    <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">
-                      <div className="mx-auto">+ Add a Task</div>
-                    </div>
                   )}
                 </div>
               </div>

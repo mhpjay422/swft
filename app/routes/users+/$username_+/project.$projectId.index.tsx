@@ -134,12 +134,10 @@ export default function UsersProjectDetailPage() {
     taskIsSubmitting && taskSubmittingSectionId === sectionId;
 
   const deleteFetcher = useFetcher({ key: "delete-task" });
-  const deleteTaskTitle = fetcher.formData?.get("title")?.toString();
   const deleteTaskSubmittingSectionId = deleteFetcher.formData
     ?.get("sectionId")
     ?.toString();
-  const deleteTaskIsSubmitting =
-    deleteFetcher.state !== "idle" && deleteTaskTitle !== "";
+  const deleteTaskIsSubmitting = deleteFetcher.state !== "idle";
   const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
     deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
   const sectionEmptyAndIdle = (
@@ -185,24 +183,38 @@ export default function UsersProjectDetailPage() {
                 ))}
                 {/* Optimistic update for new task creation */}
                 {sectionHasOptimisticUpdate(section.id) && (
-                  <TaskCard title={taskTitle} />
+                  <>
+                    <TaskCard title={taskTitle} />
+                    <div className="w-full rounded-md bg-white} hover:cursor-wait transition p-3 flex items-center font-medium text-sm">
+                      <div className="mx-auto">+ Add a Task</div>
+                    </div>
+                  </>
                 )}
                 <div className="shrink-0 w-64 select-none mb-32">
-                  <AddTaskButtonAndForm
-                    AddTaskFormSchema={AddTaskFormSchema}
-                    fetcher={fetcher}
-                    actionData={actionData}
-                    ownerId={data.owner.id}
-                    sectionId={section.id}
-                    sectionRef={sectionRefs[index]}
-                    sectionEmptyAndIdle={sectionEmptyAndIdle(
-                      section,
-                      section.id
-                    )}
-                    isEditing={editingSectionId === section.id}
-                    setEditingSectionId={setEditingSectionId}
-                    setIsTempBlurSubmitting={setIsTempBlurSubmitting}
-                  />
+                  {!sectionHasOptimisticDeletion(section.id) ? (
+                    <AddTaskButtonAndForm
+                      AddTaskFormSchema={AddTaskFormSchema}
+                      fetcher={fetcher}
+                      actionData={actionData}
+                      ownerId={data.owner.id}
+                      sectionId={section.id}
+                      sectionRef={sectionRefs[index]}
+                      sectionEmptyAndIdle={sectionEmptyAndIdle(
+                        section,
+                        section.id
+                      )}
+                      isEditing={editingSectionId === section.id}
+                      sectionHasOptimisticUpdate={sectionHasOptimisticUpdate(
+                        section.id
+                      )}
+                      setEditingSectionId={setEditingSectionId}
+                      setIsTempBlurSubmitting={setIsTempBlurSubmitting}
+                    />
+                  ) : (
+                    <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">
+                      <div className="mx-auto">+ Add a Task</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -225,6 +237,11 @@ export default function UsersProjectDetailPage() {
               >
                 <AuthenticityTokenInput />
                 <input type="hidden" name="taskId" value={taskModalData.id} />
+                <input
+                  type="hidden"
+                  name="sectionId"
+                  value={taskModalData.sectionId ?? ""}
+                />
                 <button
                   type="submit"
                   className="bg-red-500 text-white h-10 w-20 rounded-lg border border-gray-100 hover:bg-red-600 text-center self-center text-base"

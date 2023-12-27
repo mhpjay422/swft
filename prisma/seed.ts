@@ -45,6 +45,7 @@ const seedData = async () => {
                 create: {
                   title: "My first Task",
                   description: "This is my first task",
+                  completed: Math.random() > 0.5,
                   owner: {
                     connect: { username: "admin" },
                   },

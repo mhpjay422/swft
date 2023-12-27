@@ -21,6 +21,7 @@ interface AddTaskButtonProps {
   fetcher: FetcherWithComponents<unknown>;
   sectionEmptyAndIdle: boolean;
   isEditing: boolean;
+  sectionHasOptimisticTaskCreation: boolean;
   setEditingSectionId: React.Dispatch<React.SetStateAction<string | null>>;
   setIsTempBlurSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,6 +35,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   fetcher,
   sectionEmptyAndIdle,
   isEditing,
+  sectionHasOptimisticTaskCreation,
   setEditingSectionId,
   setIsTempBlurSubmitting,
 }) => {
@@ -78,7 +80,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
               setIsTempBlurSubmitting(true);
               setEditingSectionId(null);
             });
-            if (formData?.has("title") && formData.get("title")) {
+            if (formData?.get("title")) {
               fetcher.submit(formData, { method: "post" });
             }
             setIsTempBlurSubmitting(false);
@@ -109,7 +111,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             value={sectionId}
           />
         </fetcher.Form>
-      ) : (
+      ) : !sectionHasOptimisticTaskCreation ? (
         <button
           onClick={() => {
             // flushSync allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
@@ -125,7 +127,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
         >
           <div className="mx-auto">+ Add a Task</div>
         </button>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -130,7 +130,7 @@ export default function UsersProjectDetailPage() {
     ?.get("sectionId")
     ?.toString();
   const taskIsSubmitting = fetcher.state !== "idle" && taskTitle !== "";
-  const sectionHasOptimisticUpdate = (sectionId: string | undefined) =>
+  const sectionHasOptimisticTaskCreation = (sectionId: string | undefined) =>
     taskIsSubmitting && taskSubmittingSectionId === sectionId;
 
   const deleteFetcher = useFetcher({ key: "delete-task" });
@@ -147,7 +147,7 @@ export default function UsersProjectDetailPage() {
     return (
       section.tasks.length === 0 &&
       editingSectionId !== sectionId &&
-      !sectionHasOptimisticUpdate(sectionId) &&
+      !sectionHasOptimisticTaskCreation(sectionId) &&
       !sectionHasOptimisticDeletion(sectionId)
     );
   };
@@ -182,7 +182,7 @@ export default function UsersProjectDetailPage() {
                   />
                 ))}
                 {/* Optimistic update for new task creation */}
-                {sectionHasOptimisticUpdate(section.id) && (
+                {sectionHasOptimisticTaskCreation(section.id) && (
                   <>
                     <TaskCard title={taskTitle} />
                     <div className="w-full rounded-md bg-white} hover:cursor-wait transition p-3 flex items-center font-medium text-sm">
@@ -204,7 +204,7 @@ export default function UsersProjectDetailPage() {
                         section.id
                       )}
                       isEditing={editingSectionId === section.id}
-                      sectionHasOptimisticUpdate={sectionHasOptimisticUpdate(
+                      sectionHasOptimisticTaskCreation={sectionHasOptimisticTaskCreation(
                         section.id
                       )}
                       setEditingSectionId={setEditingSectionId}

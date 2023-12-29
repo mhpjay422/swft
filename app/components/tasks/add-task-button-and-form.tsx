@@ -42,7 +42,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
 
-  const scrollIntoView = () => {
+  const scrollDownIntoView = () => {
     const current = sectionRef.current;
 
     if (current) {
@@ -76,7 +76,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
               formData = new FormData(formRef.current);
             }
             flushSync(() => {
-              // NOTE: This is a hack to have the parent component UI update before closing the form
+              // This is a hack to have the parent component UI update before closing the form
               setIsTempBlurSubmitting(true);
               setEditingSectionId(null);
             });
@@ -85,7 +85,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             }
             setIsTempBlurSubmitting(false);
             formRef.current?.reset();
-            scrollIntoView();
+            scrollDownIntoView();
           }}
           className="h-28 p-3 pb-8 rounded-lg bg-white space-y-4 border border-gray-400"
         >
@@ -95,7 +95,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
             {...conform.input(fields.title)}
             className="text-sm px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter task title..."
-            onFocus={scrollIntoView}
+            onFocus={scrollDownIntoView}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 setEditingSectionId(null);
@@ -119,7 +119,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
               setEditingSectionId(sectionId);
             });
             inputRef.current?.select();
-            scrollIntoView();
+            scrollDownIntoView();
           }}
           className={`w-full rounded-md ${
             sectionEmptyAndIdle ? "bg-gray-50" : "bg-white"

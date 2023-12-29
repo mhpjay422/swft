@@ -11,8 +11,6 @@ const prisma = prismaClient;
 export async function action({ request, params }: DataFunctionArgs) {
   const formData = await request.formData();
 
-  console.log("hello");
-
   try {
     await csrf.validate(formData, request.headers);
   } catch (error) {
@@ -38,8 +36,6 @@ export async function action({ request, params }: DataFunctionArgs) {
           },
         });
 
-        console.log("new section", section);
-
         if (!section) {
           ctx.addIssue({
             code: "custom",
@@ -55,9 +51,6 @@ export async function action({ request, params }: DataFunctionArgs) {
       }),
     async: true,
   });
-
-  console.log("sub", submission);
-  console.log("val", submission.value);
 
   if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);

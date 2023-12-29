@@ -10,7 +10,7 @@ import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useLoaderData, useFetcher } from "@remix-run/react";
-import { useState, useRef, createRef, type ElementRef } from "react";
+import { useState, useRef, createRef, type ElementRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { CSRFError } from "remix-utils/csrf/server";
@@ -132,7 +132,8 @@ export default function UsersProjectDetailPage() {
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const [addSectionFormIsOpen, setAddSectionFormIsOpen] = useState(false);
 
-  const wrapperRef = useRef(null);
+  const projectPageRef = useRef<ElementRef<"div">>(null);
+  const wrapperRef = useRef<ElementRef<"div">>(null);
   const addSectionRef = useRef<ElementRef<"form">>(null);
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
 
@@ -175,12 +176,16 @@ export default function UsersProjectDetailPage() {
   });
 
   const scrollRightIntoView = () => {
-    const current = addSectionRef.current;
+    const current = projectPageRef.current;
 
     if (current) {
       current.scrollLeft = current.scrollWidth;
     }
   };
+
+  useEffect(() => {
+    scrollRightIntoView();
+  }, [data.owner.sections.length]);
 
   const [form, fields] = useForm({
     id: "add-section-form",
@@ -193,7 +198,10 @@ export default function UsersProjectDetailPage() {
   });
 
   return (
-    <div className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8">
+    <div
+      className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8"
+      ref={projectPageRef}
+    >
       <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
@@ -276,11 +284,12 @@ export default function UsersProjectDetailPage() {
               action="/section-create"
               ref={addSectionRef}
               onBlur={() => {
-                if (addSectionRef.current?.value !== "") {
-                  addSectionFetcher.submit(addSectionRef.current);
-                }
+                flushSync(() => {
+                  if (addSectionRef.current?.value !== "") {
+                    addSectionFetcher.submit(addSectionRef.current);
+                  }
+                });
                 // formRef.current?.reset();
-                scrollRightIntoView();
               }}
             >
               <AuthenticityTokenInput />

@@ -275,8 +275,11 @@ export default function UsersProjectDetailPage() {
               method="POST"
               action="/section-create"
               ref={addSectionRef}
-              // action={ }
               onBlur={() => {
+                if (addSectionRef.current?.value !== "") {
+                  addSectionFetcher.submit(addSectionRef.current);
+                }
+                // formRef.current?.reset();
                 scrollRightIntoView();
               }}
             >

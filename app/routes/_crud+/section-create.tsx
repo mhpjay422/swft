@@ -8,7 +8,7 @@ import { AddSectionFormSchema } from "#app/routes/users+/$username_+/project.$pr
 
 const prisma = prismaClient;
 
-export async function action({ request, params }: DataFunctionArgs) {
+export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
 
   try {

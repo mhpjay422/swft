@@ -151,11 +151,11 @@ export default function UsersProjectDetailPage() {
     ?.get("sectionId")
     ?.toString();
   const deleteTaskIsSubmitting = deleteFetcher.state !== "idle";
+  const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
+    deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
 
-  const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
-    deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
   const sectionEmptyAndIdle = (
     section: { tasks: string | any[] },
     sectionId: string | undefined
@@ -236,8 +236,8 @@ export default function UsersProjectDetailPage() {
                   </>
                 )}
                 <div className="shrink-0 w-64 select-none mb-32">
-                  {/* Render stand in add task button while optimisticly deleting task. This avoids
-                      unsynchronized updating of UI while deleting task.
+                  {/* Render stand-in add task button while optimisticly deleting task. 
+                      This avoids unsynchronized updating of UI while deleting task.
                   */}
                   {sectionHasOptimisticDeletion(section.id) ? (
                     <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">

@@ -183,8 +183,28 @@ export default function UsersProjectDetailPage() {
     }
   };
 
+  const isFirstRender = useRef(true);
+
+  const [prevSectionsLength, setPrevSectionsLength] = useState(
+    data.owner.sections.length
+  );
+
   useEffect(() => {
-    scrollRightIntoView();
+    const currentSectionsLength = data.owner.sections.length;
+
+    if (isFirstRender.current) {
+      // This is the first render, do nothing but update the ref
+      isFirstRender.current = false;
+    } else {
+      // This is a subsequent render, execute the desired function
+      // This uses state to track the previous length of sections while
+      // avoiding a reset when reloading the page
+      if (prevSectionsLength !== currentSectionsLength) {
+        scrollRightIntoView();
+        setPrevSectionsLength(currentSectionsLength);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.owner.sections.length]);
 
   const [form, fields] = useForm({

@@ -1,4 +1,5 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
+import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
@@ -225,7 +226,10 @@ export default function UsersProjectDetailPage() {
       <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
-            <div className="font-semibold mb-2">{section.title}</div>
+            <div className="flex flex-row justify-between font-semibold mb-2 w-64">
+              <div>{section.title}</div>
+              <SectionDropdown sectionId={section.id} />
+            </div>
             <div
               ref={sectionRefs[index]}
               className={`overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg`}

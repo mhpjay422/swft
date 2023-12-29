@@ -52,7 +52,7 @@ export async function action({ request, params }: DataFunctionArgs) {
     async: true,
   });
 
-  if (submission.intent !== "submit") {
+  if (submission.intent !== "submit" || !submission.value?.title) {
     return json({ status: "idle", submission } as const);
   }
 

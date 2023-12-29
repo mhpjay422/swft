@@ -269,7 +269,7 @@ export default function UsersProjectDetailPage() {
           </div>
         ))}
         <div
-          className="w-[274px] hover:cursor-pointer"
+          className="w-[274px] hover:cursor-pointer pr-1"
           onClick={() => {
             flushSync(() => {
               setAddSectionFormIsOpen(true);

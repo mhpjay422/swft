@@ -93,7 +93,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
           <input
             ref={inputRef}
             {...conform.input(fields.title)}
-            className="text-sm px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
+            className="text-base px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter task title..."
             onFocus={scrollDownIntoView}
             onKeyDown={(event) => {

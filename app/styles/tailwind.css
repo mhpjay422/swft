@@ -77,7 +77,7 @@
 
 @layer utilities {
   .section-max-height {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 207px);
   }
   .task {
     @apply h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 rounded-lg mb-2 bg-white;

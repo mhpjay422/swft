@@ -226,7 +226,7 @@ export default function UsersProjectDetailPage() {
       <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
-            <div className="flex flex-row justify-between font-semibold mb-2 w-64">
+            <div className="flex flex-row justify-between font-semibold mb-1 w-64">
               <div>{section.title}</div>
               <SectionDropdown sectionId={section.id} />
             </div>

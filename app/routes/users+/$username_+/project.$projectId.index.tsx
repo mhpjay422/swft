@@ -131,7 +131,8 @@ export default function UsersProjectDetailPage() {
   );
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
-  const [addSectionFormIsOpen, setAddSectionFormIsOpen] = useState(false);
+  const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
+    useState(false);
 
   const projectPageRef = useRef<ElementRef<"div">>(null);
   const wrapperRef = useRef<ElementRef<"div">>(null);
@@ -173,7 +174,7 @@ export default function UsersProjectDetailPage() {
     setTaskModalData(null);
   });
   useClickOutside(addSectionRef, () => {
-    setAddSectionFormIsOpen(false);
+    setAddSectionCreateFormIsOpen(false);
   });
 
   const scrollRightIntoView = () => {
@@ -296,27 +297,25 @@ export default function UsersProjectDetailPage() {
           className="w-[274px] hover:cursor-pointer pr-1"
           onClick={() => {
             flushSync(() => {
-              setAddSectionFormIsOpen(true);
+              setAddSectionCreateFormIsOpen(true);
             });
             addSectionInputRef.current?.select();
           }}
         >
-          {addSectionFormIsOpen ? (
+          {addSectionCreateFormIsOpen ? (
             <addSectionFetcher.Form
               {...form.props}
               method="POST"
               action="/section-create"
               ref={addSectionRef}
               onSubmit={() => {
-                setAddSectionFormIsOpen(false);
-                addSectionRef.current?.reset();
+                setAddSectionCreateFormIsOpen(false);
               }}
               onBlur={() => {
-                flushSync(() => {
-                  if (addSectionRef.current?.value !== "") {
-                    addSectionFetcher.submit(addSectionRef.current);
-                  }
-                });
+                if (addSectionRef.current?.value !== "") {
+                  addSectionFetcher.submit(addSectionRef.current);
+                }
+                addSectionRef.current?.reset();
               }}
             >
               <AuthenticityTokenInput />
@@ -328,7 +327,7 @@ export default function UsersProjectDetailPage() {
                 placeholder="Enter section title..."
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
-                    setAddSectionFormIsOpen(false);
+                    setAddSectionCreateFormIsOpen(false);
                   }
                 }}
               />

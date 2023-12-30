@@ -200,7 +200,7 @@ export default function UsersProjectDetailPage() {
       // This is a subsequent render, execute the desired function
       // This uses state to track the previous length of sections while
       // avoiding a reset when reloading the page
-      if (prevSectionsLength !== currentSectionsLength) {
+      if (prevSectionsLength < currentSectionsLength) {
         scrollRightIntoView();
         setPrevSectionsLength(currentSectionsLength);
       }
@@ -324,7 +324,7 @@ export default function UsersProjectDetailPage() {
                 ref={addSectionInputRef}
                 type="text"
                 {...conform.input(fields.title)}
-                className="w-64 mb-1.5 text-sm px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
+                className="w-64 mb-1.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
                 placeholder="Enter section title..."
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {

@@ -307,13 +307,16 @@ export default function UsersProjectDetailPage() {
               method="POST"
               action="/section-create"
               ref={addSectionRef}
+              onSubmit={() => {
+                setAddSectionFormIsOpen(false);
+                addSectionRef.current?.reset();
+              }}
               onBlur={() => {
                 flushSync(() => {
                   if (addSectionRef.current?.value !== "") {
                     addSectionFetcher.submit(addSectionRef.current);
                   }
                 });
-                // formRef.current?.reset();
               }}
             >
               <AuthenticityTokenInput />

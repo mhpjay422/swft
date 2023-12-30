@@ -323,7 +323,6 @@ export default function UsersProjectDetailPage() {
                 {...conform.input(fields.title)}
                 className="w-64 mb-1.5 text-sm px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
                 placeholder="Enter section title..."
-                // onFocus={}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
                     setAddSectionFormIsOpen(false);
@@ -366,11 +365,6 @@ export default function UsersProjectDetailPage() {
               >
                 <AuthenticityTokenInput />
                 <input type="hidden" name="taskId" value={taskModalData.id} />
-                <input
-                  type="hidden"
-                  name="sectionId"
-                  value={taskModalData.sectionId ?? ""}
-                />
                 <button
                   type="submit"
                   className="bg-red-500 text-white h-10 w-20 rounded-lg border border-gray-100 hover:bg-red-600 text-center self-center text-base"

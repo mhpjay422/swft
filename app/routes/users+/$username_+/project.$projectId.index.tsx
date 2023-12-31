@@ -31,6 +31,13 @@ export const AddSectionFormSchema = z.object({
   projectId: z.string().min(5),
 });
 
+export const EditSectionFormSchema = z.object({
+  title: z.string(),
+  sectionId: z.string(),
+  ownerId: z.string().min(5),
+  index: z.number(),
+});
+
 export type Task = {
   id: string;
   title: string;
@@ -126,18 +133,25 @@ export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [taskModalData, setTaskModalData] = useState<Task | null>(null);
-  const [sectionRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
+  const [sectionBodyRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
+  const [editSectionTitleRefs] = useState<
+    Array<React.RefObject<HTMLFormElement>>
+  >(data.owner.sections.map(() => createRef()));
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
     useState(false);
+  const [editSectionFormIndex, setEditSectionFormIndex] = useState<
+    null | number
+  >(null);
 
   const projectPageRef = useRef<ElementRef<"div">>(null);
   const wrapperRef = useRef<ElementRef<"div">>(null);
   const addSectionRef = useRef<ElementRef<"form">>(null);
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
+  const editSectionInputRef = useRef<ElementRef<"input">>(null);
 
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
@@ -157,6 +171,7 @@ export default function UsersProjectDetailPage() {
     deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
+  const editSectionFetcher = useFetcher({ key: "edit-section" });
 
   const sectionEmptyAndIdle = (
     section: { tasks: string | any[] },
@@ -219,6 +234,16 @@ export default function UsersProjectDetailPage() {
     shouldRevalidate: "onBlur",
   });
 
+  const [editForm, editFields] = useForm({
+    id: "edit-section-form",
+    constraint: getFieldsetConstraint(EditSectionFormSchema),
+    lastSubmission: actionData?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: EditSectionFormSchema });
+    },
+    shouldRevalidate: "onBlur",
+  });
+
   return (
     <div
       className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8"
@@ -228,11 +253,76 @@ export default function UsersProjectDetailPage() {
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
             <div className="flex flex-row justify-between font-semibold mb-1 w-64">
-              <div>{section.title}</div>
+              {editSectionFormIndex === index ? (
+                <editSectionFetcher.Form
+                  {...editForm.props}
+                  method="PUT"
+                  action="/section-edit"
+                  ref={editSectionTitleRefs[index]}
+                  onSubmit={() => {
+                    setEditSectionFormIndex(null);
+                  }}
+                  onBlur={() => {
+                    if (editSectionTitleRefs[index].current?.value !== "") {
+                      editSectionFetcher.submit(
+                        editSectionTitleRefs[index].current
+                      );
+                    }
+                    setEditSectionFormIndex(null);
+                    editSectionTitleRefs[index].current?.reset();
+                  }}
+                  className="w-64"
+                >
+                  <AuthenticityTokenInput />
+                  <input
+                    ref={editSectionInputRef}
+                    type="text"
+                    {...conform.input(editFields.title)}
+                    className="max-w-54 overflow-hidden mb-1.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
+                    defaultValue={section.title}
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") {
+                        setEditSectionFormIndex(null);
+                      }
+                    }}
+                  />
+                  <input
+                    {...conform.input(editFields.ownerId, { type: "hidden" })}
+                    value={data.owner.id}
+                  />
+                  <input
+                    {...conform.input(editFields.sectionId, { type: "hidden" })}
+                    value={section.id}
+                  />
+                  <input
+                    {...conform.input(editFields.index, { type: "hidden" })}
+                    value={index}
+                  />
+                </editSectionFetcher.Form>
+              ) : (
+                <div
+                  className="font-semibold mb-2 pl-2 w-52 overflow-hidden hover:bg-gray-50 hover:cursor-pointer rounded-lg"
+                  onClick={() => {
+                    flushSync(() => {
+                      setEditSectionFormIndex(index);
+                    });
+                    editSectionInputRef.current?.select();
+                  }}
+                >
+                  {/* NOTE: Add optimistic update for section title edit */}
+                  <div>
+                    {editSectionFetcher.state !== "idle" &&
+                    Number(editSectionFetcher.formData?.get("index")) === index
+                      ? editSectionFetcher.formData?.get("title")?.toString()
+                      : section.title}
+                  </div>
+                </div>
+              )}
+
               <SectionDropdown sectionId={section.id} />
             </div>
             <div
-              ref={sectionRefs[index]}
+              ref={sectionBodyRefs[index]}
               className={`overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg`}
             >
               <div
@@ -275,7 +365,7 @@ export default function UsersProjectDetailPage() {
                       actionData={actionData}
                       ownerId={data.owner.id}
                       sectionId={section.id}
-                      sectionRef={sectionRefs[index]}
+                      sectionRef={sectionBodyRefs[index]}
                       sectionEmptyAndIdle={sectionEmptyAndIdle(
                         section,
                         section.id

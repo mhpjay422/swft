@@ -17,20 +17,20 @@ export function SectionDropdown({ sectionId }: { sectionId: string }) {
           <div className="pb-4 h-6">•••</div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
-          <div className="hover:cursor-pointer">
-            <deleteSectionFetcher.Form method="DELETE" action="/section-delete">
-              <AuthenticityTokenInput />
-              <input type="hidden" name="sectionId" value={sectionId} />
+      <DropdownMenuContent className="p-0">
+        <DropdownMenuItem className="p-0">
+          <deleteSectionFetcher.Form method="DELETE" action="/section-delete">
+            <AuthenticityTokenInput />
+            <input type="hidden" name="sectionId" value={sectionId} />
+            <button type="submit" className=" text-red-600 p-2">
               <div className="flex flex-row">
-                <RedTrashCan />
-                <button type="submit" className=" text-red-600">
-                  Delete Section
-                </button>
+                <div className="mr-1">
+                  <RedTrashCan />
+                </div>
+                <div>Delete Section</div>
               </div>
-            </deleteSectionFetcher.Form>
-          </div>
+            </button>
+          </deleteSectionFetcher.Form>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

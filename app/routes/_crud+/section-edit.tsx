@@ -51,7 +51,7 @@ export async function action({ request }: DataFunctionArgs) {
     throw json(
       {
         error: "Unauthorized",
-        message: `Unauthorized to delete section ${section.id}`,
+        message: `Unauthorized to edit section ${section.id}`,
       },
       { status: 403 }
     );

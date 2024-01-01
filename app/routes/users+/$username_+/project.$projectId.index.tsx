@@ -38,6 +38,12 @@ export const EditSectionFormSchema = z.object({
   index: z.number(),
 });
 
+export const EditTaskDescriptionFormSchema = z.object({
+  taskId: z.string(),
+  description: z.string(),
+  ownerId: z.string().min(5),
+});
+
 export type Task = {
   id: string;
   title: string;
@@ -140,6 +146,9 @@ export default function UsersProjectDetailPage() {
     Array<React.RefObject<HTMLFormElement>>
   >(data.owner.sections.map(() => createRef()));
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const [editingTaskDescriptionId, setEditingTaskDescriptionId] = useState<
+    string | null
+  >(null);
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
     useState(false);
@@ -149,9 +158,13 @@ export default function UsersProjectDetailPage() {
 
   const projectPageRef = useRef<ElementRef<"div">>(null);
   const wrapperRef = useRef<ElementRef<"div">>(null);
+
   const addSectionRef = useRef<ElementRef<"form">>(null);
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const editSectionInputRef = useRef<ElementRef<"input">>(null);
+
+  const editTaskDescriptionRef = useRef<ElementRef<"form">>(null);
+  const editTaskDescriptionInputRef = useRef<ElementRef<"textarea">>(null);
 
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
@@ -172,6 +185,7 @@ export default function UsersProjectDetailPage() {
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
   const editSectionFetcher = useFetcher({ key: "edit-section" });
+  const editTaskDescriptionFetcher = useFetcher({ key: "edit-task" });
 
   const sectionEmptyAndIdle = (
     section: { tasks: string | any[] },
@@ -190,6 +204,9 @@ export default function UsersProjectDetailPage() {
   });
   useClickOutside(addSectionRef, () => {
     setAddSectionCreateFormIsOpen(false);
+  });
+  useClickOutside(editTaskDescriptionRef, () => {
+    setEditingTaskDescriptionId(null);
   });
 
   const scrollRightIntoView = () => {
@@ -234,12 +251,22 @@ export default function UsersProjectDetailPage() {
     shouldRevalidate: "onBlur",
   });
 
-  const [editForm, editFields] = useForm({
+  const [editSectionForm, editSectionFields] = useForm({
     id: "edit-section-form",
     constraint: getFieldsetConstraint(EditSectionFormSchema),
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EditSectionFormSchema });
+    },
+    shouldRevalidate: "onBlur",
+  });
+
+  const [editTaskDescriptionForm, editTaskDescriptionFields] = useForm({
+    id: "edit-task-description-form",
+    constraint: getFieldsetConstraint(EditTaskDescriptionFormSchema),
+    lastSubmission: actionData?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: EditTaskDescriptionFormSchema });
     },
     shouldRevalidate: "onBlur",
   });
@@ -253,9 +280,10 @@ export default function UsersProjectDetailPage() {
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
             <div className="flex flex-row justify-between font-semibold mb-1 w-64">
+              {/* NOTE to add: Use state to set title to "Untitled section" if title is empty */}
               {editSectionFormIndex === index ? (
                 <editSectionFetcher.Form
-                  {...editForm.props}
+                  {...editSectionForm.props}
                   method="PUT"
                   action="/section-edit"
                   ref={editSectionTitleRefs[index]}
@@ -277,7 +305,7 @@ export default function UsersProjectDetailPage() {
                   <input
                     ref={editSectionInputRef}
                     type="text"
-                    {...conform.input(editFields.title)}
+                    {...conform.input(editSectionFields.title)}
                     className="max-w-54 overflow-hidden mb-1.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
                     defaultValue={section.title}
                     onKeyDown={(event) => {
@@ -287,15 +315,21 @@ export default function UsersProjectDetailPage() {
                     }}
                   />
                   <input
-                    {...conform.input(editFields.ownerId, { type: "hidden" })}
+                    {...conform.input(editSectionFields.ownerId, {
+                      type: "hidden",
+                    })}
                     value={data.owner.id}
                   />
                   <input
-                    {...conform.input(editFields.sectionId, { type: "hidden" })}
+                    {...conform.input(editSectionFields.sectionId, {
+                      type: "hidden",
+                    })}
                     value={section.id}
                   />
                   <input
-                    {...conform.input(editFields.index, { type: "hidden" })}
+                    {...conform.input(editSectionFields.index, {
+                      type: "hidden",
+                    })}
                     value={index}
                   />
                 </editSectionFetcher.Form>
@@ -469,6 +503,7 @@ export default function UsersProjectDetailPage() {
               <div className="mr-2">Completed:</div>
               {taskModalData.completed ? (
                 <div className="h-6 w-6">
+                  {/* NOTE: Move SVG to separate file */}
                   <svg
                     data-slot="icon"
                     fill="none"
@@ -487,6 +522,7 @@ export default function UsersProjectDetailPage() {
                 </div>
               ) : (
                 <div className="h-7 w-7">
+                  {/* NOTE: Move SVG to separate file */}
                   <svg
                     data-slot="icon"
                     fill="#fd0207"
@@ -499,11 +535,84 @@ export default function UsersProjectDetailPage() {
                 </div>
               )}
             </div>
-            <div>
-              Description:
-              <div className="border border-gray-300 hover:border-gray-400 p-4 rounded-lg h-96 hover:cursor-text cursor">
-                {taskModalData.description}
-              </div>
+            <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full  hover:cursor-text cursor">
+              {editingTaskDescriptionId ? (
+                <editTaskDescriptionFetcher.Form
+                  {...editTaskDescriptionForm.props}
+                  method="PUT"
+                  action="/task-edit"
+                  ref={editTaskDescriptionRef}
+                  onSubmit={() => {
+                    setEditingTaskDescriptionId(null);
+                  }}
+                  onBlur={() => {
+                    editTaskDescriptionFetcher.submit(
+                      editTaskDescriptionRef.current
+                    );
+                    setEditSectionFormIndex(null);
+                    editTaskDescriptionRef.current?.reset();
+                  }}
+                  className="h-full w-full "
+                >
+                  <AuthenticityTokenInput />
+                  <textarea
+                    ref={editTaskDescriptionInputRef}
+                    {...conform.input(editTaskDescriptionFields.description)}
+                    className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 outline-none rounded-lg resize-none"
+                    placeholder={
+                      taskModalData.description
+                        ? undefined
+                        : "What is this task about?"
+                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") {
+                        setEditingTaskDescriptionId(null);
+                      }
+                    }}
+                  >
+                    {taskModalData.description}
+                  </textarea>
+                  <input
+                    {...conform.input(editTaskDescriptionFields.ownerId, {
+                      type: "hidden",
+                    })}
+                    value={data.owner.id}
+                  />
+                  <input
+                    {...conform.input(editTaskDescriptionFields.taskId, {
+                      type: "hidden",
+                    })}
+                    value={taskModalData.id}
+                  />
+                </editTaskDescriptionFetcher.Form>
+              ) : (
+                <div
+                  className="h-full w-full p-4 text-base"
+                  onClick={() => {
+                    flushSync(() => {
+                      setEditingTaskDescriptionId(taskModalData.id);
+                    });
+                    editTaskDescriptionInputRef.current?.select();
+                  }}
+                >
+                  {/* NOTE: Add optimistic update for Task title edit */}
+                  {editTaskDescriptionFetcher.state !== "idle" ? (
+                    editTaskDescriptionFetcher.formData
+                      ?.get("description")
+                      ?.toString()
+                  ) : (
+                    <div
+                      className={`${
+                        taskModalData.description
+                          ? "text-gray-600"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {taskModalData.description || "What is this task about?"}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -52,8 +52,14 @@ export const EditSectionFormSchema = z.object({
 
 export const EditTaskDescriptionFormSchema = z.object({
   taskId: z.string(),
-  description: z.string(),
   ownerId: z.string().min(5),
+  description: z.string(),
+});
+
+export const EditTaskTitleFormSchema = z.object({
+  taskId: z.string(),
+  ownerId: z.string().min(5),
+  title: z.string(),
 });
 
 export async function loader({ request, params }: DataFunctionArgs) {
@@ -149,6 +155,9 @@ export default function UsersProjectDetailPage() {
   const [editingTaskDescriptionId, setEditingTaskDescriptionId] = useState<
     string | null
   >(null);
+  const [editingTaskTitleId, setEditingTaskTitleId] = useState<string | null>(
+    null
+  );
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
   const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
     useState(false);
@@ -163,8 +172,10 @@ export default function UsersProjectDetailPage() {
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const editSectionInputRef = useRef<ElementRef<"input">>(null);
 
-  const editTaskDescriptionRef = useRef<ElementRef<"form">>(null);
-  const editTaskDescriptionInputRef = useRef<ElementRef<"textarea">>(null);
+  const editTaskDescriptionFormRef = useRef<ElementRef<"form">>(null);
+  const editTaskDescriptionTextAreaRef = useRef<ElementRef<"textarea">>(null);
+  const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
+  const editTaskTitleInputRef = useRef<ElementRef<"input">>(null);
 
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
@@ -186,7 +197,10 @@ export default function UsersProjectDetailPage() {
   const addSectionFetcher = useFetcher({ key: "add-section" });
   const editSectionFetcher = useFetcher({ key: "edit-section" });
   const editTaskDescriptionFetcher = useFetcher({
-    key: "edit-task",
+    key: "edit-task-description",
+  });
+  const editTaskTitleFetcher = useFetcher({
+    key: "edit-task-title",
   });
 
   const sectionEmptyAndIdle = (
@@ -207,7 +221,7 @@ export default function UsersProjectDetailPage() {
   useClickOutside(addSectionRef, () => {
     setAddSectionCreateFormIsOpen(false);
   });
-  useClickOutside(editTaskDescriptionRef, () => {
+  useClickOutside(editTaskDescriptionFormRef, () => {
     setEditingTaskDescriptionId(null);
   });
 
@@ -269,6 +283,16 @@ export default function UsersProjectDetailPage() {
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EditTaskDescriptionFormSchema });
+    },
+    shouldRevalidate: "onBlur",
+  });
+
+  const [editTaskTitleForm, editTaskTitleFields] = useForm({
+    id: "edit-task-title-form",
+    constraint: getFieldsetConstraint(EditTaskTitleFormSchema),
+    lastSubmission: actionData?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: EditTaskTitleFormSchema });
     },
     shouldRevalidate: "onBlur",
   });
@@ -484,8 +508,78 @@ export default function UsersProjectDetailPage() {
             id="task-modal"
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
-            <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16">
-              <div>{taskModalData.title}</div>
+            <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16 h-10">
+              {editingTaskTitleId ? (
+                <editTaskTitleFetcher.Form
+                  {...editTaskTitleForm.props}
+                  method="PUT"
+                  action="/task-edit"
+                  ref={editTaskTitleFormRef}
+                  onSubmit={() => {
+                    setEditingTaskTitleId(null);
+                  }}
+                  onBlur={() => {
+                    editTaskTitleFetcher.submit(editTaskTitleFormRef.current);
+                    setTaskModalData({
+                      ...taskModalData,
+                      description: editTaskTitleInputRef.current?.value,
+                    });
+
+                    setEditingTaskTitleId(null);
+                    editTaskTitleFormRef.current?.reset();
+                  }}
+                  className="h-full w-full mr-2"
+                >
+                  <AuthenticityTokenInput />
+                  <input
+                    ref={editTaskTitleInputRef}
+                    {...conform.input(editTaskTitleFields.title)}
+                    className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 rounded-lg"
+                    placeholder={
+                      taskModalData.title ? undefined : "Write a task title"
+                    }
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") {
+                        setEditingTaskTitleId(null);
+                      }
+                    }}
+                    defaultValue={taskModalData.title}
+                  ></input>
+                  <input
+                    {...conform.input(editTaskTitleFields.ownerId, {
+                      type: "hidden",
+                    })}
+                    value={data.owner.id}
+                  />
+                  <input
+                    {...conform.input(editTaskTitleFields.taskId, {
+                      type: "hidden",
+                    })}
+                    value={taskModalData.id}
+                  />
+                </editTaskTitleFetcher.Form>
+              ) : (
+                <div
+                  className="h-full w-full text-base"
+                  onClick={() => {
+                    flushSync(() => {
+                      setEditingTaskTitleId(taskModalData.id);
+                    });
+                    editTaskTitleInputRef.current?.select();
+                  }}
+                >
+                  <div
+                    className={`${
+                      taskModalData.title ? "text-gray-600" : "text-gray-400"
+                    } mt-2`}
+                  >
+                    {editTaskTitleFetcher.state !== "idle"
+                      ? editTaskTitleFetcher.formData?.get("title")?.toString()
+                      : taskModalData.title || "Write a task title"}
+                  </div>
+                </div>
+              )}
+
               <deleteTaskFetcher.Form
                 method="DELETE"
                 action="/task-delete"
@@ -543,27 +637,28 @@ export default function UsersProjectDetailPage() {
                   {...editTaskDescriptionForm.props}
                   method="PUT"
                   action="/task-edit"
-                  ref={editTaskDescriptionRef}
+                  ref={editTaskDescriptionFormRef}
                   onSubmit={() => {
                     setEditingTaskDescriptionId(null);
                   }}
                   onBlur={() => {
                     editTaskDescriptionFetcher.submit(
-                      editTaskDescriptionRef.current
+                      editTaskDescriptionFormRef.current
                     );
                     setTaskModalData({
                       ...taskModalData,
-                      description: editTaskDescriptionInputRef.current?.value,
+                      description:
+                        editTaskDescriptionTextAreaRef.current?.value,
                     });
 
                     setEditingTaskDescriptionId(null);
-                    editTaskDescriptionRef.current?.reset();
+                    editTaskDescriptionFormRef.current?.reset();
                   }}
                   className="h-full w-full "
                 >
                   <AuthenticityTokenInput />
                   <textarea
-                    ref={editTaskDescriptionInputRef}
+                    ref={editTaskDescriptionTextAreaRef}
                     {...conform.input(editTaskDescriptionFields.description)}
                     className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 outline-none rounded-lg resize-none"
                     placeholder={
@@ -599,7 +694,7 @@ export default function UsersProjectDetailPage() {
                     flushSync(() => {
                       setEditingTaskDescriptionId(taskModalData.id);
                     });
-                    editTaskDescriptionInputRef.current?.select();
+                    editTaskDescriptionTextAreaRef.current?.select();
                   }}
                 >
                   {/* NOTE: Add optimistic update for Task title edit */}

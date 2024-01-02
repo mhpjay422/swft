@@ -397,8 +397,8 @@ export default function UsersProjectDetailPage() {
                   <TaskCard
                     key={task.id}
                     task={task}
-                    setTaskModalData={setTaskModalData}
                     deleteTaskIsSubmitting={deleteTaskIsSubmitting}
+                    setTaskModalData={setTaskModalData}
                   />
                 ))}
                 {/* Optimistic update for new task creation */}

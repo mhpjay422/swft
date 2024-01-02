@@ -666,14 +666,13 @@ export default function UsersProjectDetailPage() {
                         ? undefined
                         : "What is this task about?"
                     }
+                    defaultValue={taskModalData.description || ""}
                     onKeyDown={(event) => {
                       if (event.key === "Escape") {
                         setEditingTaskDescriptionId(null);
                       }
                     }}
-                  >
-                    {taskModalData.description}
-                  </textarea>
+                  ></textarea>
                   <input
                     {...conform.input(editTaskDescriptionFields.ownerId, {
                       type: "hidden",

@@ -19,7 +19,7 @@ import { z } from "zod";
 
 export type Task = {
   id: string;
-  title: string;
+  title: string | null | undefined;
   description: string | null | undefined;
   completed: boolean;
   createdAt: string;
@@ -513,7 +513,7 @@ export default function UsersProjectDetailPage() {
                 <editTaskTitleFetcher.Form
                   {...editTaskTitleForm.props}
                   method="PUT"
-                  action="/task-edit"
+                  action="/task-edit-title"
                   ref={editTaskTitleFormRef}
                   onSubmit={() => {
                     setEditingTaskTitleId(null);
@@ -522,7 +522,7 @@ export default function UsersProjectDetailPage() {
                     editTaskTitleFetcher.submit(editTaskTitleFormRef.current);
                     setTaskModalData({
                       ...taskModalData,
-                      description: editTaskTitleInputRef.current?.value,
+                      title: editTaskTitleInputRef.current?.value,
                     });
 
                     setEditingTaskTitleId(null);
@@ -543,7 +543,7 @@ export default function UsersProjectDetailPage() {
                         setEditingTaskTitleId(null);
                       }
                     }}
-                    defaultValue={taskModalData.title}
+                    defaultValue={taskModalData.title || ""}
                   ></input>
                   <input
                     {...conform.input(editTaskTitleFields.ownerId, {
@@ -636,7 +636,7 @@ export default function UsersProjectDetailPage() {
                 <editTaskDescriptionFetcher.Form
                   {...editTaskDescriptionForm.props}
                   method="PUT"
-                  action="/task-edit"
+                  action="/task-edit-description"
                   ref={editTaskDescriptionFormRef}
                   onSubmit={() => {
                     setEditingTaskDescriptionId(null);

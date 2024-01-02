@@ -157,7 +157,7 @@ export default function UsersProjectDetailPage() {
   >(null);
 
   const projectPageRef = useRef<ElementRef<"div">>(null);
-  const wrapperRef = useRef<ElementRef<"div">>(null);
+  const taskModalRef = useRef<ElementRef<"div">>(null);
 
   const addSectionRef = useRef<ElementRef<"form">>(null);
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
@@ -175,11 +175,11 @@ export default function UsersProjectDetailPage() {
   const sectionHasOptimisticTaskCreation = (sectionId: string | undefined) =>
     taskIsSubmitting && taskSubmittingSectionId === sectionId;
 
-  const deleteFetcher = useFetcher({ key: "delete-task" });
-  const deleteTaskSubmittingSectionId = deleteFetcher.formData
+  const deleteTaskFetcher = useFetcher({ key: "delete-task" });
+  const deleteTaskSubmittingSectionId = deleteTaskFetcher.formData
     ?.get("sectionId")
     ?.toString();
-  const deleteTaskIsSubmitting = deleteFetcher.state !== "idle";
+  const deleteTaskIsSubmitting = deleteTaskFetcher.state !== "idle";
   const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
     deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
 
@@ -201,7 +201,7 @@ export default function UsersProjectDetailPage() {
     );
   };
 
-  useClickOutside(wrapperRef, () => {
+  useClickOutside(taskModalRef, () => {
     setTaskModalData(null);
   });
   useClickOutside(addSectionRef, () => {
@@ -480,13 +480,13 @@ export default function UsersProjectDetailPage() {
       {taskModalData !== null && (
         <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll ">
           <div
-            ref={wrapperRef}
+            ref={taskModalRef}
             id="task-modal"
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
             <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16">
               <div>{taskModalData.title}</div>
-              <deleteFetcher.Form
+              <deleteTaskFetcher.Form
                 method="DELETE"
                 action="/task-delete"
                 onSubmit={() => setTaskModalData(null)}
@@ -499,7 +499,7 @@ export default function UsersProjectDetailPage() {
                 >
                   Delete
                 </button>
-              </deleteFetcher.Form>
+              </deleteTaskFetcher.Form>
             </div>
             <div className="flex flex-row mb-8">
               <div className="mr-2">Completed:</div>

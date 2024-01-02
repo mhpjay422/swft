@@ -13,8 +13,8 @@ export function SectionDropdown({ sectionId }: { sectionId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
-        <div className="h-8 w-8 hover:bg-gray-50 rounded-md items-center outline-none ring-none">
-          <div className="pb-4 h-6">•••</div>
+        <div className="h-8 w-8 mb-2 hover:bg-gray-50 rounded-md outline-none ring-none">
+          <div className="h-8">•••</div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-0">

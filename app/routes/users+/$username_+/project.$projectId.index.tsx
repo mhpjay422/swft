@@ -281,7 +281,7 @@ export default function UsersProjectDetailPage() {
       <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[274px]">
-            <div className="flex flex-row justify-between font-semibold mb-1 w-64">
+            <div className="flex flex-row justify-between font-semibold h-10 w-64">
               {/* NOTE to add: Use state to set title to "Untitled section" if title is empty */}
               {editSectionFormIndex === index ? (
                 <editSectionFetcher.Form
@@ -337,7 +337,7 @@ export default function UsersProjectDetailPage() {
                 </editSectionFetcher.Form>
               ) : (
                 <div
-                  className="font-semibold mb-2 pl-2 w-52 overflow-hidden hover:bg-gray-50 hover:cursor-pointer rounded-lg"
+                  className="font-semibold pl-2 h-8 w-52 overflow-hidden hover:bg-gray-50 hover:cursor-pointer rounded-lg"
                   onClick={() => {
                     flushSync(() => {
                       setEditSectionFormIndex(index);

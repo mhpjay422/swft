@@ -449,7 +449,7 @@ export default function UsersProjectDetailPage() {
                 ref={addSectionInputRef}
                 type="text"
                 {...conform.input(fields.title)}
-                className="w-64 mb-1.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
+                className="w-64 mb-2.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
                 placeholder="Enter section title..."
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
@@ -467,7 +467,7 @@ export default function UsersProjectDetailPage() {
               />
             </addSectionFetcher.Form>
           ) : (
-            <div className="font-semibold mb-2 pl-2 w-64 hover:bg-gray-50 hover:cursor-pointer rounded-lg">
+            <div className="font-semibold mb-2.5 pl-2 h-8 w-64 hover:bg-gray-50 hover:cursor-pointer rounded-lg">
               {" "}
               + Add section
             </div>

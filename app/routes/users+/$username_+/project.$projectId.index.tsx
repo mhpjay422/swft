@@ -17,6 +17,18 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
 
+export type Task = {
+  id: string;
+  title: string;
+  description: string | null | undefined;
+  completed: boolean;
+  createdAt: string;
+  updatedAt: string;
+  ownerId: string;
+  projectId: string | null;
+  sectionId: string | null;
+};
+
 const prisma = prismaClient;
 
 const AddTaskFormSchema = z.object({
@@ -43,18 +55,6 @@ export const EditTaskDescriptionFormSchema = z.object({
   description: z.string(),
   ownerId: z.string().min(5),
 });
-
-export type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  completed: boolean;
-  createdAt: string;
-  updatedAt: string;
-  ownerId: string;
-  projectId: string | null;
-  sectionId: string | null;
-};
 
 export async function loader({ request, params }: DataFunctionArgs) {
   const user = await requireUser(request);
@@ -185,7 +185,9 @@ export default function UsersProjectDetailPage() {
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
   const editSectionFetcher = useFetcher({ key: "edit-section" });
-  const editTaskDescriptionFetcher = useFetcher({ key: "edit-task" });
+  const editTaskDescriptionFetcher = useFetcher({
+    key: "edit-task",
+  });
 
   const sectionEmptyAndIdle = (
     section: { tasks: string | any[] },
@@ -549,7 +551,12 @@ export default function UsersProjectDetailPage() {
                     editTaskDescriptionFetcher.submit(
                       editTaskDescriptionRef.current
                     );
-                    setEditSectionFormIndex(null);
+                    setTaskModalData({
+                      ...taskModalData,
+                      description: editTaskDescriptionInputRef.current?.value,
+                    });
+
+                    setEditingTaskDescriptionId(null);
                     editTaskDescriptionRef.current?.reset();
                   }}
                   className="h-full w-full "
@@ -597,9 +604,11 @@ export default function UsersProjectDetailPage() {
                 >
                   {/* NOTE: Add optimistic update for Task title edit */}
                   {editTaskDescriptionFetcher.state !== "idle" ? (
-                    editTaskDescriptionFetcher.formData
-                      ?.get("description")
-                      ?.toString()
+                    <div>
+                      {editTaskDescriptionFetcher.formData
+                        ?.get("description")
+                        ?.toString()}
+                    </div>
                   ) : (
                     <div
                       className={`${

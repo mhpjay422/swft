@@ -60,7 +60,7 @@ export async function action({ request }: DataFunctionArgs) {
     );
   }
 
-  const updatedTask = await prisma.task.update({
+  await prisma.task.update({
     where: {
       id: taskId,
     },
@@ -69,7 +69,7 @@ export async function action({ request }: DataFunctionArgs) {
     },
   });
 
-  console.log("updatedTask", updatedTask);
-
-  return json({ status: "success", submission } as const, { status: 200 });
+  return json({ status: "success", submission } as const, {
+    status: 200,
+  });
 }

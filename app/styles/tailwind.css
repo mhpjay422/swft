@@ -82,4 +82,20 @@
   .task {
     @apply h-28 w-64 p-4 border border-gray-200 hover:border-gray-400 rounded-lg mb-2 bg-white;
   }
+
+  .not-completed-checkmark {
+    @apply border-gray-300 text-gray-700 hover:bg-green-700/10 hover:text-green-700 hover:border-green-700;
+  }
+
+  .completed-checkmark {
+    @apply border-green-600 text-green-700 bg-green-600/10 hover:bg-green-700/10 hover:border-green-700;
+  }
+
+  .not-completed-checkmark-svg {
+    @apply stroke-gray-500 group-hover:stroke-green-700;
+  }
+
+  .completed-checkmark-svg {
+    @apply stroke-green-700;
+  }
 }

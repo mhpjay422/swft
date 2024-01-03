@@ -650,47 +650,36 @@ export default function UsersProjectDetailPage() {
                 />
                 <div ref={taskCompleteModalIcon}>
                   {/* NOTE: Add optimistic update for task completion toggle */}
-                  {!taskModalData.completed ? (
-                    <div
-                      className={`h-7 px-2 text-xs flex items-center rounded-md border group border-gray-300 text-gray-700 hover:bg-green-700/10 hover:text-green-700 hover:border-green-700 hover:cursor-pointer`}
+                  <div
+                    className={`group h-7 px-2 text-xs flex items-center rounded-md hover:cursor-pointer border ${
+                      taskModalData.completed
+                        ? "completed-checkmark"
+                        : "not-completed-checkmark"
+                    }`}
+                  >
+                    <svg
+                      data-slot="icon"
+                      fill="none"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      className={`mr-1 h-3.5 w-4 ${
+                        taskModalData.completed
+                          ? "completed-checkmark-svg"
+                          : "not-completed-checkmark-svg"
+                      }`}
                     >
-                      <svg
-                        data-slot="icon"
-                        fill="none"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        className="mr-1 h-3.5 w-4 stroke-gray-500 group-hover:stroke-green-700"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="m4.5 12.75 6 6 9-13.5"
-                        ></path>
-                      </svg>
-                      <div>Mark complete</div>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m4.5 12.75 6 6 9-13.5"
+                      ></path>
+                    </svg>
+                    <div>
+                      {taskModalData.completed ? "Completed" : "Mark complete"}
                     </div>
-                  ) : (
-                    <div className="h-7 px-2 text-xs flex items-center rounded-md border border-green-600 text-green-700 bg-green-600/10 hover:bg-green-700/10 hover:border-green-700 hover:cursor-pointer">
-                      <svg
-                        data-slot="icon"
-                        fill="none"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        className="mr-1 h-3.5 w-4 stroke-green-700"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="m4.5 12.75 6 6 9-13.5"
-                        ></path>
-                      </svg>
-                      <div>Completed</div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </toggleTaskCompletionModalFetcher.Form>
             </div>

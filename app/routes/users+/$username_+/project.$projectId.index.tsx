@@ -462,7 +462,7 @@ export default function UsersProjectDetailPage() {
           </div>
         ))}
         <div
-          className="w-[274px] hover:cursor-pointer pr-1"
+          className="w-[274px] hover:cursor-pointer pr-1 group"
           onClick={() => {
             flushSync(() => {
               setAddSectionCreateFormIsOpen(true);
@@ -509,13 +509,13 @@ export default function UsersProjectDetailPage() {
               />
             </addSectionFetcher.Form>
           ) : (
-            <div className="font-semibold mb-2.5 pl-2 h-8 w-64 hover:bg-gray-50 hover:cursor-pointer rounded-lg">
+            <div className="font-semibold mb-2.5 pl-2 h-8 w-64 group-hover:bg-gray-100 hover:cursor-pointer rounded-lg">
               {" "}
               + Add section
             </div>
           )}
           <div className="overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg">
-            <div className="w-64 h-full rounded-lg bg-gray-50"></div>
+            <div className="w-64 h-full rounded-lg bg-gray-50 group-hover:bg-gray-100"></div>
           </div>
         </div>
       </div>

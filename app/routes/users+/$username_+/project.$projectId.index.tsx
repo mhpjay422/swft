@@ -701,24 +701,19 @@ export default function UsersProjectDetailPage() {
                     editTaskDescriptionTextAreaRef.current?.select();
                   }}
                 >
-                  {/* NOTE: Add optimistic update for Task title edit */}
-                  {editTaskDescriptionFetcher.state !== "idle" ? (
-                    <div>
-                      {editTaskDescriptionFetcher.formData
-                        ?.get("description")
-                        ?.toString()}
-                    </div>
-                  ) : (
-                    <div
-                      className={`${
-                        taskModalData.description
-                          ? "text-gray-600"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {taskModalData.description || "What is this task about?"}
-                    </div>
-                  )}
+                  <div
+                    className={`${
+                      taskModalData.description
+                        ? "text-gray-600"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {editTaskDescriptionFetcher.state !== "idle"
+                      ? editTaskDescriptionFetcher.formData
+                          ?.get("description")
+                          ?.toString()
+                      : taskModalData.description || "What is this task about?"}
+                  </div>
                 </div>
               )}
             </div>

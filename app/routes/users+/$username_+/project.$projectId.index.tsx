@@ -538,6 +538,10 @@ export default function UsersProjectDetailPage() {
                   ref={editTaskTitleFormRef}
                   onSubmit={() => {
                     setEditingTaskTitleId(null);
+                    setTaskModalData({
+                      ...taskModalData,
+                      title: editTaskTitleInputRef.current?.value,
+                    });
                   }}
                   onBlur={() => {
                     editTaskTitleFetcher.submit(editTaskTitleFormRef.current);
@@ -545,13 +549,14 @@ export default function UsersProjectDetailPage() {
                       ...taskModalData,
                       title: editTaskTitleInputRef.current?.value,
                     });
-
                     setEditingTaskTitleId(null);
                     editTaskTitleFormRef.current?.reset();
                   }}
                   className="h-full w-full mr-2"
                 >
                   <AuthenticityTokenInput />
+                  {/* Hidden submit button to submit form onEnter keypress */}
+                  <button type="submit" className="hidden" />
                   <input
                     ref={editTaskTitleInputRef}
                     {...conform.input(editTaskTitleFields.title)}
@@ -565,7 +570,7 @@ export default function UsersProjectDetailPage() {
                       }
                     }}
                     defaultValue={taskModalData.title || ""}
-                  ></input>
+                  />
                   <input
                     {...conform.input(editTaskTitleFields.ownerId, {
                       type: "hidden",

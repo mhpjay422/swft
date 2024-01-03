@@ -571,7 +571,7 @@ export default function UsersProjectDetailPage() {
                   <div
                     className={`${
                       taskModalData.title ? "text-gray-600" : "text-gray-400"
-                    } mt-2`}
+                    } pl-4 mt-2`}
                   >
                     {editTaskTitleFetcher.state !== "idle"
                       ? editTaskTitleFetcher.formData?.get("title")?.toString()

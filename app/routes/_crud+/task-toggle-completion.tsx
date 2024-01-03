@@ -37,8 +37,6 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "idle", submission } as const);
   }
 
-  console.log("sub", submission);
-
   if (!submission.value?.taskId || submission.value?.completed === undefined) {
     return json({ status: "error", submission } as const, { status: 400 });
   }

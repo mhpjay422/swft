@@ -502,7 +502,7 @@ export default function UsersProjectDetailPage() {
         </div>
       </div>
       {taskModalData !== null && (
-        <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll ">
+        <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll">
           <div
             ref={taskModalRef}
             id="task-modal"
@@ -596,18 +596,16 @@ export default function UsersProjectDetailPage() {
               </deleteTaskFetcher.Form>
             </div>
             <div className="flex flex-row mb-8">
-              <div className="mr-2">Completed:</div>
-              {taskModalData.completed ? (
-                <div className="h-6 w-6">
-                  {/* NOTE: Move SVG to separate file */}
+              {!taskModalData.completed ? (
+                <div className="h-7 px-2 text-xs flex items-center rounded-md border group border-gray-300 text-gray-700 hover:bg-green-700/10 hover:text-green-700 hover:border-green-700 hover:cursor-pointer ">
                   <svg
                     data-slot="icon"
                     fill="none"
-                    stroke-width="4"
-                    stroke="#34cb45"
+                    stroke-width="2"
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                     aria-hidden="true"
+                    className="mr-1 h-3.5 w-4 stroke-gray-500 group-hover:stroke-green-700"
                   >
                     <path
                       stroke-linecap="round"
@@ -615,19 +613,26 @@ export default function UsersProjectDetailPage() {
                       d="m4.5 12.75 6 6 9-13.5"
                     ></path>
                   </svg>
+                  <div>Mark complete</div>
                 </div>
               ) : (
-                <div className="h-7 w-7">
-                  {/* NOTE: Move SVG to separate file */}
+                <div className="h-7 px-2 text-xs flex items-center rounded-md border border-green-600 text-green-700 bg-green-600/10 hover:bg-green-700/10 hover:border-green-700 hover:cursor-pointer">
                   <svg
                     data-slot="icon"
-                    fill="#fd0207"
-                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                     aria-hidden="true"
+                    className="mr-1 h-3.5 w-4 stroke-green-700"
                   >
-                    <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    ></path>
                   </svg>
+                  <div>Completed</div>
                 </div>
               )}
             </div>

@@ -224,6 +224,9 @@ export default function UsersProjectDetailPage() {
   };
 
   useClickOutside(taskModalRef, () => {
+    if (editTaskDescriptionFormRef.current) {
+      editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
+    }
     setTaskModalData(null);
   });
   useClickOutside(addSectionRef, () => {
@@ -388,7 +391,7 @@ export default function UsersProjectDetailPage() {
                   }}
                 >
                   {/* NOTE: Add optimistic update for section title edit */}
-                  <div>
+                  <div className="mt-0.5">
                     {editSectionFetcher.state !== "idle" &&
                     Number(editSectionFetcher.formData?.get("index")) === index
                       ? editSectionFetcher.formData?.get("title")?.toString()
@@ -509,7 +512,7 @@ export default function UsersProjectDetailPage() {
               />
             </addSectionFetcher.Form>
           ) : (
-            <div className="font-semibold mb-2.5 pl-2 h-8 w-64 group-hover:bg-gray-100 hover:cursor-pointer rounded-lg">
+            <div className="font-semibold mt-0.5 mb-[6px] pl-2 h-8 w-64 text-gray-500 group-hover:bg-gray-100 hover:cursor-pointer rounded-lg group-hover:text-gray-600">
               {" "}
               + Add section
             </div>

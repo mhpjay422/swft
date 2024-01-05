@@ -62,4 +62,9 @@ ENTRYPOINT [ "/app/docker-entrypoint.js" ]
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 ENV DATABASE_URL="file:///data/sqlite.db"
+
+# Make SQLite CLI accessible via fly ssh console
+# $ fly ssh console -C database-cli
+RUN echo "#!/bin/sh\nset -x\nsqlite3 \$DATABASE_URL" > /usr/local/bin/database-cli && chmod +x /usr/local/bin/database-cli
+
 CMD [ "npm", "run", "start" ]

@@ -49,6 +49,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-package-lock.json
-
 data.sql

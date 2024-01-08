@@ -17,7 +17,7 @@ export default function Index() {
           </div>
           <div className="text-center mt-8 text-4xl">
             <span className="font-semibold inline mt-4 text-black">
-              DEV SWFT
+              DEV1 SWFT
             </span>
             ly
           </div>

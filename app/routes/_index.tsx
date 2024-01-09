@@ -19,11 +19,11 @@ export default function Index() {
             <span
               className={`font-semibold inline mt-4 ${
                 process.env.NODE_ENV === "development"
-                  ? "text-red-500"
+                  ? "text-red-300"
                   : "text-black"
               }`}
             >
-              {process.env.NODE_ENV === "development" ? "DEV2" : null} SWFT
+              {process.env.NODE_ENV === "development" ? "DEV" : null} SWFT
             </span>
             ly
           </div>

@@ -16,7 +16,15 @@ export default function Index() {
             The platform for organizing your projects
           </div>
           <div className="text-center mt-8 text-4xl">
-            <span className="font-semibold inline mt-4 text-black"> SWFT</span>
+            <span
+              className={`font-semibold inline mt-4 ${
+                process.env.NODE_ENV === "development"
+                  ? "text-red-500"
+                  : "text-black"
+              }`}
+            >
+              {process.env.NODE_ENV === "development" ? "DEV2" : null} SWFT
+            </span>
             ly
           </div>
           <p className="text-xl text-center mt-12">

@@ -2,7 +2,7 @@ export function Footer() {
   return (
     <div
       className={`w-full sticky bottom-0 h-16 border-t border-gray-200 ${
-        process.env.NODE_ENV === "production" ? "bg-gray-50" : "bg-blue-200"
+        process.env.NODE_ENV === "production" ? "bg-gray-50" : "bg-blue-100"
       }`}
     >
       <div className="flex flex-row justify-between mx-32 lg:mx-64 xl:mx-96 pt-4">

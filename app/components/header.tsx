@@ -7,7 +7,7 @@ export function Header() {
   return (
     <div
       className={`flex h-16 text-gray-500 font-semibold sticky top-0 z-50 border-b border-gray-200 ${
-        process.env.NODE_ENV === "production" ? "bg-gray-50" : "bg-blue-200"
+        process.env.NODE_ENV === "production" ? "bg-gray-50" : "bg-blue-100"
       }`}
     >
       <div className="self-center flex flex-row justify-between w-full mx-32 lg:mx-64 xl:mx-96">

@@ -60,7 +60,9 @@ RUN echo "#!/bin/sh\nset -x\nsqlite3 \$DATABASE_URL" > /usr/local/bin/database-c
 ENTRYPOINT [ "/app/docker-entrypoint.js" ]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+ENV PORT=8080
+ENV INTERNAL_PORT=8080
+EXPOSE 8080
 ENV DATABASE_URL="file:///data/sqlite.db"
 
 # Make SQLite CLI accessible via fly ssh console

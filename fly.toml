@@ -26,3 +26,8 @@ primary_region = "ewr"
   cpus = 1
   memory_mb = 1024
 
+[[services.ports]]
+  force_https = false
+  handlers = ["http"]
+  port = 8080
+

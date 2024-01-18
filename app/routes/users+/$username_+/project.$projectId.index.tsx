@@ -703,85 +703,58 @@ export default function UsersProjectDetailPage() {
               </toggleTaskCompletionModalFetcher.Form>
             </div>
             <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full  hover:cursor-text cursor">
-              {editingTaskDescriptionId ? (
-                <editTaskDescriptionFetcher.Form
-                  {...editTaskDescriptionForm.props}
-                  method="PUT"
-                  action="/task-edit-description"
-                  ref={editTaskDescriptionFormRef}
-                  onSubmit={() => {
-                    setEditingTaskDescriptionId(null);
-                  }}
-                  onBlur={() => {
-                    editTaskDescriptionFetcher.submit(
-                      editTaskDescriptionFormRef.current
-                    );
-                    setTaskModalData({
-                      ...taskModalData,
-                      description:
-                        editTaskDescriptionTextAreaRef.current?.value,
-                    });
+              <editTaskDescriptionFetcher.Form
+                {...editTaskDescriptionForm.props}
+                method="PUT"
+                action="/task-edit-description"
+                ref={editTaskDescriptionFormRef}
+                onSubmit={() => {
+                  setEditingTaskDescriptionId(null);
+                }}
+                onBlur={() => {
+                  editTaskDescriptionFetcher.submit(
+                    editTaskDescriptionFormRef.current
+                  );
+                  setTaskModalData({
+                    ...taskModalData,
+                    description: editTaskDescriptionTextAreaRef.current?.value,
+                  });
 
-                    setEditingTaskDescriptionId(null);
-                    editTaskDescriptionFormRef.current?.reset();
-                  }}
-                  className="h-full w-full "
-                >
-                  <AuthenticityTokenInput />
-                  <textarea
-                    ref={editTaskDescriptionTextAreaRef}
-                    {...conform.input(editTaskDescriptionFields.description)}
-                    className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 outline-none rounded-lg resize-none"
-                    placeholder={
-                      taskModalData.description
-                        ? undefined
-                        : "What is this task about?"
+                  setEditingTaskDescriptionId(null);
+                  editTaskDescriptionFormRef.current?.reset();
+                }}
+                className="h-full w-full "
+              >
+                <AuthenticityTokenInput />
+                <textarea
+                  ref={editTaskDescriptionTextAreaRef}
+                  {...conform.input(editTaskDescriptionFields.description)}
+                  className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 outline-none rounded-lg resize-none"
+                  placeholder={
+                    taskModalData.description
+                      ? undefined
+                      : "What is this task about?"
+                  }
+                  defaultValue={taskModalData.description || ""}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape") {
+                      setEditingTaskDescriptionId(null);
                     }
-                    defaultValue={taskModalData.description || ""}
-                    onKeyDown={(event) => {
-                      if (event.key === "Escape") {
-                        setEditingTaskDescriptionId(null);
-                      }
-                    }}
-                  ></textarea>
-                  <input
-                    {...conform.input(editTaskDescriptionFields.ownerId, {
-                      type: "hidden",
-                    })}
-                    value={data.owner.id}
-                  />
-                  <input
-                    {...conform.input(editTaskDescriptionFields.taskId, {
-                      type: "hidden",
-                    })}
-                    value={taskModalData.id}
-                  />
-                </editTaskDescriptionFetcher.Form>
-              ) : (
-                <div
-                  className="h-full w-full p-4 text-base"
-                  onClick={() => {
-                    flushSync(() => {
-                      setEditingTaskDescriptionId(taskModalData.id);
-                    });
-                    editTaskDescriptionTextAreaRef.current?.select();
                   }}
-                >
-                  <div
-                    className={`${
-                      taskModalData.description
-                        ? "text-gray-600"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {editTaskDescriptionFetcher.state !== "idle"
-                      ? editTaskDescriptionFetcher.formData
-                          ?.get("description")
-                          ?.toString()
-                      : taskModalData.description || "What is this task about?"}
-                  </div>
-                </div>
-              )}
+                ></textarea>
+                <input
+                  {...conform.input(editTaskDescriptionFields.ownerId, {
+                    type: "hidden",
+                  })}
+                  value={data.owner.id}
+                />
+                <input
+                  {...conform.input(editTaskDescriptionFields.taskId, {
+                    type: "hidden",
+                  })}
+                  value={taskModalData.id}
+                />
+              </editTaskDescriptionFetcher.Form>
             </div>
           </div>
         </div>

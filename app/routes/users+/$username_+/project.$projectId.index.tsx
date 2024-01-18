@@ -57,7 +57,7 @@ export const EditSectionFormSchema = z.object({
 export const EditTaskDescriptionFormSchema = z.object({
   taskId: z.string(),
   ownerId: z.string().min(5),
-  description: z.string(),
+  description: z.string().min(0),
 });
 
 export const EditTaskTitleFormSchema = z.object({

@@ -25,7 +25,7 @@ export async function action({ request }: DataFunctionArgs) {
     schema: EditTaskDescriptionFormSchema,
   });
 
-  if (!submission.value?.description || submission.intent !== "submit") {
+  if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }
 
@@ -40,6 +40,7 @@ export async function action({ request }: DataFunctionArgs) {
       id: true,
       ownerId: true,
       owner: { select: { username: true } },
+      description: true,
     },
     where: { id: taskId },
   });
@@ -57,7 +58,7 @@ export async function action({ request }: DataFunctionArgs) {
     );
   }
 
-  if (!submission.value?.description === task.description) {
+  if (submission.value?.description === task.description) {
     return json({ status: "idle", submission } as const);
   }
 

@@ -6,12 +6,12 @@ export const useEventListener = <T extends Event>(
   handler: (event: T) => void,
   element?: EventTarget
 ): void => {
-  // Check if window is defined (i.e., we're in a browser environment)
-  const targetElement: EventTarget | undefined =
-    typeof window !== "undefined" ? element || window : element;
-
+  // Use effect to add an event listener
   useEffect(() => {
-    // Ensure the required parameters are provided
+    // Define the target element (document, window, or custom element)
+    const targetElement: EventTarget | undefined = element || document;
+
+    // Check if required parameters and target element are available
     if (!eventName || !handler || !targetElement) return;
 
     // Callback function to handle the event
@@ -26,5 +26,5 @@ export const useEventListener = <T extends Event>(
     return () => {
       targetElement.removeEventListener(eventName, callback);
     };
-  }, [eventName, handler, targetElement]);
+  }, [eventName, handler, element]); // Include dependencies in useEffect
 };

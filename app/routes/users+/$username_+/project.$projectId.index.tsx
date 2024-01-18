@@ -156,9 +156,6 @@ export default function UsersProjectDetailPage() {
     Array<React.RefObject<HTMLFormElement>>
   >(data.owner.sections.map(() => createRef()));
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
-  const [editingTaskDescriptionId, setEditingTaskDescriptionId] = useState<
-    string | null
-  >(null);
   const [editingTaskTitleId, setEditingTaskTitleId] = useState<string | null>(
     null
   );
@@ -233,19 +230,12 @@ export default function UsersProjectDetailPage() {
   useClickOutside(addSectionRef, () => {
     setAddSectionCreateFormIsOpen(false);
   });
-  useClickOutside(editTaskDescriptionFormRef, () => {
-    setEditingTaskDescriptionId(null);
-  });
 
-  useEventListener(
-    "keydown",
-    (event) => {
-      if (event instanceof KeyboardEvent && event.key === "Escape") {
-        setTaskModalData(null);
-      }
-    },
-    document
-  );
+  useEventListener("keydown", (event) => {
+    if (event instanceof KeyboardEvent && event.key === "Escape") {
+      setTaskModalData(null);
+    }
+  });
 
   const scrollRightIntoView = () => {
     const current = projectPageRef.current;
@@ -708,9 +698,6 @@ export default function UsersProjectDetailPage() {
                 method="PUT"
                 action="/task-edit-description"
                 ref={editTaskDescriptionFormRef}
-                onSubmit={() => {
-                  setEditingTaskDescriptionId(null);
-                }}
                 onBlur={() => {
                   editTaskDescriptionFetcher.submit(
                     editTaskDescriptionFormRef.current
@@ -720,7 +707,6 @@ export default function UsersProjectDetailPage() {
                     description: editTaskDescriptionTextAreaRef.current?.value,
                   });
 
-                  setEditingTaskDescriptionId(null);
                   editTaskDescriptionFormRef.current?.reset();
                 }}
                 className="h-full w-full "
@@ -736,11 +722,6 @@ export default function UsersProjectDetailPage() {
                       : "What is this task about?"
                   }
                   defaultValue={taskModalData.description || ""}
-                  onKeyDown={(event) => {
-                    if (event.key === "Escape") {
-                      setEditingTaskDescriptionId(null);
-                    }
-                  }}
                 ></textarea>
                 <input
                   {...conform.input(editTaskDescriptionFields.ownerId, {

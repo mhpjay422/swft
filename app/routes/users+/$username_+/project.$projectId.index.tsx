@@ -6,6 +6,7 @@ import {
   ToggleTaskCompletionFormSchema,
 } from "#app/components/tasks/task-card.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
+import { useEventListener } from "#app/hooks/useEventListener.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
@@ -235,6 +236,16 @@ export default function UsersProjectDetailPage() {
   useClickOutside(editTaskDescriptionFormRef, () => {
     setEditingTaskDescriptionId(null);
   });
+
+  useEventListener(
+    "keydown",
+    (event) => {
+      if (event instanceof KeyboardEvent && event.key === "Escape") {
+        setTaskModalData(null);
+      }
+    },
+    document
+  );
 
   const scrollRightIntoView = () => {
     const current = projectPageRef.current;

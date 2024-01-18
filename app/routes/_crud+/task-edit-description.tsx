@@ -25,10 +25,7 @@ export async function action({ request }: DataFunctionArgs) {
     schema: EditTaskDescriptionFormSchema,
   });
 
-  if (
-    (submission.value?.description !== "" && !submission.value?.description) ||
-    submission.intent !== "submit"
-  ) {
+  if (!submission.value?.description || submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }
 
@@ -58,6 +55,10 @@ export async function action({ request }: DataFunctionArgs) {
       },
       { status: 403 }
     );
+  }
+
+  if (!submission.value?.description === task.description) {
+    return json({ status: "idle", submission } as const);
   }
 
   await prisma.task.update({

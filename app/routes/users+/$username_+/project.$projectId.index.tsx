@@ -471,6 +471,7 @@ export default function UsersProjectDetailPage() {
             flushSync(() => {
               setAddSectionCreateFormIsOpen(true);
             });
+            scrollRightIntoView();
             addSectionInputRef.current?.select();
           }}
         >
@@ -482,6 +483,7 @@ export default function UsersProjectDetailPage() {
               ref={addSectionRef}
               onSubmit={() => {
                 setAddSectionCreateFormIsOpen(false);
+                scrollRightIntoView();
               }}
               onBlur={() => {
                 if (addSectionRef.current?.value !== "") {

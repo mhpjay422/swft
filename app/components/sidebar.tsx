@@ -100,39 +100,41 @@ export default function Sidebar() {
                   Team
                 </p>
 
-                {itemsNavigation.map((item) => (
-                  <Popover key={item.name}>
-                    <PopoverTrigger>
-                      <div className="cursor-not-allowed">
-                        <a
-                          href={item.href}
-                          className={`
+                <div className="w-full flex flex-grow min-w-max">
+                  {itemsNavigation.map((item) => (
+                    <Popover key={item.name}>
+                      <PopoverTrigger>
+                        <div className="cursor-not-allowed w-[239px]">
+                          <a
+                            href={item.href}
+                            className={`
                       ${
                         item.current
                           ? "bg-slate-200 text-gray-900"
                           : "text-gray-300 hover:bg-gray-50 hover:text-gray-900"
                       }
                       group flex items-center px-2 py-2 text-sm font-medium rounded-md pointer-events-none w-full`}
-                        >
-                          <item.icon
-                            className={`
+                          >
+                            <item.icon
+                              className={`
                         ${
                           item.current
                             ? "text-gray-800"
                             : "text-gray-400 group-hover:text-gray-500"
                         }
                         mr-3 flex-shrink-0 h-6 w-6`}
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </a>
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="text-sm">
-                      <p>This feature is coming soon...</p>
-                    </PopoverContent>
-                  </Popover>
-                ))}
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </a>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="text-sm">
+                        <p>This feature is coming soon...</p>
+                      </PopoverContent>
+                    </Popover>
+                  ))}
+                </div>
               </div>
 
               <Popover>

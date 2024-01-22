@@ -221,6 +221,14 @@ export default function UsersProjectDetailPage() {
     );
   };
 
+  const focusCurrentEditSection = (index: number) => {
+    flushSync(() => {
+      setEditSectionFormIndex(index);
+    });
+
+    setTimeout(() => editSectionInputRef.current?.select(), 200);
+  };
+
   useClickOutside(taskModalRef, () => {
     if (editTaskDescriptionFormRef.current) {
       editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
@@ -385,10 +393,7 @@ export default function UsersProjectDetailPage() {
                 <div
                   className="font-semibold pl-2 h-8 w-52 overflow-hidden hover:bg-gray-50 hover:cursor-pointer rounded-lg"
                   onClick={() => {
-                    flushSync(() => {
-                      setEditSectionFormIndex(index);
-                    });
-                    editSectionInputRef.current?.select();
+                    focusCurrentEditSection(index);
                   }}
                 >
                   {/* NOTE: Add optimistic update for section title edit */}
@@ -401,7 +406,10 @@ export default function UsersProjectDetailPage() {
                 </div>
               )}
 
-              <SectionDropdown sectionId={section.id} />
+              <SectionDropdown
+                sectionId={section.id}
+                focusCurrentEditSection={() => focusCurrentEditSection(index)}
+              />
             </div>
             <div
               ref={sectionBodyRefs[index]}

@@ -87,10 +87,12 @@ function Document({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Document>
-      <Header />
-      <div className="flex-grow flex flex-row min-h-screen w-screen p-0 m-0">
-        <Sidebar />
-        <Outlet />
+      <div className="h-screen">
+        <Header />
+        <div className="flex-grow flex flex-row min-h-screen w-screen p-0 m-0">
+          <Sidebar />
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </Document>

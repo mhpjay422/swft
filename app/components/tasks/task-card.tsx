@@ -43,6 +43,11 @@ export const TaskCard: React.FC<TaskProps> = ({
       setTaskModalData(task);
     }
   };
+  const shouldRenderTaskCompleteIcon = () => {
+    return toggleTaskCompletionFetcher.state !== "idle"
+      ? !task?.completed
+      : task?.completed;
+  };
 
   const [form, fields] = useForm({
     id: `toggle-task-completion-form-${task?.id}`,
@@ -91,9 +96,7 @@ export const TaskCard: React.FC<TaskProps> = ({
           value={task?.completed.toString()}
         />
         <div ref={taskCompleteIcon}>
-          {/* NOTE: Add optimistic update for task completion toggle */}
-          {/* {task?.completed && toggleTaskCompletionRef.state !== "idle" ? ( */}
-          {task?.completed ? (
+          {shouldRenderTaskCompleteIcon() ? (
             // Remix is not importing TaskCompleteCheckIcon correctly if the
             // import is a SVG wrapped in a div. Moved div here to fix.
             <div className="w-4 h-4 mt-1.5 ml-0.5 mr-2.5 rounded-full bg-green-700 flex items-center">

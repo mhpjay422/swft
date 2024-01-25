@@ -11,6 +11,7 @@ import { requireUser } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
+import PlusSign from "#public/plus-sign.tsx";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
@@ -173,6 +174,11 @@ export default function UsersProjectDetailPage() {
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const editSectionInputRef = useRef<ElementRef<"input">>(null);
 
+  const [addTaskButtonRefs] = useState(
+    Array(data.owner.sections.length)
+      .fill(null)
+      .map(() => createRef<HTMLButtonElement>())
+  );
   const editTaskDescriptionFormRef = useRef<ElementRef<"form">>(null);
   const editTaskDescriptionTextAreaRef = useRef<ElementRef<"textarea">>(null);
   const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
@@ -334,7 +340,7 @@ export default function UsersProjectDetailPage() {
     >
       <div className="flex flex-row pt-6 px-5 w-full">
         {data.owner.sections.map((section, index) => (
-          <div key={section.id} className="mr-4 w-[274px]">
+          <div key={section.id} className="mr-4 w-[256px]">
             <div className="flex flex-row justify-between font-semibold h-10 w-64">
               {/* NOTE to add: Use state to set title to "Untitled section" if title is empty */}
               {editSectionFormIndex === index ? (
@@ -405,7 +411,12 @@ export default function UsersProjectDetailPage() {
                   </div>
                 </div>
               )}
-
+              <button
+                className="m-1 w-[18px] h-[18px]"
+                onClick={() => addTaskButtonRefs[index].current?.click()}
+              >
+                <PlusSign />
+              </button>
               <SectionDropdown
                 sectionId={section.id}
                 focusCurrentEditSection={() => focusCurrentEditSection(index)}
@@ -450,6 +461,7 @@ export default function UsersProjectDetailPage() {
                     </div>
                   ) : (
                     <AddTaskButtonAndForm
+                      ref={addTaskButtonRefs[index]}
                       AddTaskFormSchema={AddTaskFormSchema}
                       fetcher={fetcher}
                       actionData={actionData}

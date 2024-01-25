@@ -1,5 +1,5 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
-import { type ElementRef, useRef } from "react";
+import { type ElementRef, useRef, forwardRef } from "react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import type { ZodObject, ZodString } from "zod";
 import { conform, useForm } from "@conform-to/react";
@@ -8,6 +8,7 @@ import { flushSync } from "react-dom";
 import { type FetcherWithComponents } from "@remix-run/react";
 
 interface AddTaskButtonProps {
+  ref: React.Ref<HTMLButtonElement>;
   AddTaskFormSchema: ZodObject<{
     title: ZodString;
     ownerId: ZodString;
@@ -26,111 +27,119 @@ interface AddTaskButtonProps {
   setIsTempBlurSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = ({
-  AddTaskFormSchema,
-  actionData,
-  ownerId,
-  sectionId,
-  sectionRef,
-  fetcher,
-  sectionEmptyAndIdle,
-  isEditing,
-  sectionHasOptimisticTaskCreation,
-  setEditingSectionId,
-  setIsTempBlurSubmitting,
-}) => {
-  const formRef = useRef<ElementRef<"form">>(null);
-  const inputRef = useRef<ElementRef<"input">>(null);
-
-  const scrollDownIntoView = () => {
-    const current = sectionRef.current;
-
-    if (current) {
-      current.scrollTop = current.scrollHeight;
-    }
-  };
-
-  const [form, fields] = useForm({
-    id: "add-task-form",
-    constraint: getFieldsetConstraint(AddTaskFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: AddTaskFormSchema });
+export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
+  (
+    {
+      AddTaskFormSchema,
+      actionData,
+      ownerId,
+      sectionId,
+      sectionRef,
+      fetcher,
+      sectionEmptyAndIdle,
+      isEditing,
+      sectionHasOptimisticTaskCreation,
+      setEditingSectionId,
+      setIsTempBlurSubmitting,
     },
-    shouldRevalidate: "onBlur",
-  });
+    ref
+  ) => {
+    const formRef = useRef<ElementRef<"form">>(null);
+    const inputRef = useRef<ElementRef<"input">>(null);
 
-  return (
-    <div>
-      {isEditing ? (
-        <fetcher.Form
-          {...form.props}
-          method="POST"
-          ref={formRef}
-          onSubmit={() => {
-            setEditingSectionId(null);
-          }}
-          onBlur={() => {
-            let formData;
-            if (formRef.current) {
-              formData = new FormData(formRef.current);
-            }
-            flushSync(() => {
-              // This is a hack to have the parent component UI update before closing the form
-              setIsTempBlurSubmitting(true);
+    const scrollDownIntoView = () => {
+      const current = sectionRef.current;
+
+      if (current) {
+        current.scrollTop = current.scrollHeight;
+      }
+    };
+
+    const [form, fields] = useForm({
+      id: "add-task-form",
+      constraint: getFieldsetConstraint(AddTaskFormSchema),
+      lastSubmission: actionData?.submission,
+      onValidate({ formData }) {
+        return parse(formData, { schema: AddTaskFormSchema });
+      },
+      shouldRevalidate: "onBlur",
+    });
+
+    return (
+      <div>
+        {isEditing ? (
+          <fetcher.Form
+            {...form.props}
+            method="POST"
+            ref={formRef}
+            onSubmit={() => {
               setEditingSectionId(null);
-            });
-            if (formData?.get("title")) {
-              fetcher.submit(formData, { method: "post" });
-            }
-            setIsTempBlurSubmitting(false);
-            formRef.current?.reset();
-            scrollDownIntoView();
-          }}
-          className="h-28 p-3 pb-8 rounded-lg bg-white space-y-4 border border-gray-400"
-        >
-          <AuthenticityTokenInput />
-          <input
-            ref={inputRef}
-            {...conform.input(fields.title)}
-            className="text-base px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
-            placeholder="Enter task title..."
-            onFocus={scrollDownIntoView}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                setEditingSectionId(null);
-              }
             }}
-          />
-          <input
-            {...conform.input(fields.ownerId, { type: "hidden" })}
-            value={ownerId}
-          />
-          <input
-            {...conform.input(fields.sectionId, { type: "hidden" })}
-            value={sectionId}
-          />
-        </fetcher.Form>
-      ) : !sectionHasOptimisticTaskCreation ? (
-        <button
-          onClick={() => {
-            // flushSync allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
-            flushSync(() => {
-              setEditingSectionId(sectionId);
-            });
-            inputRef.current?.select();
-            scrollDownIntoView();
-          }}
-          className={`w-full rounded-md ${
-            sectionEmptyAndIdle ? "bg-gray-50" : "bg-white"
-          } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
-        >
-          <div className="mx-auto">+ Add a Task</div>
-        </button>
-      ) : null}
-    </div>
-  );
-};
+            onBlur={() => {
+              let formData;
+              if (formRef.current) {
+                formData = new FormData(formRef.current);
+              }
+              flushSync(() => {
+                // This is a hack to have the parent component UI update before closing the form
+                setIsTempBlurSubmitting(true);
+                setEditingSectionId(null);
+              });
+              if (formData?.get("title")) {
+                fetcher.submit(formData, { method: "post" });
+              }
+              setIsTempBlurSubmitting(false);
+              formRef.current?.reset();
+              scrollDownIntoView();
+            }}
+            className="h-28 p-3 pb-8 rounded-lg bg-white space-y-4 border border-gray-400"
+          >
+            <AuthenticityTokenInput />
+            <input
+              ref={inputRef}
+              {...conform.input(fields.title)}
+              className="text-base px-2 pt-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
+              placeholder="Enter task title..."
+              onFocus={scrollDownIntoView}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setEditingSectionId(null);
+                }
+              }}
+            />
+            <input
+              {...conform.input(fields.ownerId, { type: "hidden" })}
+              value={ownerId}
+            />
+            <input
+              {...conform.input(fields.sectionId, { type: "hidden" })}
+              value={sectionId}
+            />
+          </fetcher.Form>
+        ) : !sectionHasOptimisticTaskCreation ? (
+          <button
+            ref={ref}
+            onClick={() => {
+              // flushSync allows you to perform synchronous DOM actions immediately after the update is flushed to the DOM.
+              flushSync(() => {
+                setEditingSectionId(sectionId);
+              });
+              inputRef.current?.select();
+              scrollDownIntoView();
+            }}
+            className={`w-full rounded-md ${
+              sectionEmptyAndIdle ? "bg-gray-50" : "bg-white"
+            } hover:bg-gray-100 transition p-3 flex items-center font-medium text-sm`}
+          >
+            <div className="mx-auto">+ Add a Task</div>
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+);
+
+AddTaskButtonAndForm.displayName = "AddTaskButtonAndForm";
 
 export function ErrorBoundary() {
   return <DynamicErrorBoundary />;

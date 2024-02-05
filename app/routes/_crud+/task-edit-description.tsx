@@ -29,6 +29,8 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "idle", submission } as const);
   }
 
+  console.log("vbal", submission);
+
   if (!submission.value?.taskId) {
     return json({ status: "error", submission } as const, { status: 400 });
   }
@@ -58,7 +60,7 @@ export async function action({ request }: DataFunctionArgs) {
     );
   }
 
-  if (submission.value?.description === task.description) {
+  if (description === task.description) {
     return json({ status: "idle", submission } as const);
   }
 
@@ -67,7 +69,10 @@ export async function action({ request }: DataFunctionArgs) {
       id: taskId,
     },
     data: {
-      description,
+      // Without a value set for the description field,
+      // submission.value?.description will be undefined.
+      // Hence the need for the below null for the prisma update.
+      description: description || null,
     },
   });
 

@@ -9,7 +9,7 @@ import { z } from "zod";
 export const EditTaskDescriptionFormSchema = z.object({
   taskId: z.string(),
   ownerId: z.string().min(5),
-  description: z.string(),
+  description: z.string().optional(),
 });
 
 interface TaskProps {
@@ -61,6 +61,8 @@ export const EditTaskDescription: React.FC<TaskProps> = ({
       action="/task-edit-description"
       ref={editTaskDescriptionFormRef}
       onBlur={() => {
+        console.log("task", editTaskDescriptionFormRef.current);
+
         editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
         invokeSetTaskModalData({
           description: editTaskDescriptionTextAreaRef.current?.value,

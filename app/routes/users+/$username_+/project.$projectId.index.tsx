@@ -174,6 +174,7 @@ export default function UsersProjectDetailPage() {
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const editSectionInputRef = useRef<ElementRef<"input">>(null);
 
+  // This must be set with null values to avoid a TypeScript error
   const [addTaskButtonRefs] = useState(
     Array(data.owner.sections.length)
       .fill(null)

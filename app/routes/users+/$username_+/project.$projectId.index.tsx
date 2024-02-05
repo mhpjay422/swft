@@ -1,6 +1,7 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
+import { EditTaskDescription } from "#app/components/tasks/edit-task-description.tsx";
 import {
   TaskCard,
   ToggleTaskCompletionFormSchema,
@@ -53,12 +54,6 @@ export const EditSectionFormSchema = z.object({
   sectionId: z.string(),
   ownerId: z.string().min(5),
   index: z.number(),
-});
-
-export const EditTaskDescriptionFormSchema = z.object({
-  taskId: z.string(),
-  ownerId: z.string().min(5),
-  description: z.string().min(0),
 });
 
 export const EditTaskTitleFormSchema = z.object({
@@ -180,8 +175,7 @@ export default function UsersProjectDetailPage() {
       .fill(null)
       .map(() => createRef<HTMLButtonElement>())
   );
-  const editTaskDescriptionFormRef = useRef<ElementRef<"form">>(null);
-  const editTaskDescriptionTextAreaRef = useRef<ElementRef<"textarea">>(null);
+
   const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
   const editTaskTitleInputRef = useRef<ElementRef<"input">>(null);
   const toggleTaskCompletionModalRef = useRef<HTMLFormElement>(null);
@@ -206,15 +200,20 @@ export default function UsersProjectDetailPage() {
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
   const editSectionFetcher = useFetcher({ key: "edit-section" });
-  const editTaskDescriptionFetcher = useFetcher({
-    key: "edit-task-description",
-  });
   const editTaskTitleFetcher = useFetcher({
     key: "edit-task-title",
   });
   const toggleTaskCompletionModalFetcher = useFetcher({
     key: `toggle-task-completion-${taskModalData?.id}`,
   });
+
+  const invokeSetTaskModalData = (
+    data: { description: string | undefined } | null
+  ) => {
+    data && taskModalData
+      ? setTaskModalData({ ...taskModalData, ...data })
+      : setTaskModalData(null);
+  };
 
   const sectionEmptyAndIdle = (
     section: { tasks: string | any[] },
@@ -236,12 +235,6 @@ export default function UsersProjectDetailPage() {
     setTimeout(() => editSectionInputRef.current?.select(), 200);
   };
 
-  useClickOutside(taskModalRef, () => {
-    if (editTaskDescriptionFormRef.current) {
-      editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
-    }
-    setTaskModalData(null);
-  });
   useClickOutside(addSectionRef, () => {
     setAddSectionCreateFormIsOpen(false);
   });
@@ -300,16 +293,6 @@ export default function UsersProjectDetailPage() {
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EditSectionFormSchema });
-    },
-    shouldRevalidate: "onBlur",
-  });
-
-  const [editTaskDescriptionForm, editTaskDescriptionFields] = useForm({
-    id: "edit-task-description-form",
-    constraint: getFieldsetConstraint(EditTaskDescriptionFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: EditTaskDescriptionFormSchema });
     },
     shouldRevalidate: "onBlur",
   });
@@ -715,50 +698,15 @@ export default function UsersProjectDetailPage() {
                 </div>
               </toggleTaskCompletionModalFetcher.Form>
             </div>
-            <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full  hover:cursor-text cursor">
-              <editTaskDescriptionFetcher.Form
-                {...editTaskDescriptionForm.props}
-                method="PUT"
-                action="/task-edit-description"
-                ref={editTaskDescriptionFormRef}
-                onBlur={() => {
-                  editTaskDescriptionFetcher.submit(
-                    editTaskDescriptionFormRef.current
-                  );
-                  setTaskModalData({
-                    ...taskModalData,
-                    description: editTaskDescriptionTextAreaRef.current?.value,
-                  });
-
-                  editTaskDescriptionFormRef.current?.reset();
-                }}
-                className="h-full w-full "
-              >
-                <AuthenticityTokenInput />
-                <textarea
-                  ref={editTaskDescriptionTextAreaRef}
-                  {...conform.input(editTaskDescriptionFields.description)}
-                  className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 outline-none rounded-lg resize-none"
-                  placeholder={
-                    taskModalData.description
-                      ? undefined
-                      : "What is this task about?"
-                  }
-                  defaultValue={taskModalData.description || ""}
-                ></textarea>
-                <input
-                  {...conform.input(editTaskDescriptionFields.ownerId, {
-                    type: "hidden",
-                  })}
-                  value={data.owner.id}
-                />
-                <input
-                  {...conform.input(editTaskDescriptionFields.taskId, {
-                    type: "hidden",
-                  })}
-                  value={taskModalData.id}
-                />
-              </editTaskDescriptionFetcher.Form>
+            <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full hover:cursor-text cursor">
+              <EditTaskDescription
+                actionData={actionData}
+                ownerId={data.owner.id}
+                taskModalDataId={taskModalData.id}
+                taskModalDataDescription={taskModalData.description}
+                taskModalRef={taskModalRef}
+                invokeSetTaskModalData={invokeSetTaskModalData}
+              />
             </div>
           </div>
         </div>

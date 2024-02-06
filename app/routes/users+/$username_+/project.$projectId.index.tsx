@@ -2,10 +2,8 @@ import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { EditTaskDescription } from "#app/components/tasks/edit-task-description.tsx";
-import {
-  TaskCard,
-  ToggleTaskCompletionFormSchema,
-} from "#app/components/tasks/task-card.tsx";
+import { TaskCard } from "#app/components/tasks/task-card.tsx";
+import { ToggleTaskCompletionForm } from "#app/components/tasks/toggle-task-completion.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { useEventListener } from "#app/hooks/useEventListener.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
@@ -178,8 +176,6 @@ export default function UsersProjectDetailPage() {
 
   const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
   const editTaskTitleInputRef = useRef<ElementRef<"input">>(null);
-  const toggleTaskCompletionModalRef = useRef<HTMLFormElement>(null);
-  const taskCompleteModalIcon = useRef<HTMLDivElement>(null);
 
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
@@ -203,12 +199,12 @@ export default function UsersProjectDetailPage() {
   const editTaskTitleFetcher = useFetcher({
     key: "edit-task-title",
   });
-  const toggleTaskCompletionModalFetcher = useFetcher({
-    key: `toggle-task-completion-${taskModalData?.id}`,
-  });
 
   const invokeSetTaskModalData = (
-    data: { description: string | undefined } | null
+    data: {
+      description?: string | undefined;
+      completed?: boolean | undefined;
+    } | null
   ) => {
     data && taskModalData
       ? setTaskModalData({ ...taskModalData, ...data })
@@ -303,16 +299,6 @@ export default function UsersProjectDetailPage() {
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EditTaskTitleFormSchema });
-    },
-    shouldRevalidate: "onBlur",
-  });
-
-  const [toggleTaskCompletionForm, toggleTaskCompletionFields] = useForm({
-    id: `toggle-task-completion-form-modal-${taskModalData?.id}`,
-    constraint: getFieldsetConstraint(ToggleTaskCompletionFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: ToggleTaskCompletionFormSchema });
     },
     shouldRevalidate: "onBlur",
   });
@@ -629,80 +615,19 @@ export default function UsersProjectDetailPage() {
               </deleteTaskFetcher.Form>
             </div>
             <div className="flex flex-row mb-8">
-              <toggleTaskCompletionModalFetcher.Form
-                {...toggleTaskCompletionForm.props}
-                method="PUT"
-                action="/task-toggle-completion"
-                ref={toggleTaskCompletionModalRef}
-                onClick={() => {
-                  toggleTaskCompletionModalFetcher.submit(
-                    toggleTaskCompletionModalRef.current
-                  );
-                  setTaskModalData({
-                    ...taskModalData,
-                    completed: !taskModalData?.completed,
-                  });
-                }}
-              >
-                <AuthenticityTokenInput />
-                <input
-                  {...conform.input(toggleTaskCompletionFields.taskId, {
-                    type: "hidden",
-                  })}
-                  value={taskModalData?.id}
-                />
-                <input
-                  {...conform.input(toggleTaskCompletionFields.ownerId, {
-                    type: "hidden",
-                  })}
-                  value={taskModalData?.ownerId}
-                />
-                <input
-                  {...conform.input(toggleTaskCompletionFields.completed, {
-                    type: "hidden",
-                  })}
-                  value={taskModalData?.completed.toString()}
-                />
-                <div ref={taskCompleteModalIcon}>
-                  {/* NOTE: Add optimistic update for task completion toggle */}
-                  <div
-                    className={`group h-7 px-2 text-xs flex items-center rounded-md hover:cursor-pointer border ${
-                      taskModalData.completed
-                        ? "completed-checkmark"
-                        : "not-completed-checkmark"
-                    }`}
-                  >
-                    <svg
-                      data-slot="icon"
-                      fill="none"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                      className={`mr-1 h-3.5 w-4 ${
-                        taskModalData.completed
-                          ? "completed-checkmark-svg"
-                          : "not-completed-checkmark-svg"
-                      }`}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m4.5 12.75 6 6 9-13.5"
-                      ></path>
-                    </svg>
-                    <div>
-                      {taskModalData.completed ? "Completed" : "Mark complete"}
-                    </div>
-                  </div>
-                </div>
-              </toggleTaskCompletionModalFetcher.Form>
+              <ToggleTaskCompletionForm
+                actionData={actionData}
+                taskModalDataId={taskModalData.id}
+                taskModalDataOwnerId={taskModalData.ownerId}
+                taskModalDataIsCompleted={taskModalData.completed}
+                invokeSetTaskModalData={invokeSetTaskModalData}
+              />
             </div>
             <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full hover:cursor-text cursor">
               <EditTaskDescription
                 actionData={actionData}
-                ownerId={data.owner.id}
                 taskModalDataId={taskModalData.id}
+                taskModalDataOwnerId={taskModalData.ownerId}
                 taskModalDataDescription={taskModalData.description}
                 taskModalRef={taskModalRef}
                 invokeSetTaskModalData={invokeSetTaskModalData}

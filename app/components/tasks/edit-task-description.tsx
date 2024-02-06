@@ -14,8 +14,8 @@ export const EditTaskDescriptionFormSchema = z.object({
 
 interface TaskProps {
   actionData: any;
-  ownerId: string;
   taskModalDataId: string;
+  taskModalDataOwnerId: string;
   taskModalDataDescription: string | null | undefined;
   taskModalRef: React.RefObject<HTMLDivElement>;
   invokeSetTaskModalData: (
@@ -25,7 +25,7 @@ interface TaskProps {
 
 export const EditTaskDescription: React.FC<TaskProps> = ({
   actionData,
-  ownerId,
+  taskModalDataOwnerId,
   taskModalDataId,
   taskModalDataDescription,
   taskModalRef,
@@ -61,8 +61,6 @@ export const EditTaskDescription: React.FC<TaskProps> = ({
       action="/task-edit-description"
       ref={editTaskDescriptionFormRef}
       onBlur={() => {
-        console.log("task", editTaskDescriptionFormRef.current);
-
         editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
         invokeSetTaskModalData({
           description: editTaskDescriptionTextAreaRef.current?.value,
@@ -86,7 +84,7 @@ export const EditTaskDescription: React.FC<TaskProps> = ({
         {...conform.input(editTaskDescriptionFields.ownerId, {
           type: "hidden",
         })}
-        value={ownerId}
+        value={taskModalDataOwnerId}
       />
       <input
         {...conform.input(editTaskDescriptionFields.taskId, {

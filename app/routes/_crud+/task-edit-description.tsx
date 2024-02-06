@@ -29,8 +29,6 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "idle", submission } as const);
   }
 
-  console.log("vbal", submission);
-
   if (!submission.value?.taskId) {
     return json({ status: "error", submission } as const, { status: 400 });
   }

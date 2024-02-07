@@ -3,7 +3,7 @@ import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { EditTaskDescription } from "#app/components/tasks/edit-task-description.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
-import { ToggleTaskCompletionForm } from "#app/components/tasks/toggle-task-completion.tsx";
+import { ToggleTaskCompletionButton } from "#app/components/tasks/toggle-task-completion.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { useEventListener } from "#app/hooks/useEventListener.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
@@ -615,7 +615,7 @@ export default function UsersProjectDetailPage() {
               </deleteTaskFetcher.Form>
             </div>
             <div className="flex flex-row mb-8">
-              <ToggleTaskCompletionForm
+              <ToggleTaskCompletionButton
                 actionData={actionData}
                 taskModalDataId={taskModalData.id}
                 taskModalDataOwnerId={taskModalData.ownerId}

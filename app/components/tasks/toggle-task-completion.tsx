@@ -13,7 +13,7 @@ interface TaskProps {
   invokeSetTaskModalData: (data: { completed: boolean } | null) => void;
 }
 
-export const ToggleTaskCompletionForm: React.FC<TaskProps> = ({
+export const ToggleTaskCompletionButton: React.FC<TaskProps> = ({
   actionData,
   taskModalDataId,
   taskModalDataOwnerId,

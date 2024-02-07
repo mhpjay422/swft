@@ -1,6 +1,7 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
+import { DeleteTaskButton } from "#app/components/tasks/delete-task-button.tsx";
 import { EditTaskDescriptionTextarea } from "#app/components/tasks/edit-task-description.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { ToggleTaskCompletionButton } from "#app/components/tasks/toggle-task-completion.tsx";
@@ -598,21 +599,11 @@ export default function UsersProjectDetailPage() {
                   </div>
                 </div>
               )}
-
-              <deleteTaskFetcher.Form
-                method="DELETE"
-                action="/task-delete"
-                onSubmit={() => setTaskModalData(null)}
-              >
-                <AuthenticityTokenInput />
-                <input type="hidden" name="taskId" value={taskModalData.id} />
-                <button
-                  type="submit"
-                  className="bg-red-500 text-white h-10 w-20 rounded-lg border border-gray-100 hover:bg-red-600 text-center self-center text-base"
-                >
-                  Delete
-                </button>
-              </deleteTaskFetcher.Form>
+              <DeleteTaskButton
+                taskModalDataId={taskModalData.id}
+                deleteTaskFetcher={deleteTaskFetcher}
+                invokeSetTaskModalData={invokeSetTaskModalData}
+              />
             </div>
             <div className="flex flex-row mb-8">
               <ToggleTaskCompletionButton

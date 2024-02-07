@@ -23,7 +23,7 @@ interface TaskProps {
   ) => void;
 }
 
-export const EditTaskDescription: React.FC<TaskProps> = ({
+export const EditTaskDescriptionTextarea: React.FC<TaskProps> = ({
   actionData,
   taskModalDataOwnerId,
   taskModalDataId,

@@ -1,7 +1,7 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
-import { EditTaskDescription } from "#app/components/tasks/edit-task-description.tsx";
+import { EditTaskDescriptionTextarea } from "#app/components/tasks/edit-task-description.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { ToggleTaskCompletionButton } from "#app/components/tasks/toggle-task-completion.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
@@ -624,7 +624,7 @@ export default function UsersProjectDetailPage() {
               />
             </div>
             <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full hover:cursor-text cursor">
-              <EditTaskDescription
+              <EditTaskDescriptionTextarea
                 actionData={actionData}
                 taskModalDataId={taskModalData.id}
                 taskModalDataOwnerId={taskModalData.ownerId}

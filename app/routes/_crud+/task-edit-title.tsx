@@ -1,3 +1,4 @@
+import { EditTaskTitleFormSchema } from "#app/components/tasks/edit-task-title.tsx";
 import { requireUserId } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
@@ -5,7 +6,6 @@ import { invariantResponse } from "#app/utils/misc.tsx";
 import { parse } from "@conform-to/zod";
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { CSRFError } from "remix-utils/csrf/server";
-import { EditTaskTitleFormSchema } from "../users+/$username_+/project.$projectId.index.tsx";
 
 const prisma = prismaClient;
 

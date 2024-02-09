@@ -3,6 +3,7 @@ import { SectionDropdown } from "#app/components/section-dropdown.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { DeleteTaskButton } from "#app/components/tasks/delete-task-button.tsx";
 import { EditTaskDescriptionTextarea } from "#app/components/tasks/edit-task-description.tsx";
+import { EditTaskTitleInput } from "#app/components/tasks/edit-task-title.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { ToggleTaskCompletionButton } from "#app/components/tasks/toggle-task-completion.tsx";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
@@ -53,12 +54,6 @@ export const EditSectionFormSchema = z.object({
   sectionId: z.string(),
   ownerId: z.string().min(5),
   index: z.number(),
-});
-
-export const EditTaskTitleFormSchema = z.object({
-  taskId: z.string(),
-  ownerId: z.string().min(5),
-  title: z.string(),
 });
 
 export async function loader({ request, params }: DataFunctionArgs) {
@@ -175,9 +170,6 @@ export default function UsersProjectDetailPage() {
       .map(() => createRef<HTMLButtonElement>())
   );
 
-  const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
-  const editTaskTitleInputRef = useRef<ElementRef<"input">>(null);
-
   const fetcher = useFetcher({ key: "create-task" });
   const taskTitle = fetcher.formData?.get("title")?.toString();
   const taskSubmittingSectionId = fetcher.formData
@@ -197,19 +189,21 @@ export default function UsersProjectDetailPage() {
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
   const editSectionFetcher = useFetcher({ key: "edit-section" });
-  const editTaskTitleFetcher = useFetcher({
-    key: "edit-task-title",
-  });
 
   const invokeSetTaskModalData = (
     data: {
       description?: string | undefined;
       completed?: boolean | undefined;
+      title?: string | null;
     } | null
   ) => {
     data && taskModalData
       ? setTaskModalData({ ...taskModalData, ...data })
       : setTaskModalData(null);
+  };
+
+  const invokeSetEditingTaskTitleId = (id: string | null) => {
+    setEditingTaskTitleId(id);
   };
 
   const sectionEmptyAndIdle = (
@@ -290,16 +284,6 @@ export default function UsersProjectDetailPage() {
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EditSectionFormSchema });
-    },
-    shouldRevalidate: "onBlur",
-  });
-
-  const [editTaskTitleForm, editTaskTitleFields] = useForm({
-    id: "edit-task-title-form",
-    constraint: getFieldsetConstraint(EditTaskTitleFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: EditTaskTitleFormSchema });
     },
     shouldRevalidate: "onBlur",
   });
@@ -524,81 +508,15 @@ export default function UsersProjectDetailPage() {
             className="flex flex-col bg-zinc-100 opacity-100 text-black flex-grow h-full w-[50%] p-8 mt-28 mb-16 mx-auto border border-gray-200 rounded-2xl"
           >
             <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16 h-10">
-              {editingTaskTitleId ? (
-                <editTaskTitleFetcher.Form
-                  {...editTaskTitleForm.props}
-                  method="PUT"
-                  action="/task-edit-title"
-                  ref={editTaskTitleFormRef}
-                  onSubmit={() => {
-                    setEditingTaskTitleId(null);
-                    setTaskModalData({
-                      ...taskModalData,
-                      title: editTaskTitleInputRef.current?.value,
-                    });
-                  }}
-                  onBlur={() => {
-                    editTaskTitleFetcher.submit(editTaskTitleFormRef.current);
-                    setTaskModalData({
-                      ...taskModalData,
-                      title: editTaskTitleInputRef.current?.value,
-                    });
-                    setEditingTaskTitleId(null);
-                    editTaskTitleFormRef.current?.reset();
-                  }}
-                  className="h-full w-full mr-2"
-                >
-                  <AuthenticityTokenInput />
-                  {/* Hidden submit button to submit form onEnter keypress */}
-                  <button type="submit" className="hidden" />
-                  <input
-                    ref={editTaskTitleInputRef}
-                    {...conform.input(editTaskTitleFields.title)}
-                    className="w-full h-full text-base p-4 border-transparent hover:border-input focus:border-input transition bg-gray-100 rounded-lg"
-                    placeholder={
-                      taskModalData.title ? undefined : "Write a task title"
-                    }
-                    onKeyDown={(event) => {
-                      if (event.key === "Escape") {
-                        setEditingTaskTitleId(null);
-                      }
-                    }}
-                    defaultValue={taskModalData.title || ""}
-                  />
-                  <input
-                    {...conform.input(editTaskTitleFields.ownerId, {
-                      type: "hidden",
-                    })}
-                    value={data.owner.id}
-                  />
-                  <input
-                    {...conform.input(editTaskTitleFields.taskId, {
-                      type: "hidden",
-                    })}
-                    value={taskModalData.id}
-                  />
-                </editTaskTitleFetcher.Form>
-              ) : (
-                <div
-                  className="h-full w-full text-base"
-                  onClick={() => {
-                    flushSync(() => {
-                      setEditingTaskTitleId(taskModalData.id);
-                    });
-                    editTaskTitleInputRef.current?.select();
-                  }}
-                >
-                  <div
-                    className={`${
-                      taskModalData.title ? "text-gray-600" : "text-gray-400"
-                    } pl-4 mt-2`}
-                  >
-                    {editTaskTitleFetcher.state !== "idle"
-                      ? editTaskTitleFetcher.formData?.get("title")?.toString()
-                      : taskModalData.title || "Write a task title"}
-                  </div>
-                </div>
-              )}
+              <EditTaskTitleInput
+                actionData={actionData}
+                editingTaskTitleId={editingTaskTitleId}
+                taskModalDataId={taskModalData.id}
+                taskModalDataTitle={taskModalData.title}
+                taskModalDataOwnerId={taskModalData.ownerId}
+                invokeSetEditingTaskTitleId={invokeSetEditingTaskTitleId}
+                invokeSetTaskModalData={invokeSetTaskModalData}
+              />
               <DeleteTaskButton
                 taskModalDataId={taskModalData.id}
                 deleteTaskFetcher={deleteTaskFetcher}

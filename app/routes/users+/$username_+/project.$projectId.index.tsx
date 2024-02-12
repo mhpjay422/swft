@@ -1,5 +1,6 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
+import { EditSectionForm } from "#app/components/sections/edit-section-title.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { DeleteTaskButton } from "#app/components/tasks/delete-task-button.tsx";
 import { EditTaskDescriptionTextarea } from "#app/components/tasks/edit-task-description.tsx";
@@ -35,6 +36,23 @@ export type Task = {
   sectionId: string | null;
 };
 
+export type Section = {
+  title: string;
+  ownerId: string;
+  id: string;
+  tasks: {
+    id: string;
+    title: string;
+    description: string | null;
+    completed: boolean;
+    createdAt: string;
+    updatedAt: string;
+    ownerId: string;
+    projectId: string | null;
+    sectionId: string | null;
+  }[];
+};
+
 const prisma = prismaClient;
 
 const AddTaskFormSchema = z.object({
@@ -47,13 +65,6 @@ export const AddSectionFormSchema = z.object({
   title: z.string().min(1).max(32),
   ownerId: z.string().min(5),
   projectId: z.string().min(5),
-});
-
-export const EditSectionFormSchema = z.object({
-  title: z.string(),
-  sectionId: z.string(),
-  ownerId: z.string().min(5),
-  index: z.number(),
 });
 
 export async function loader({ request, params }: DataFunctionArgs) {
@@ -70,6 +81,7 @@ export async function loader({ request, params }: DataFunctionArgs) {
       sections: {
         select: {
           id: true,
+          ownerId: true,
           title: true,
           tasks: true,
         },
@@ -188,7 +200,6 @@ export default function UsersProjectDetailPage() {
     deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
 
   const addSectionFetcher = useFetcher({ key: "add-section" });
-  const editSectionFetcher = useFetcher({ key: "edit-section" });
 
   const invokeSetTaskModalData = (
     data: {
@@ -204,6 +215,10 @@ export default function UsersProjectDetailPage() {
 
   const invokeSetEditingTaskTitleId = (id: string | null) => {
     setEditingTaskTitleId(id);
+  };
+
+  const invokeSetEditSectionFormIndex = (index: number | null) => {
+    setEditSectionFormIndex(index);
   };
 
   const sectionEmptyAndIdle = (
@@ -278,16 +293,6 @@ export default function UsersProjectDetailPage() {
     shouldRevalidate: "onBlur",
   });
 
-  const [editSectionForm, editSectionFields] = useForm({
-    id: "edit-section-form",
-    constraint: getFieldsetConstraint(EditSectionFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: EditSectionFormSchema });
-    },
-    shouldRevalidate: "onBlur",
-  });
-
   return (
     <div
       className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8"
@@ -297,75 +302,16 @@ export default function UsersProjectDetailPage() {
         {data.owner.sections.map((section, index) => (
           <div key={section.id} className="mr-4 w-[256px]">
             <div className="flex flex-row justify-between font-semibold h-10 w-64">
-              {/* NOTE to add: Use state to set title to "Untitled section" if title is empty */}
-              {editSectionFormIndex === index ? (
-                <editSectionFetcher.Form
-                  {...editSectionForm.props}
-                  method="PUT"
-                  action="/section-edit"
-                  ref={editSectionTitleRefs[index]}
-                  onSubmit={() => {
-                    setEditSectionFormIndex(null);
-                  }}
-                  onBlur={() => {
-                    if (editSectionTitleRefs[index].current?.value !== "") {
-                      editSectionFetcher.submit(
-                        editSectionTitleRefs[index].current
-                      );
-                    }
-                    setEditSectionFormIndex(null);
-                    editSectionTitleRefs[index].current?.reset();
-                  }}
-                  className="w-64"
-                >
-                  <AuthenticityTokenInput />
-                  <input
-                    ref={editSectionInputRef}
-                    type="text"
-                    {...conform.input(editSectionFields.title)}
-                    className="max-w-54 overflow-hidden mb-1.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
-                    defaultValue={section.title}
-                    onKeyDown={(event) => {
-                      if (event.key === "Escape") {
-                        setEditSectionFormIndex(null);
-                      }
-                    }}
-                  />
-                  <input
-                    {...conform.input(editSectionFields.ownerId, {
-                      type: "hidden",
-                    })}
-                    value={data.owner.id}
-                  />
-                  <input
-                    {...conform.input(editSectionFields.sectionId, {
-                      type: "hidden",
-                    })}
-                    value={section.id}
-                  />
-                  <input
-                    {...conform.input(editSectionFields.index, {
-                      type: "hidden",
-                    })}
-                    value={index}
-                  />
-                </editSectionFetcher.Form>
-              ) : (
-                <div
-                  className="font-semibold pl-2 h-8 w-52 overflow-hidden hover:bg-gray-50 hover:cursor-pointer rounded-lg"
-                  onClick={() => {
-                    focusCurrentEditSection(index);
-                  }}
-                >
-                  {/* NOTE: Add optimistic update for section title edit */}
-                  <div className="mt-0.5">
-                    {editSectionFetcher.state !== "idle" &&
-                    Number(editSectionFetcher.formData?.get("index")) === index
-                      ? editSectionFetcher.formData?.get("title")?.toString()
-                      : section.title}
-                  </div>
-                </div>
-              )}
+              <EditSectionForm
+                submissionData={actionData?.submission}
+                editSectionTitleRef={editSectionTitleRefs[index]}
+                editSectionInputRef={editSectionInputRef}
+                editSectionFormIndex={editSectionFormIndex}
+                index={index}
+                invokeSetEditSectionFormIndex={invokeSetEditSectionFormIndex}
+                focusCurrentEditSection={focusCurrentEditSection}
+                section={section}
+              />
               <button
                 className="m-1 w-[18px] h-[18px]"
                 onClick={() => addTaskButtonRefs[index].current?.click()}

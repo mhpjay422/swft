@@ -6,7 +6,7 @@ import { z } from "zod";
 import { type Section } from "#app/routes/users+/$username_+/project.$projectId.index.tsx";
 
 export const EditSectionFormSchema = z.object({
-  title: z.string(),
+  title: z.string().optional(),
   sectionId: z.string(),
   ownerId: z.string().min(5),
   index: z.number(),
@@ -45,7 +45,6 @@ export const EditSectionForm: React.FC<TaskProps> = ({
 
   const editSectionFetcher = useFetcher({ key: "edit-section" });
 
-  // NOTE to add: Set title to "Untitled section" if title is empty during submission
   return editSectionFormIndex === index ? (
     <editSectionFetcher.Form
       {...editSectionForm.props}
@@ -56,9 +55,7 @@ export const EditSectionForm: React.FC<TaskProps> = ({
         invokeSetEditSectionFormIndex(null);
       }}
       onBlur={() => {
-        if (editSectionTitleRef.current?.value !== "") {
-          editSectionFetcher.submit(editSectionTitleRef.current);
-        }
+        editSectionFetcher.submit(editSectionTitleRef.current);
         invokeSetEditSectionFormIndex(null);
         editSectionTitleRef.current?.reset();
       }}

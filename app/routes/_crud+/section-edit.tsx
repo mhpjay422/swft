@@ -25,7 +25,7 @@ export async function action({ request }: DataFunctionArgs) {
     schema: EditSectionFormSchema,
   });
 
-  if (submission.intent !== "submit" || !submission.value?.title) {
+  if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }
 
@@ -33,7 +33,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "error", submission } as const, { status: 400 });
   }
 
-  const { sectionId, title } = submission.value;
+  let { sectionId, title } = submission.value;
 
   const section = await prisma.section.findFirst({
     select: {
@@ -56,6 +56,8 @@ export async function action({ request }: DataFunctionArgs) {
       { status: 403 }
     );
   }
+
+  if (!title) title = "Untitled section";
 
   await prisma.section.update({
     where: {

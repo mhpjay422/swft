@@ -365,8 +365,8 @@ export default function UsersProjectDetailPage() {
                       ref={addTaskButtonRefs[index]}
                       AddTaskFormSchema={AddTaskFormSchema}
                       fetcher={fetcher}
-                      actionData={actionData}
-                      ownerId={data.owner.id}
+                      submissionData={actionData?.submission}
+                      sectionOwnerId={section.ownerId}
                       sectionId={section.id}
                       sectionRef={sectionBodyRefs[index]}
                       sectionEmptyAndIdle={sectionEmptyAndIdle(

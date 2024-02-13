@@ -15,8 +15,8 @@ interface AddTaskButtonProps {
     sectionId: ZodString;
   }>;
   // NOTE: Figure out how to Type this
-  actionData: any;
-  ownerId: string;
+  submissionData: any;
+  sectionOwnerId: string;
   sectionId: string;
   sectionRef: React.RefObject<HTMLDivElement>;
   fetcher: FetcherWithComponents<unknown>;
@@ -31,8 +31,8 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
   (
     {
       AddTaskFormSchema,
-      actionData,
-      ownerId,
+      submissionData,
+      sectionOwnerId,
       sectionId,
       sectionRef,
       fetcher,
@@ -58,7 +58,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
     const [form, fields] = useForm({
       id: "add-task-form",
       constraint: getFieldsetConstraint(AddTaskFormSchema),
-      lastSubmission: actionData?.submission,
+      lastSubmission: submissionData,
       onValidate({ formData }) {
         return parse(formData, { schema: AddTaskFormSchema });
       },
@@ -109,7 +109,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
             />
             <input
               {...conform.input(fields.ownerId, { type: "hidden" })}
-              value={ownerId}
+              value={sectionOwnerId}
             />
             <input
               {...conform.input(fields.sectionId, { type: "hidden" })}

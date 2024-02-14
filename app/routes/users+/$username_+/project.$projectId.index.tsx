@@ -151,8 +151,6 @@ export default function UsersProjectDetailPage() {
   >(data.owner.sections.map(() => createRef()));
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [isTempBlurSubmitting, setIsTempBlurSubmitting] = useState(false);
-  const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
-    useState(false);
   const [editSectionFormIndex, setEditSectionFormIndex] = useState<
     null | number
   >(null);
@@ -200,10 +198,6 @@ export default function UsersProjectDetailPage() {
 
   const invokeSetEditSectionFormIndex = (index: number | null) => {
     setEditSectionFormIndex(index);
-  };
-
-  const invokeSetAddSectionCreateFormIsOpen = (isOpen: boolean) => {
-    setAddSectionCreateFormIsOpen(isOpen);
   };
 
   const sectionEmptyAndIdle = (
@@ -362,11 +356,7 @@ export default function UsersProjectDetailPage() {
             submissionData={actionData?.submission}
             ownerId={data.owner.id}
             projectId={data.projectId}
-            addSectionCreateFormIsOpen={addSectionCreateFormIsOpen}
             scrollRightIntoView={scrollRightIntoView}
-            invokeSetAddSectionCreateFormIsOpen={
-              invokeSetAddSectionCreateFormIsOpen
-            }
           />
         </div>
       </div>

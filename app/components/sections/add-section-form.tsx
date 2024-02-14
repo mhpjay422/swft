@@ -5,7 +5,7 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
 import { flushSync } from "react-dom";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
-import { type ElementRef, useRef } from "react";
+import { type ElementRef, useRef, useState } from "react";
 
 export const AddSectionFormSchema = z.object({
   title: z.string().min(1).max(32),
@@ -17,19 +17,17 @@ interface TaskProps {
   submissionData: any;
   ownerId: string;
   projectId: string | undefined;
-  addSectionCreateFormIsOpen: boolean;
   scrollRightIntoView: () => void;
-  invokeSetAddSectionCreateFormIsOpen: (isOpen: boolean) => void;
 }
 
 export const AddSectionForm: React.FC<TaskProps> = ({
   submissionData,
   ownerId,
   projectId,
-  addSectionCreateFormIsOpen,
   scrollRightIntoView,
-  invokeSetAddSectionCreateFormIsOpen,
 }) => {
+  const [addSectionCreateFormIsOpen, setAddSectionCreateFormIsOpen] =
+    useState(false);
   const [addSectionForm, addSectionFields] = useForm({
     id: "add-section-form",
     constraint: getFieldsetConstraint(AddSectionFormSchema),
@@ -45,7 +43,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
   const addSectionFetcher = useFetcher({ key: "add-section" });
 
   useClickOutside(addSectionRef, () => {
-    invokeSetAddSectionCreateFormIsOpen(false);
+    setAddSectionCreateFormIsOpen(false);
   });
 
   return (
@@ -53,7 +51,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
       className="w-full"
       onClick={() => {
         flushSync(() => {
-          invokeSetAddSectionCreateFormIsOpen(true);
+          setAddSectionCreateFormIsOpen(true);
         });
         scrollRightIntoView();
         addSectionInputRef.current?.select();
@@ -66,7 +64,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
           action="/section-create"
           ref={addSectionRef}
           onSubmit={() => {
-            invokeSetAddSectionCreateFormIsOpen(false);
+            setAddSectionCreateFormIsOpen(false);
             scrollRightIntoView();
           }}
           onBlur={() => {
@@ -85,7 +83,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
             placeholder="Enter section title..."
             onKeyDown={(event) => {
               if (event.key === "Escape") {
-                invokeSetAddSectionCreateFormIsOpen(false);
+                setAddSectionCreateFormIsOpen(false);
               }
             }}
           />

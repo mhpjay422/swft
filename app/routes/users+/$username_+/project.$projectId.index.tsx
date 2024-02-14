@@ -1,5 +1,6 @@
 import { DynamicErrorBoundary } from "#app/components/error-boundary.tsx";
 import { SectionDropdown } from "#app/components/section-dropdown.tsx";
+import { AddSectionForm } from "#app/components/sections/add-section-form.tsx";
 import { EditSectionForm } from "#app/components/sections/edit-section-title.tsx";
 import { AddTaskButtonAndForm } from "#app/components/tasks/add-task-button-and-form.tsx";
 import { DeleteTaskButton } from "#app/components/tasks/delete-task-button.tsx";
@@ -7,20 +8,17 @@ import { EditTaskDescriptionTextarea } from "#app/components/tasks/edit-task-des
 import { EditTaskTitleInput } from "#app/components/tasks/edit-task-title.tsx";
 import { TaskCard } from "#app/components/tasks/task-card.tsx";
 import { ToggleTaskCompletionButton } from "#app/components/tasks/toggle-task-completion.tsx";
-import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { useEventListener } from "#app/hooks/useEventListener.ts";
 import { requireUser } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { invariantResponse } from "#app/utils/misc.tsx";
 import PlusSign from "#public/plus-sign.tsx";
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json } from "@remix-run/node";
 import { useActionData, useLoaderData, useFetcher } from "@remix-run/react";
 import { useState, useRef, createRef, type ElementRef, useEffect } from "react";
 import { flushSync } from "react-dom";
-import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
 
@@ -59,12 +57,6 @@ const AddTaskFormSchema = z.object({
   title: z.string().min(1).max(32),
   ownerId: z.string(),
   sectionId: z.string(),
-});
-
-export const AddSectionFormSchema = z.object({
-  title: z.string().min(1).max(32),
-  ownerId: z.string().min(5),
-  projectId: z.string().min(5),
 });
 
 export async function loader({ request, params }: DataFunctionArgs) {
@@ -171,8 +163,6 @@ export default function UsersProjectDetailPage() {
   const projectPageRef = useRef<ElementRef<"div">>(null);
   const taskModalRef = useRef<ElementRef<"div">>(null);
 
-  const addSectionRef = useRef<ElementRef<"form">>(null);
-  const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const editSectionInputRef = useRef<ElementRef<"input">>(null);
 
   // This must be set with null values to avoid a TypeScript error
@@ -199,8 +189,6 @@ export default function UsersProjectDetailPage() {
   const sectionHasOptimisticDeletion = (sectionId: string | undefined) =>
     deleteTaskIsSubmitting && deleteTaskSubmittingSectionId === sectionId;
 
-  const addSectionFetcher = useFetcher({ key: "add-section" });
-
   const invokeSetTaskModalData = (
     data: {
       description?: string | undefined;
@@ -219,6 +207,10 @@ export default function UsersProjectDetailPage() {
 
   const invokeSetEditSectionFormIndex = (index: number | null) => {
     setEditSectionFormIndex(index);
+  };
+
+  const invokeSetAddSectionCreateFormIsOpen = (isOpen: boolean) => {
+    setAddSectionCreateFormIsOpen(isOpen);
   };
 
   const sectionEmptyAndIdle = (
@@ -240,10 +232,6 @@ export default function UsersProjectDetailPage() {
 
     setTimeout(() => editSectionInputRef.current?.select(), 200);
   };
-
-  useClickOutside(addSectionRef, () => {
-    setAddSectionCreateFormIsOpen(false);
-  });
 
   useEventListener("keydown", (event) => {
     if (event instanceof KeyboardEvent && event.key === "Escape") {
@@ -282,16 +270,6 @@ export default function UsersProjectDetailPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.owner.sections.length]);
-
-  const [form, fields] = useForm({
-    id: "add-section-form",
-    constraint: getFieldsetConstraint(AddSectionFormSchema),
-    lastSubmission: actionData?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: AddSectionFormSchema });
-    },
-    shouldRevalidate: "onBlur",
-  });
 
   return (
     <div
@@ -386,64 +364,17 @@ export default function UsersProjectDetailPage() {
             </div>
           </div>
         ))}
-        <div
-          className="w-[274px] hover:cursor-pointer pr-1 group"
-          onClick={() => {
-            flushSync(() => {
-              setAddSectionCreateFormIsOpen(true);
-            });
-            scrollRightIntoView();
-            addSectionInputRef.current?.select();
-          }}
-        >
-          {addSectionCreateFormIsOpen ? (
-            <addSectionFetcher.Form
-              {...form.props}
-              method="POST"
-              action="/section-create"
-              ref={addSectionRef}
-              onSubmit={() => {
-                setAddSectionCreateFormIsOpen(false);
-                scrollRightIntoView();
-              }}
-              onBlur={() => {
-                if (addSectionRef.current?.value !== "") {
-                  addSectionFetcher.submit(addSectionRef.current);
-                }
-                addSectionRef.current?.reset();
-              }}
-            >
-              <AuthenticityTokenInput />
-              <input
-                ref={addSectionInputRef}
-                type="text"
-                {...conform.input(fields.title)}
-                className="w-64 mb-2.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
-                placeholder="Enter section title..."
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") {
-                    setAddSectionCreateFormIsOpen(false);
-                  }
-                }}
-              />
-              <input
-                {...conform.input(fields.ownerId, { type: "hidden" })}
-                value={data.owner.id}
-              />
-              <input
-                {...conform.input(fields.projectId, { type: "hidden" })}
-                value={data.projectId}
-              />
-            </addSectionFetcher.Form>
-          ) : (
-            <div className="font-semibold mt-0.5 mb-[6px] pl-2 h-8 w-64 text-gray-500 group-hover:bg-gray-100 hover:cursor-pointer rounded-lg group-hover:text-gray-600">
-              {" "}
-              + Add section
-            </div>
-          )}
-          <div className="overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg">
-            <div className="w-64 h-full rounded-lg bg-gray-50 group-hover:bg-gray-100"></div>
-          </div>
+        <div className="w-[274px] hover:cursor-pointer pr-1 group">
+          <AddSectionForm
+            submissionData={actionData?.submission}
+            ownerId={data.owner.id}
+            projectId={data.projectId}
+            addSectionCreateFormIsOpen={addSectionCreateFormIsOpen}
+            scrollRightIntoView={scrollRightIntoView}
+            invokeSetAddSectionCreateFormIsOpen={
+              invokeSetAddSectionCreateFormIsOpen
+            }
+          />
         </div>
       </div>
       {taskModalData !== null && (

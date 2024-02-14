@@ -1,10 +1,10 @@
+import { AddSectionFormSchema } from "#app/components/sections/add-section-form.tsx";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
 import { parse } from "@conform-to/zod";
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
-import { AddSectionFormSchema } from "#app/routes/users+/$username_+/project.$projectId.index.tsx";
 
 const prisma = prismaClient;
 

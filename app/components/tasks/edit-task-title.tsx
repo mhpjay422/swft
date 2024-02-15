@@ -13,7 +13,7 @@ export const EditTaskTitleFormSchema = z.object({
 });
 
 interface TaskProps {
-  actionData: any;
+  submissionData: any;
   taskModalDataId: string;
   taskModalDataOwnerId: string;
   taskModalDataTitle: string | null | undefined;
@@ -21,7 +21,7 @@ interface TaskProps {
 }
 
 export const EditTaskTitleInput: React.FC<TaskProps> = ({
-  actionData,
+  submissionData,
   taskModalDataId,
   taskModalDataOwnerId,
   taskModalDataTitle,
@@ -39,7 +39,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
   const [editTaskTitleForm, editTaskTitleFields] = useForm({
     id: "edit-task-title-form",
     constraint: getFieldsetConstraint(EditTaskTitleFormSchema),
-    lastSubmission: actionData?.submission,
+    lastSubmission: submissionData,
     onValidate({ formData }) {
       return parse(formData, { schema: EditTaskTitleFormSchema });
     },

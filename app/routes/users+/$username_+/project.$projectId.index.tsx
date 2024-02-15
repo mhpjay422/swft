@@ -369,7 +369,7 @@ export default function UsersProjectDetailPage() {
           >
             <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16 h-10">
               <EditTaskTitleInput
-                actionData={actionData}
+                submissionData={actionData?.submission}
                 taskModalDataId={taskModalData.id}
                 taskModalDataTitle={taskModalData.title}
                 taskModalDataOwnerId={taskModalData.ownerId}
@@ -383,7 +383,7 @@ export default function UsersProjectDetailPage() {
             </div>
             <div className="flex flex-row mb-8">
               <ToggleTaskCompletionButton
-                actionData={actionData}
+                submissionData={actionData?.submission}
                 taskModalDataId={taskModalData.id}
                 taskModalDataOwnerId={taskModalData.ownerId}
                 taskModalDataIsCompleted={taskModalData.completed}
@@ -392,7 +392,7 @@ export default function UsersProjectDetailPage() {
             </div>
             <div className="border border-gray-300 hover:border-gray-400 rounded-lg h-96 w-full hover:cursor-text cursor">
               <EditTaskDescriptionTextarea
-                actionData={actionData}
+                submissionData={actionData?.submission}
                 taskModalDataId={taskModalData.id}
                 taskModalDataOwnerId={taskModalData.ownerId}
                 taskModalDataDescription={taskModalData.description}

@@ -13,7 +13,7 @@ export const EditTaskDescriptionFormSchema = z.object({
 });
 
 interface TaskProps {
-  actionData: any;
+  submissionData: any;
   taskModalDataId: string;
   taskModalDataOwnerId: string;
   taskModalDataDescription: string | null | undefined;
@@ -24,7 +24,7 @@ interface TaskProps {
 }
 
 export const EditTaskDescriptionTextarea: React.FC<TaskProps> = ({
-  actionData,
+  submissionData,
   taskModalDataOwnerId,
   taskModalDataId,
   taskModalDataDescription,
@@ -47,7 +47,7 @@ export const EditTaskDescriptionTextarea: React.FC<TaskProps> = ({
   const [editTaskDescriptionForm, editTaskDescriptionFields] = useForm({
     id: "edit-task-description-form",
     constraint: getFieldsetConstraint(EditTaskDescriptionFormSchema),
-    lastSubmission: actionData?.submission,
+    lastSubmission: submissionData,
     onValidate({ formData }) {
       return parse(formData, { schema: EditTaskDescriptionFormSchema });
     },

@@ -6,7 +6,7 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { ToggleTaskCompletionFormSchema } from "#app/components/tasks/task-card.tsx";
 
 interface TaskProps {
-  actionData: any;
+  submissionData: any;
   taskModalDataId: string;
   taskModalDataOwnerId: string;
   taskModalDataIsCompleted: boolean;
@@ -14,7 +14,7 @@ interface TaskProps {
 }
 
 export const ToggleTaskCompletionButton: React.FC<TaskProps> = ({
-  actionData,
+  submissionData,
   taskModalDataId,
   taskModalDataOwnerId,
   taskModalDataIsCompleted,
@@ -28,7 +28,7 @@ export const ToggleTaskCompletionButton: React.FC<TaskProps> = ({
   const [toggleTaskCompletionForm, toggleTaskCompletionFields] = useForm({
     id: `toggle-task-completion-form-modal-${taskModalDataId}`,
     constraint: getFieldsetConstraint(ToggleTaskCompletionFormSchema),
-    lastSubmission: actionData?.submission,
+    lastSubmission: submissionData,
     onValidate({ formData }) {
       return parse(formData, { schema: ToggleTaskCompletionFormSchema });
     },

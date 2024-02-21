@@ -99,7 +99,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
     </editTaskTitleFetcher.Form>
   ) : (
     <div
-      className="h-full w-full text-base"
+      className="h-full w-full mr-2 text-base border-transparent ring-1 ring-transparent hover:ring-gray-400 rounded-lg hover:cursor-text"
       onClick={() => {
         flushSync(() => {
           invokeSetEditingTaskTitleId(taskModalDataId);

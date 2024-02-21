@@ -1,7 +1,7 @@
 import { useFetcher } from "@remix-run/react";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type ElementRef, useRef, useState } from "react";
+import { type ElementRef, useRef } from "react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
 import { flushSync } from "react-dom";
@@ -14,22 +14,23 @@ export const EditTaskTitleFormSchema = z.object({
 
 interface TaskProps {
   submissionData: any;
+  editingTaskTitleId: string | null;
   taskModalDataId: string;
   taskModalDataOwnerId: string;
   taskModalDataTitle: string | null | undefined;
+  invokeSetEditingTaskTitleId: (id: string | null) => void;
   invokeSetTaskModalData: (data: { title: string | undefined } | null) => void;
 }
 
 export const EditTaskTitleInput: React.FC<TaskProps> = ({
   submissionData,
+  editingTaskTitleId,
   taskModalDataId,
   taskModalDataOwnerId,
   taskModalDataTitle,
+  invokeSetEditingTaskTitleId,
   invokeSetTaskModalData,
 }) => {
-  const [editingTaskTitleId, setEditingTaskTitleId] = useState<string | null>(
-    null
-  );
   const editTaskTitleFormRef = useRef<ElementRef<"form">>(null);
   const editTaskTitleInputRef = useRef<ElementRef<"input">>(null);
   const editTaskTitleFetcher = useFetcher({
@@ -53,7 +54,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
       action="/task-edit-title"
       ref={editTaskTitleFormRef}
       onSubmit={() => {
-        setEditingTaskTitleId(null);
+        invokeSetEditingTaskTitleId(null);
         invokeSetTaskModalData({
           title: editTaskTitleInputRef.current?.value,
         });
@@ -63,7 +64,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
         invokeSetTaskModalData({
           title: editTaskTitleInputRef.current?.value,
         });
-        setEditingTaskTitleId(null);
+        invokeSetEditingTaskTitleId(null);
         editTaskTitleFormRef.current?.reset();
       }}
       className="h-full w-full mr-2"
@@ -78,7 +79,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
         placeholder={taskModalDataTitle ? undefined : "Write a task title"}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
-            setEditingTaskTitleId(null);
+            invokeSetEditingTaskTitleId(null);
           }
         }}
         defaultValue={taskModalDataTitle || ""}
@@ -101,8 +102,9 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
       className="h-full w-full text-base"
       onClick={() => {
         flushSync(() => {
-          setEditingTaskTitleId(taskModalDataId);
+          invokeSetEditingTaskTitleId(taskModalDataId);
         });
+
         editTaskTitleInputRef.current?.select();
       }}
     >

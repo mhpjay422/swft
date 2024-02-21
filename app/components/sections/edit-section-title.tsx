@@ -103,7 +103,7 @@ export const EditSectionForm: React.FC<TaskProps> = ({
       <div className="mt-0.5">
         {editSectionFetcher.state !== "idle" &&
         Number(editSectionFetcher.formData?.get("index")) === index
-          ? editSectionFetcher.formData?.get("title")?.toString()
+          ? String(editSectionFetcher.formData?.get("title"))
           : section.title}
       </div>
     </div>

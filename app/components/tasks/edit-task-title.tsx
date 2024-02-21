@@ -112,7 +112,7 @@ export const EditTaskTitleInput: React.FC<TaskProps> = ({
         } pl-4 mt-2`}
       >
         {editTaskTitleFetcher.state !== "idle"
-          ? editTaskTitleFetcher.formData?.get("title")?.toString()
+          ? String(editTaskTitleFetcher.formData?.get("title"))
           : taskModalDataTitle || "Write a task title"}
       </div>
     </div>

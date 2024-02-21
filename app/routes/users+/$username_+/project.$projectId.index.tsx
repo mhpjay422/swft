@@ -168,7 +168,7 @@ export default function UsersProjectDetailPage() {
   );
 
   const fetcher = useFetcher({ key: "create-task" });
-  const taskTitle = fetcher.formData?.get("title")?.toString();
+  const taskTitle = String(fetcher.formData?.get("title"));
   const taskSubmittingSectionId = fetcher.formData
     ?.get("sectionId")
     ?.toString();

@@ -27,7 +27,10 @@ interface AddTaskButtonProps {
   setIsTempBlurSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
+export const AddTaskButtonAndForm = forwardRef<
+  HTMLButtonElement,
+  AddTaskButtonProps
+>(
   (
     {
       AddTaskFormSchema,
@@ -45,7 +48,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
     ref
   ) => {
     const formRef = useRef<ElementRef<"form">>(null);
-    const inputRef = useRef<ElementRef<"input">>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const scrollDownIntoView = () => {
       const current = sectionRef.current;
@@ -85,7 +88,7 @@ export const AddTaskButtonAndForm: React.FC<AddTaskButtonProps> = forwardRef(
                 setIsTempBlurSubmitting(true);
                 setEditingSectionId(null);
               });
-              if (formData?.get("title")) {
+              if (formData && String(formData?.get("title"))) {
                 fetcher.submit(formData, { method: "post" });
               }
               setIsTempBlurSubmitting(false);

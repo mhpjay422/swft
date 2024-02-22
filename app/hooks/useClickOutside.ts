@@ -3,7 +3,7 @@ import { type RefObject, useEffect } from "react";
 export const useClickOutside = (
   ref: RefObject<HTMLElement>,
   onClickOutside: (event: MouseEvent) => void,
-  ignoreClassName: string // This is a new parameter to specify which clicks to ignore based on class name
+  ignoreClassName?: string // This is a new parameter to specify which clicks to ignore based on class name
 ) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

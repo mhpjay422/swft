@@ -37,6 +37,10 @@ export const EditTaskDescriptionTextarea: React.FC<TaskProps> = ({
     key: "edit-task-description",
   });
 
+  // Should this be separated into two hooks?
+  // One for the click outside the modal
+  // and one for the submitting the form?
+  // How to separate them with getting them to act in the right order?
   useClickOutside(taskModalRef, () => {
     if (editTaskDescriptionFormRef.current) {
       editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);

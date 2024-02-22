@@ -41,12 +41,16 @@ export const EditTaskDescriptionTextarea: React.FC<TaskProps> = ({
   // One for the click outside the modal
   // and one for the submitting the form?
   // How to separate them with getting them to act in the right order?
-  useClickOutside(taskModalRef, () => {
-    if (editTaskDescriptionFormRef.current) {
-      editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
-    }
-    invokeSetTaskModalData(null);
-  });
+  useClickOutside(
+    taskModalRef,
+    () => {
+      if (editTaskDescriptionFormRef.current) {
+        editTaskDescriptionFetcher.submit(editTaskDescriptionFormRef.current);
+      }
+      invokeSetTaskModalData(null);
+    },
+    "ignore-click-outside"
+  );
 
   const [editTaskDescriptionForm, editTaskDescriptionFields] = useForm({
     id: "edit-task-description-form",

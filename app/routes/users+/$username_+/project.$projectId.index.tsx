@@ -143,9 +143,6 @@ export default function UsersProjectDetailPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [taskModalData, setTaskModalData] = useState<Task | null>(null);
-  const [editingTaskTitleId, setEditingTaskTitleId] = useState<string | null>(
-    null
-  );
   const [sectionBodyRefs] = useState<Array<React.RefObject<HTMLDivElement>>>(
     data.owner.sections.map(() => createRef())
   );
@@ -197,10 +194,6 @@ export default function UsersProjectDetailPage() {
     data && taskModalData
       ? setTaskModalData({ ...taskModalData, ...data })
       : setTaskModalData(null);
-  };
-
-  const invokeSetEditingTaskTitleId = (id: string | null) => {
-    setEditingTaskTitleId(id);
   };
 
   const invokeSetEditSectionFormIndex = (index: number | null) => {
@@ -377,11 +370,9 @@ export default function UsersProjectDetailPage() {
             <div className="flex flex-row justify-between w-full font-semibold text-xl mb-16 h-10">
               <EditTaskTitleInput
                 submissionData={actionData?.submission}
-                editingTaskTitleId={editingTaskTitleId}
                 taskModalDataId={taskModalData.id}
                 taskModalDataTitle={taskModalData.title}
                 taskModalDataOwnerId={taskModalData.ownerId}
-                invokeSetEditingTaskTitleId={invokeSetEditingTaskTitleId}
                 invokeSetTaskModalData={invokeSetTaskModalData}
               />
               <DeleteTaskButton

@@ -89,7 +89,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
             ref={addSectionInputRef}
             type="text"
             {...conform.input(addSectionFields.title)}
-            className="w-64 mb-2.5 text-base px-2 h-8 font-medium border-transparent hover:border-input focus:border-input transition"
+            className="w-64 mb-2.5 text-base px-2 h-[30px] font-medium border-transparent hover:border-input focus:border-input transition"
             placeholder="Enter section title..."
             onKeyDown={(event) => {
               if (event.key === "Escape") {

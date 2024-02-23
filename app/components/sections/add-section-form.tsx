@@ -5,7 +5,7 @@ import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
 import { flushSync } from "react-dom";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
-import { type ElementRef, useRef, useState } from "react";
+import { type ElementRef, useRef, useState, useEffect } from "react";
 
 export const AddSectionFormSchema = z.object({
   title: z.string().min(1).max(32),
@@ -42,19 +42,29 @@ export const AddSectionForm: React.FC<TaskProps> = ({
   const addSectionInputRef = useRef<ElementRef<"input">>(null);
   const addSectionFetcher = useFetcher({ key: "add-section" });
 
-  useClickOutside(addSectionRef, () => {
-    setAddSectionCreateFormIsOpen(false);
-  });
+  useClickOutside(
+    addSectionRef,
+    () => {
+      setAddSectionCreateFormIsOpen(false);
+    },
+    "ignore-click-outside"
+  );
+
+  useEffect(() => {
+    if (addSectionCreateFormIsOpen) {
+      scrollRightIntoView();
+      addSectionInputRef.current?.select();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addSectionCreateFormIsOpen]);
 
   return (
     <div
       className="w-full"
       onClick={() => {
         flushSync(() => {
-          setAddSectionCreateFormIsOpen(true);
+          setAddSectionCreateFormIsOpen((prevState) => !prevState);
         });
-        scrollRightIntoView();
-        addSectionInputRef.current?.select();
       }}
     >
       {addSectionCreateFormIsOpen ? (
@@ -102,7 +112,7 @@ export const AddSectionForm: React.FC<TaskProps> = ({
           + Add section
         </div>
       )}
-      <div className="overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg">
+      <div className="overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg ignore-click-outside">
         <div className="w-64 h-full rounded-lg bg-gray-50 group-hover:bg-gray-100"></div>
       </div>
     </div>

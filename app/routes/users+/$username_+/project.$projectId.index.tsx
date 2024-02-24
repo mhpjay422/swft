@@ -21,6 +21,7 @@ import { useState, useRef, createRef, type ElementRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { CSRFError } from "remix-utils/csrf/server";
 import { z } from "zod";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 
 export type Task = {
   id: string;
@@ -263,103 +264,153 @@ export default function UsersProjectDetailPage() {
       className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8"
       ref={projectPageRef}
     >
-      <div className="flex flex-row pt-6 px-5 w-full">
-        {data.owner.sections.map((section, index) => (
-          <div key={section.id} className="mr-4 w-[256px]">
-            <div className="flex flex-row justify-between font-semibold h-10 w-64">
-              <EditSectionForm
-                submissionData={actionData?.submission}
-                editSectionTitleRef={editSectionTitleRefs[index]}
-                editSectionInputRef={editSectionInputRef}
-                editSectionFormIndex={editSectionFormIndex}
-                index={index}
-                invokeSetEditSectionFormIndex={invokeSetEditSectionFormIndex}
-                focusCurrentEditSection={focusCurrentEditSection}
-                section={section}
-              />
-              <button
-                className="m-1 w-[18px] h-[18px]"
-                onClick={() => addTaskButtonRefs[index].current?.click()}
-              >
-                <PlusSign />
-              </button>
-              <SectionDropdown
-                sectionId={section.id}
-                focusCurrentEditSection={() => focusCurrentEditSection(index)}
-              />
-            </div>
-            <div
-              ref={sectionBodyRefs[index]}
-              className={`overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg`}
+      <DragDropContext onDragEnd={() => {}}>
+        <Droppable droppableId="sections" type="section" direction="horizontal">
+          {(provided) => (
+            <ol
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="flex flex-row pt-6 px-5 w-full"
             >
-              <div
-                className={`w-64 h-full rounded-lg ${
-                  sectionEmptyAndIdle(section, section.id) &&
-                  !isTempBlurSubmitting
-                    ? "bg-gray-50"
-                    : "bg-white"
-                }`}
-              >
-                {section.tasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    deleteTaskIsSubmitting={deleteTaskIsSubmitting}
-                    setTaskModalData={setTaskModalData}
-                  />
-                ))}
-                {/* Optimistic update for new task creation */}
-                {sectionHasOptimisticTaskCreation(section.id) && (
-                  <>
-                    <TaskCard title={taskTitle} />
-                    <div className="w-full rounded-md bg-white} hover:cursor-wait transition p-3 flex items-center font-medium text-sm">
-                      <div className="mx-auto">+ Add a Task</div>
-                    </div>
-                  </>
-                )}
-                <div className="shrink-0 w-64 select-none mb-32">
-                  {/* Render stand-in add task button while optimisticly deleting task. 
-                      This avoids unsynchronized updating of UI while deleting task.
-                  */}
-                  {sectionHasOptimisticDeletion(section.id) ? (
-                    <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">
-                      <div className="mx-auto">+ Add a Task</div>
-                    </div>
-                  ) : (
-                    <AddTaskButtonAndForm
-                      ref={addTaskButtonRefs[index]}
-                      AddTaskFormSchema={AddTaskFormSchema}
-                      fetcher={fetcher}
-                      submissionData={actionData?.submission}
-                      sectionOwnerId={section.ownerId}
-                      sectionId={section.id}
-                      sectionRef={sectionBodyRefs[index]}
-                      sectionEmptyAndIdle={sectionEmptyAndIdle(
-                        section,
-                        section.id
-                      )}
-                      isEditing={editingSectionId === section.id}
-                      sectionHasOptimisticTaskCreation={sectionHasOptimisticTaskCreation(
-                        section.id
-                      )}
-                      setEditingSectionId={setEditingSectionId}
-                      setIsTempBlurSubmitting={setIsTempBlurSubmitting}
-                    />
-                  )}
+              {data.owner.sections.map((section, index) => (
+                <div key={section.id}>
+                  <Draggable draggableId={section.id} index={index}>
+                    {(provided) => (
+                      <li
+                        {...provided.draggableProps}
+                        ref={provided.innerRef}
+                        className="mr-4 w-[256px]"
+                      >
+                        <div
+                          {...provided.dragHandleProps}
+                          className="flex flex-row justify-between font-semibold h-10 w-64"
+                        >
+                          <EditSectionForm
+                            submissionData={actionData?.submission}
+                            editSectionTitleRef={editSectionTitleRefs[index]}
+                            editSectionInputRef={editSectionInputRef}
+                            editSectionFormIndex={editSectionFormIndex}
+                            index={index}
+                            invokeSetEditSectionFormIndex={
+                              invokeSetEditSectionFormIndex
+                            }
+                            focusCurrentEditSection={focusCurrentEditSection}
+                            section={section}
+                          />
+                          <button
+                            className="m-1 w-[18px] h-[18px]"
+                            onClick={() =>
+                              addTaskButtonRefs[index].current?.click()
+                            }
+                          >
+                            <PlusSign />
+                          </button>
+                          <SectionDropdown
+                            sectionId={section.id}
+                            focusCurrentEditSection={() =>
+                              focusCurrentEditSection(index)
+                            }
+                          />
+                        </div>
+                        <div
+                          ref={sectionBodyRefs[index]}
+                          className={`overflow-x-hidden overflow-y-auto section-max-height h-screen rounded-lg`}
+                        >
+                          <Droppable droppableId={section.id} type="card">
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={`w-64 h-full rounded-lg ${
+                                  sectionEmptyAndIdle(section, section.id) &&
+                                  !isTempBlurSubmitting
+                                    ? "bg-gray-50"
+                                    : "bg-white"
+                                }`}
+                              >
+                                {section.tasks.map((task, index) => (
+                                  <TaskCard
+                                    key={task.id}
+                                    index={index}
+                                    task={task}
+                                    deleteTaskIsSubmitting={
+                                      deleteTaskIsSubmitting
+                                    }
+                                    setTaskModalData={setTaskModalData}
+                                  />
+                                ))}
+                                {provided.placeholder}
+                                {/* Optimistic update for new task creation */}
+                                {sectionHasOptimisticTaskCreation(
+                                  section.id
+                                ) && (
+                                  <>
+                                    <TaskCard title={taskTitle} index={index} />
+                                    <div className="w-full rounded-md bg-white hover:cursor-wait transition p-3 flex items-center font-medium text-sm">
+                                      <div className="mx-auto">
+                                        + Add a Task
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                                <div className="shrink-0 w-64 select-none mb-32">
+                                  {/* Render stand-in add task button while optimisticly deleting task. 
+                                      This avoids unsynchronized updating of UI while deleting task.
+                                  */}
+                                  {sectionHasOptimisticDeletion(section.id) ? (
+                                    <div className="w-full rounded-md bg-white p-3 flex items-center font-medium text-sm cursor-wait">
+                                      <div className="mx-auto">
+                                        + Add a Task
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <AddTaskButtonAndForm
+                                      ref={addTaskButtonRefs[index]}
+                                      AddTaskFormSchema={AddTaskFormSchema}
+                                      fetcher={fetcher}
+                                      submissionData={actionData?.submission}
+                                      sectionOwnerId={section.ownerId}
+                                      sectionId={section.id}
+                                      sectionRef={sectionBodyRefs[index]}
+                                      sectionEmptyAndIdle={sectionEmptyAndIdle(
+                                        section,
+                                        section.id
+                                      )}
+                                      isEditing={
+                                        editingSectionId === section.id
+                                      }
+                                      sectionHasOptimisticTaskCreation={sectionHasOptimisticTaskCreation(
+                                        section.id
+                                      )}
+                                      setEditingSectionId={setEditingSectionId}
+                                      setIsTempBlurSubmitting={
+                                        setIsTempBlurSubmitting
+                                      }
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </Droppable>
+                        </div>
+                      </li>
+                    )}
+                  </Draggable>
                 </div>
+              ))}
+              {provided.placeholder}
+              <div className="w-[274px] hover:cursor-pointer pr-1 group">
+                <AddSectionForm
+                  submissionData={actionData?.submission}
+                  ownerId={data.owner.id}
+                  projectId={data.projectId}
+                  scrollRightIntoView={scrollRightIntoView}
+                />
               </div>
-            </div>
-          </div>
-        ))}
-        <div className="w-[274px] hover:cursor-pointer pr-1 group">
-          <AddSectionForm
-            submissionData={actionData?.submission}
-            ownerId={data.owner.id}
-            projectId={data.projectId}
-            scrollRightIntoView={scrollRightIntoView}
-          />
-        </div>
-      </div>
+            </ol>
+          )}
+        </Droppable>
+      </DragDropContext>
       {taskModalData !== null && (
         <div className="absolute h-screen w-screen top-0 left-0 bg-black/[.60] overflow-scroll">
           <div

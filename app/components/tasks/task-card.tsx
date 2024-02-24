@@ -7,6 +7,7 @@ import { useFetcher } from "@remix-run/react";
 import { useRef } from "react";
 import { AuthenticityTokenInput } from "remix-utils/csrf/react";
 import { z } from "zod";
+import { Draggable } from "@hello-pangea/dnd";
 
 export const ToggleTaskCompletionFormSchema = z.object({
   taskId: z.string(),
@@ -16,6 +17,7 @@ export const ToggleTaskCompletionFormSchema = z.object({
 
 interface TaskProps {
   task?: Task;
+  index: number;
   title?: string;
   deleteTaskIsSubmitting?: boolean;
   setTaskModalData?: React.Dispatch<React.SetStateAction<Task | null>>;
@@ -23,6 +25,7 @@ interface TaskProps {
 
 export const TaskCard: React.FC<TaskProps> = ({
   task,
+  index,
   title,
   deleteTaskIsSubmitting,
   setTaskModalData,
@@ -59,55 +62,64 @@ export const TaskCard: React.FC<TaskProps> = ({
   });
 
   return (
-    <div
-      className={`flex flex-row task ${
-        isCreatedTask && setTaskModalData && !deleteTaskIsSubmitting
-          ? "hover:cursor-pointer"
-          : "hover:cursor-wait"
-      }`}
-      onClick={handleClick}
-    >
-      <toggleTaskCompletionFetcher.Form
-        {...form.props}
-        method="PUT"
-        action="/task-toggle-completion"
-        ref={toggleTaskCompletionRef}
-        onClick={() => {
-          toggleTaskCompletionFetcher.submit(toggleTaskCompletionRef.current);
-        }}
-      >
-        <AuthenticityTokenInput />
-        <input
-          {...conform.input(fields.taskId, {
-            type: "hidden",
-          })}
-          value={task?.id}
-        />
-        <input
-          {...conform.input(fields.ownerId, {
-            type: "hidden",
-          })}
-          value={task?.ownerId}
-        />
-        <input
-          {...conform.input(fields.completed, {
-            type: "hidden",
-          })}
-          value={task?.completed.toString()}
-        />
-        <div ref={taskCompleteIcon}>
-          {shouldRenderTaskCompleteIcon() ? (
-            // Remix is not importing TaskCompleteCheckIcon correctly if the
-            // import is a SVG wrapped in a div. Moved div here to fix.
-            <div className="w-4 h-4 mt-1.5 ml-0.5 mr-2.5 rounded-full bg-green-700 flex items-center">
-              <TaskCompleteCheckIcon />
+    <Draggable draggableId={task?.id || "optimistic"} index={index}>
+      {(provided) => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          className={`flex flex-row task ${
+            isCreatedTask && setTaskModalData && !deleteTaskIsSubmitting
+              ? "hover:cursor-pointer"
+              : "hover:cursor-wait"
+          }`}
+          onClick={handleClick}
+        >
+          <toggleTaskCompletionFetcher.Form
+            {...form.props}
+            method="PUT"
+            action="/task-toggle-completion"
+            ref={toggleTaskCompletionRef}
+            onClick={() => {
+              toggleTaskCompletionFetcher.submit(
+                toggleTaskCompletionRef.current
+              );
+            }}
+          >
+            <AuthenticityTokenInput />
+            <input
+              {...conform.input(fields.taskId, {
+                type: "hidden",
+              })}
+              value={task?.id}
+            />
+            <input
+              {...conform.input(fields.ownerId, {
+                type: "hidden",
+              })}
+              value={task?.ownerId}
+            />
+            <input
+              {...conform.input(fields.completed, {
+                type: "hidden",
+              })}
+              value={task?.completed.toString()}
+            />
+            <div ref={taskCompleteIcon}>
+              {shouldRenderTaskCompleteIcon() ? (
+                // Remix is not importing TaskCompleteCheckIcon correctly if the
+                // import is a SVG wrapped in a div. Moved div here to fix.
+                <div className="w-4 h-4 mt-1.5 ml-0.5 mr-2.5 rounded-full bg-green-700 flex items-center">
+                  <TaskCompleteCheckIcon />
+                </div>
+              ) : (
+                <TaskNotCompleteCheckIcon />
+              )}
             </div>
-          ) : (
-            <TaskNotCompleteCheckIcon />
-          )}
+          </toggleTaskCompletionFetcher.Form>
+          {isCreatedTask ? task?.title : title}
         </div>
-      </toggleTaskCompletionFetcher.Form>
-      {isCreatedTask ? task?.title : title}
-    </div>
+      )}
+    </Draggable>
   );
 };

@@ -1,3 +1,4 @@
+import { EditSectionFormSchema } from "#app/components/sections/edit-section-title.tsx";
 import { requireUserId } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
@@ -5,7 +6,6 @@ import { invariantResponse } from "#app/utils/misc.tsx";
 import { parse } from "@conform-to/zod";
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { CSRFError } from "remix-utils/csrf/server";
-import { EditSectionFormSchema } from "../users+/$username_+/project.$projectId.index.tsx";
 
 const prisma = prismaClient;
 
@@ -25,7 +25,7 @@ export async function action({ request }: DataFunctionArgs) {
     schema: EditSectionFormSchema,
   });
 
-  if (submission.intent !== "submit" || !submission.value?.title) {
+  if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }
 
@@ -33,7 +33,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: "error", submission } as const, { status: 400 });
   }
 
-  const { sectionId, title } = submission.value;
+  let { sectionId, title } = submission.value;
 
   const section = await prisma.section.findFirst({
     select: {
@@ -56,6 +56,8 @@ export async function action({ request }: DataFunctionArgs) {
       { status: 403 }
     );
   }
+
+  if (!title) title = "Untitled section";
 
   await prisma.section.update({
     where: {

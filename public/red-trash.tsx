@@ -6,7 +6,7 @@ export default function RedTrashCan() {
       viewBox="0 0 24 24"
       stroke-width="1"
       stroke="rgb(220 38 38 / var(--tw-text-opacity))"
-      className="w-5 h-5 mr-1.5"
+      className="w-5 h-5"
     >
       <path
         stroke-linecap="round"

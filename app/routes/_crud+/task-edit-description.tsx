@@ -1,3 +1,4 @@
+import { EditTaskDescriptionFormSchema } from "#app/components/tasks/edit-task-description.tsx";
 import { requireUserId } from "#app/utils/auth.server.ts";
 import { csrf } from "#app/utils/csrf.server.ts";
 import prismaClient from "#app/utils/db.server.ts";
@@ -5,7 +6,6 @@ import { invariantResponse } from "#app/utils/misc.tsx";
 import { parse } from "@conform-to/zod";
 import { json, type DataFunctionArgs } from "@remix-run/node";
 import { CSRFError } from "remix-utils/csrf/server";
-import { EditTaskDescriptionFormSchema } from "../users+/$username_+/project.$projectId.index.tsx";
 
 const prisma = prismaClient;
 
@@ -25,10 +25,7 @@ export async function action({ request }: DataFunctionArgs) {
     schema: EditTaskDescriptionFormSchema,
   });
 
-  if (
-    (submission.value?.description !== "" && !submission.value?.description) ||
-    submission.intent !== "submit"
-  ) {
+  if (submission.intent !== "submit") {
     return json({ status: "idle", submission } as const);
   }
 
@@ -43,6 +40,7 @@ export async function action({ request }: DataFunctionArgs) {
       id: true,
       ownerId: true,
       owner: { select: { username: true } },
+      description: true,
     },
     where: { id: taskId },
   });
@@ -60,12 +58,19 @@ export async function action({ request }: DataFunctionArgs) {
     );
   }
 
+  if (description === task.description) {
+    return json({ status: "idle", submission } as const);
+  }
+
   await prisma.task.update({
     where: {
       id: taskId,
     },
     data: {
-      description,
+      // Without a value set for the description field,
+      // submission.value?.description will be undefined.
+      // Hence the need for the below null for the prisma update.
+      description: description || null,
     },
   });
 

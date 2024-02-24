@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <div
-      className={`w-full sticky bottom-0 h-16 border-t border-gray-200 ${
+      className={`absolute z-9999 w-full bottom-0 h-16 border-t border-gray-200 ${
         process.env.NODE_ENV === "production" ? "bg-gray-50" : "bg-blue-100"
       }`}
     >

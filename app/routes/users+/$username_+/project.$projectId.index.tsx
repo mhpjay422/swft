@@ -155,6 +155,9 @@ export default function UsersProjectDetailPage() {
   const [editSectionFormIndex, setEditSectionFormIndex] = useState<
     null | number
   >(null);
+  const [orderedSections, setOrderedSections] = useState<Section[]>(
+    data.owner.sections
+  );
 
   const projectPageRef = useRef<ElementRef<"div">>(null);
   const taskModalRef = useRef<ElementRef<"div">>(null);
@@ -259,12 +262,49 @@ export default function UsersProjectDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.owner.sections.length]);
 
+  const reorderItems = <T,>(
+    section: T[],
+    startIndex: number,
+    endIndex: number
+  ): T[] => {
+    const result = Array.from(section);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const onDragEnd = (result: any) => {
+    const { destination, source, type } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    if (type === "section") {
+      const items = reorderItems(
+        orderedSections,
+        source.index,
+        destination.index
+      ).map((item, index) => ({ ...item, order: index }));
+
+      setOrderedSections(items);
+    }
+  };
+
   return (
     <div
       className="flex flex-row items-center overflow-x-auto w-screen mb-36 mr-8"
       ref={projectPageRef}
     >
-      <DragDropContext onDragEnd={() => {}}>
+      <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="sections" type="section" direction="horizontal">
           {(provided) => (
             <ol
@@ -272,7 +312,7 @@ export default function UsersProjectDetailPage() {
               ref={provided.innerRef}
               className="flex flex-row pt-6 px-5 w-full"
             >
-              {data.owner.sections.map((section, index) => (
+              {orderedSections.map((section, index) => (
                 <div key={section.id}>
                   <Draggable draggableId={section.id} index={index}>
                     {(provided) => (

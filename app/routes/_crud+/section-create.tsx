@@ -28,11 +28,20 @@ export async function action({ request }: DataFunctionArgs) {
           return;
         }
 
+        const lastSection = await prisma.section.findFirst({
+          where: { projectId: data.projectId },
+          orderBy: { order: "desc" },
+          select: { order: true },
+        });
+
+        const newOrder = lastSection ? lastSection.order + 1 : 1;
+
         const section = await prisma.section.create({
           data: {
             title: data.title,
             ownerId: data.ownerId,
             projectId: data.projectId,
+            order: newOrder,
           },
         });
 

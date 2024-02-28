@@ -41,6 +41,7 @@ const seedData = async () => {
               owner: {
                 connect: { username: "admin" },
               },
+              order: 1,
               tasks: {
                 create: {
                   title: "My first Task",
@@ -63,7 +64,7 @@ const seedData = async () => {
     },
   });
 
-  function createSeedUserData() {
+  function createSeedUserData(order: number) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const projectId = cuid();
@@ -87,6 +88,7 @@ const seedData = async () => {
               owner: {
                 connect: { username: `${firstName}${lastName}` },
               },
+              order: order,
               tasks: {
                 create: tasks.map((task) => ({
                   ...task,
@@ -111,7 +113,7 @@ const seedData = async () => {
 
   for (let i = 0; i < numCreateSeedUsers; i++) {
     await prisma.user.create({
-      data: await createSeedUserData(),
+      data: await createSeedUserData(i + 2),
     });
   }
 };
